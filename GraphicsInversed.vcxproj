@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{8B7A65F7-4F15-4902-8D33-34800307C482}</ProjectGuid>
+    <RootNamespace>GraphicsInversed</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;GINBUILD;GINBUILD_DYNAMIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>.\Ext\Lib\$(Configuration);..\ReversedLibrary\Ext\Lib\$(Configuration);$(SolutionDir)Lib\$(Configuration)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(SolutionDir)Lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)Ext\Bin\$(Configuration)\*.dll" "$(TargetDir)" /D /K /Y</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying dll files...</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;GINBUILD;GINBUILD_DYNAMIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>.\Ext\Lib\$(Configuration);..\ReversedLibrary\Ext\Lib\$(Configuration);$(SolutionDir)Lib\$(Configuration)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(SolutionDir)Lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)Ext\Bin\$(Configuration)\*.dll" "$(TargetDir)" /D /K /Y</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying dll files...</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h" />
+    <ClInclude Include="Inc\AdditionalWindowInfo.h" />
+    <ClInclude Include="Inc\AlContextManager.h" />
+    <ClInclude Include="Inc\AlGlobals.h" />
+    <ClInclude Include="Inc\Application.h" />
+    <ClInclude Include="Inc\AudioListener.h" />
+    <ClInclude Include="Inc\AudioRecord.h" />
+    <ClInclude Include="Inc\AudioSequence.h" />
+    <ClInclude Include="Inc\AudioUtils.h" />
+    <ClInclude Include="Inc\BaseParticleEmitter.h" />
+    <ClInclude Include="Inc\BlendModeSwitcher.h" />
+    <ClInclude Include="Inc\BmpFile.h" />
+    <ClInclude Include="Inc\BoundUserInputAction.h" />
+    <ClInclude Include="Inc\BufferMapper.h" />
+    <ClInclude Include="Inc\Camera.h" />
+    <ClInclude Include="Inc\Clipboard.h" />
+    <ClInclude Include="Inc\ClipRect.h" />
+    <ClInclude Include="Inc\ClipVector.h" />
+    <ClInclude Include="Inc\ConsoleSystem.h" />
+    <ClInclude Include="Inc\DdsImage.h" />
+    <ClInclude Include="Inc\DdsUtils.h" />
+    <ClInclude Include="Inc\DefaultSamplerContainer.h" />
+    <ClInclude Include="Inc\DefaultWindowDispatcher.h" />
+    <ClInclude Include="Inc\DrawEnums.h" />
+    <ClInclude Include="Inc\DrawFunctions.h" />
+    <ClInclude Include="Inc\DrawMaskSwitchers.h" />
+    <ClInclude Include="Inc\Engine.h" />
+    <ClInclude Include="Inc\FaceCullSwitcher.h" />
+    <ClInclude Include="Inc\FontRenderer.h" />
+    <ClInclude Include="Inc\ForwardRenderer.h" />
+    <ClInclude Include="Inc\Framebuffer.h" />
+    <ClInclude Include="Inc\Gin.h" />
+    <ClInclude Include="Inc\GinComponents.h" />
+    <ClInclude Include="Inc\Gindefs.h" />
+    <ClInclude Include="Inc\GinError.h" />
+    <ClInclude Include="Inc\GinGlobals.h" />
+    <ClInclude Include="Inc\GinTypes.h" />
+    <ClInclude Include="Inc\GlBuffer.h" />
+    <ClInclude Include="Inc\GlContextManager.h" />
+    <ClInclude Include="Inc\GlWindow.h" />
+    <ClInclude Include="Inc\GlWindowUtils.h" />
+    <ClInclude Include="Inc\ImageData.h" />
+    <ClInclude Include="Inc\InputController.h" />
+    <ClInclude Include="Inc\InputHandler.h" />
+    <ClInclude Include="Inc\InputSettings.h" />
+    <ClInclude Include="Inc\InputUtils.h" />
+    <ClInclude Include="Inc\MainFrame.h" />
+    <ClInclude Include="Inc\MainWindowDispatcher.h" />
+    <ClInclude Include="Inc\MaterialDatabase.h" />
+    <ClInclude Include="Inc\Mesh.h" />
+    <ClInclude Include="Inc\Model.h" />
+    <ClInclude Include="Inc\NoisePermutationTable.h" />
+    <ClInclude Include="Inc\NullMouseController.h" />
+    <ClInclude Include="Inc\ObjFile.h" />
+    <ClInclude Include="Inc\OggFile.h" />
+    <ClInclude Include="Inc\OpenGlRenderMechanism.h" />
+    <ClInclude Include="Inc\ParticleEmitter.h" />
+    <ClInclude Include="Inc\ParticleShader.h" />
+    <ClInclude Include="Inc\ParticleSystem.h" />
+    <ClInclude Include="Inc\PixelRect.h" />
+    <ClInclude Include="Inc\PixelVector.h" />
+    <ClInclude Include="Inc\PngFile.h" />
+    <ClInclude Include="Inc\Quad.h" />
+    <ClInclude Include="Inc\RenderMechanism.h" />
+    <ClInclude Include="Inc\SamplerObject.h" />
+    <ClInclude Include="Inc\ScalableFontRenderer.h" />
+    <ClInclude Include="Inc\ScreenBuffer.h" />
+    <ClInclude Include="Inc\Screenshots.h" />
+    <ClInclude Include="Inc\Shader.h" />
+    <ClInclude Include="Inc\ShaderProgram.h" />
+    <ClInclude Include="Inc\Sprite.h" />
+    <ClInclude Include="Inc\State.h" />
+    <ClInclude Include="Inc\StateManager.h" />
+    <ClInclude Include="Inc\TextureBinder.h" />
+    <ClInclude Include="Inc\TextureData.h" />
+    <ClInclude Include="Inc\TextureOperations.h" />
+    <ClInclude Include="Inc\TextureOwner.h" />
+    <ClInclude Include="Inc\TextureUtils.h" />
+    <ClInclude Include="Inc\TextureWrappers.h" />
+    <ClInclude Include="Inc\TypelessTextureOperations.h" />
+    <ClInclude Include="Inc\Uniform.h" />
+    <ClInclude Include="Inc\UniformBlock.h" />
+    <ClInclude Include="Inc\UniformBlockUtils.h" />
+    <ClInclude Include="Inc\UniformFilter.h" />
+    <ClInclude Include="Inc\UniformFilterOwner.h" />
+    <ClInclude Include="Inc\UniformLocation.h" />
+    <ClInclude Include="Inc\UniformUtils.h" />
+    <ClInclude Include="Inc\UtilityUserInputActions.h" />
+    <ClInclude Include="Inc\VideoSettingsUtils.h" />
+    <ClInclude Include="Inc\WavFile.h" />
+    <ClInclude Include="Inc\WavUtils.h" />
+    <ClInclude Include="Inc\WindowClass.h" />
+    <ClInclude Include="Inc\WinGdiRenderMechanism.h" />
+    <ClInclude Include="Src\Screenshots.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Inc\GlWindowUtils.cpp" />
+    <ClCompile Include="Inc\VideoSettingsUtils.cpp" />
+    <ClCompile Include="Src\AlContextManager.cpp" />
+    <ClCompile Include="Src\AlGlobals.cpp" />
+    <ClCompile Include="Src\Application.cpp" />
+    <ClCompile Include="Src\AudioListener.cpp" />
+    <ClCompile Include="Src\AudioRecord.cpp" />
+    <ClCompile Include="Src\AudioSequence.cpp" />
+    <ClCompile Include="Src\BlendModeSwitcher.cpp" />
+    <ClCompile Include="Src\BmpFile.cpp" />
+    <ClCompile Include="Src\BufferMapper.cpp" />
+    <ClCompile Include="Src\Camera.cpp" />
+    <ClCompile Include="Src\Clipboard.cpp" />
+    <ClCompile Include="Src\DdsImage.cpp" />
+    <ClCompile Include="Src\DefaultSamplerContainer.cpp" />
+    <ClCompile Include="Src\DrawFunctions.cpp" />
+    <ClCompile Include="Src\DrawMaskSwitchers.cpp" />
+    <ClCompile Include="Src\Engine.cpp" />
+    <ClCompile Include="Src\FaceCullSwitcher.cpp" />
+    <ClCompile Include="Src\FontRenderer.cpp" />
+    <ClCompile Include="Src\ForwardRenderer.cpp" />
+    <ClCompile Include="Src\Framebuffer.cpp" />
+    <ClCompile Include="Src\GinError.cpp" />
+    <ClCompile Include="Src\GinGlobalData.cpp" />
+    <ClCompile Include="Src\GinGlobals.cpp" />
+    <ClCompile Include="Src\GinTypes.cpp" />
+    <ClCompile Include="Src\GlBuffer.cpp" />
+    <ClCompile Include="Src\GlContextManager.cpp" />
+    <ClCompile Include="Src\GlWindow.cpp" />
+    <ClCompile Include="Src\ImageData.cpp" />
+    <ClCompile Include="Src\InputController.cpp" />
+    <ClCompile Include="Src\InputHandler.cpp" />
+    <ClCompile Include="Src\InputSettings.cpp" />
+    <ClCompile Include="Src\InputUtils.cpp" />
+    <ClCompile Include="Src\MainFrame.cpp" />
+    <ClCompile Include="Src\MainWindowDispatcher.cpp" />
+    <ClCompile Include="Src\MaterialDatabase.cpp" />
+    <ClCompile Include="Src\Mesh.cpp" />
+    <ClCompile Include="Src\Model.cpp" />
+    <ClCompile Include="Src\NoisePermutationTable.cpp" />
+    <ClCompile Include="Src\ObjFile.cpp" />
+    <ClCompile Include="Src\OggFile.cpp" />
+    <ClCompile Include="Src\OpenGlRenderMechanism.cpp" />
+    <ClCompile Include="Src\ParticleSystem.cpp" />
+    <ClCompile Include="Src\PixelRect.cpp" />
+    <ClCompile Include="Src\PixelVector.cpp" />
+    <ClCompile Include="Src\PngFile.cpp" />
+    <ClCompile Include="Src\Quad.cpp" />
+    <ClCompile Include="Src\SamplerObject.cpp" />
+    <ClCompile Include="Src\ScalableFontRenderer.cpp" />
+    <ClCompile Include="Src\Screenshots.cpp" />
+    <ClCompile Include="Src\Shader.cpp" />
+    <ClCompile Include="Src\ShaderProgram.cpp" />
+    <ClCompile Include="Src\Sprite.cpp" />
+    <ClCompile Include="Src\StateManager.cpp" />
+    <ClCompile Include="Src\TextureBinder.cpp" />
+    <ClCompile Include="Src\TextureData.cpp" />
+    <ClCompile Include="Src\TextureUtils.cpp" />
+    <ClCompile Include="Src\TypelessTextureOperations.cpp" />
+    <ClCompile Include="Src\UniformUtils.cpp" />
+    <ClCompile Include="Src\UtilityUserInputActions.cpp" />
+    <ClCompile Include="Src\WavFile.cpp" />
+    <ClCompile Include="Src\WinGdiRenderMechanism.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

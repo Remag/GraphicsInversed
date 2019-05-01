@@ -1,0 +1,537 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Precompiled Headers">
+      <UniqueIdentifier>{3a96d88b-b1de-4ecd-aa44-753ab5eae9bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Audio">
+      <UniqueIdentifier>{fa668b2d-b0a5-43fb-9283-05958fee1386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Coordinates">
+      <UniqueIdentifier>{207c0bd7-2dcd-4d1c-ac66-85d02dfcdfc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawing">
+      <UniqueIdentifier>{58b5117d-72a0-4d4c-9f86-d8addf12c6c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{79b50ed4-35cb-4763-b6d2-ec5e44d82878}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Application">
+      <UniqueIdentifier>{470e288c-903d-4c33-a796-eaea6225389b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Windows">
+      <UniqueIdentifier>{b17f3ef5-9c15-4064-a875-d411f9bb7c0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawing\Models">
+      <UniqueIdentifier>{183b4df4-72f3-4c2a-9acc-52e046ae70f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawing\Textures">
+      <UniqueIdentifier>{7bbd69fa-b379-4f06-bad8-5b8c7a78616f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawing\Uniforms">
+      <UniqueIdentifier>{ef519133-f5eb-43c5-93ee-344131ea6c85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawing\Shaders">
+      <UniqueIdentifier>{c55e4b64-a33e-4ce3-95ce-c3ea2bf8c2ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\General">
+      <UniqueIdentifier>{a8728a42-00a7-4166-b9d1-9765f5477a4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Windows\RenderMechanisms">
+      <UniqueIdentifier>{c8cbf22b-92e8-4a4b-bcfa-0feffea2c3c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawing\Particles">
+      <UniqueIdentifier>{f50fd203-76d6-4a23-8dc1-78d6850cf8e7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Src\Screenshots.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>Precompiled Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AdditionalWindowInfo.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AlContextManager.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AlGlobals.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Application.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AudioListener.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AudioRecord.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AudioSequence.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AudioUtils.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\BaseParticleEmitter.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\BlendModeSwitcher.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\BmpFile.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\BoundUserInputAction.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\BufferMapper.h">
+      <Filter>Header Files\Drawing\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Camera.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Clipboard.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ClipRect.h">
+      <Filter>Header Files\Coordinates</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ClipVector.h">
+      <Filter>Header Files\Coordinates</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DdsImage.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DdsUtils.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DefaultSamplerContainer.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ConsoleSystem.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DefaultWindowDispatcher.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DrawEnums.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DrawFunctions.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DrawMaskSwitchers.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Engine.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\FaceCullSwitcher.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\FontRenderer.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ForwardRenderer.h">
+      <Filter>Header Files\Drawing\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Framebuffer.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GlContextManager.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GlWindow.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gin.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GinComponents.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gindefs.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GinError.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GinGlobals.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GinTypes.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GlBuffer.h">
+      <Filter>Header Files\Drawing\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GlWindowUtils.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ImageData.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\InputController.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\InputHandler.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\InputSettings.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\InputUtils.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\MainFrame.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\MainWindowDispatcher.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\MaterialDatabase.h">
+      <Filter>Header Files\Drawing\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Mesh.h">
+      <Filter>Header Files\Drawing\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Model.h">
+      <Filter>Header Files\Drawing\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\NoisePermutationTable.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\NullMouseController.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ObjFile.h">
+      <Filter>Header Files\Drawing\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\OggFile.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\OpenGlRenderMechanism.h">
+      <Filter>Header Files\Windows\RenderMechanisms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ParticleEmitter.h">
+      <Filter>Header Files\Drawing\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ParticleShader.h">
+      <Filter>Header Files\Drawing\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ParticleSystem.h">
+      <Filter>Header Files\Drawing\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\PixelRect.h">
+      <Filter>Header Files\Coordinates</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\PixelVector.h">
+      <Filter>Header Files\Coordinates</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\PngFile.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Quad.h">
+      <Filter>Header Files\Drawing\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\RenderMechanism.h">
+      <Filter>Header Files\Windows\RenderMechanisms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\SamplerObject.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ScalableFontRenderer.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ScreenBuffer.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Screenshots.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Shader.h">
+      <Filter>Header Files\Drawing\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ShaderProgram.h">
+      <Filter>Header Files\Drawing\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Sprite.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\State.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\StateManager.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TextureBinder.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TextureData.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TextureOperations.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TextureOwner.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TextureUtils.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TextureWrappers.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TypelessTextureOperations.h">
+      <Filter>Header Files\Drawing\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Uniform.h">
+      <Filter>Header Files\Drawing\Uniforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\UniformBlockUtils.h">
+      <Filter>Header Files\Drawing\Uniforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\UniformBlock.h">
+      <Filter>Header Files\Drawing\Uniforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\UniformFilter.h">
+      <Filter>Header Files\Drawing\Uniforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\UniformFilterOwner.h">
+      <Filter>Header Files\Drawing\Uniforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\UniformLocation.h">
+      <Filter>Header Files\Drawing\Uniforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\UniformUtils.h">
+      <Filter>Header Files\Drawing\Uniforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\UtilityUserInputActions.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\VideoSettingsUtils.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\WindowClass.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\WinGdiRenderMechanism.h">
+      <Filter>Header Files\Windows\RenderMechanisms</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\WavUtils.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\WavFile.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\AlContextManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\AlGlobals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\AudioListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\AudioRecord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\AudioSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BlendModeSwitcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BmpFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BufferMapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Clipboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\DdsImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\DefaultSamplerContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\DrawFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\DrawMaskSwitchers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FaceCullSwitcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FontRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ForwardRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Framebuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GinError.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GinGlobalData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GinGlobals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GinTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GlBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GlContextManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GlWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ImageData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\InputController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\InputHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\InputSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\InputUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MainFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MainWindowDispatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MaterialDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NoisePermutationTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ObjFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\OggFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\OpenGlRenderMechanism.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\PixelRect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\PixelVector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\PngFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Quad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SamplerObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ScalableFontRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Screenshots.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Sprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\StateManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TextureBinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TextureData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TextureUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TypelessTextureOperations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UniformUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UtilityUserInputActions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\WavFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\WinGdiRenderMechanism.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common.cpp">
+      <Filter>Precompiled Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\GlWindowUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\VideoSettingsUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

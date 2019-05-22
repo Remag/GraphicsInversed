@@ -15,6 +15,10 @@ namespace Gin {
 COpenGlRenderMechanism::COpenGlRenderMechanism( const CGlWindow& window, CGlContextManager& _glContextManager ) :
 	glContextManager( _glContextManager )
 {
+	const CUnicodeView initializerExternalName = L"Gin.ShaderInitializer";
+	if( IsExternalName( initializerExternalName ) ) {
+		globalShaderInitializer = CreateUniqueObject<IShaderInitializer>( initializerExternalName );
+	}
 	backgroundBrush = ::CreateSolidBrush( RGB( 0, 0, 0 ) );
 	OnWindowResize( window.WindowSize() );
 }

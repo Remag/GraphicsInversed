@@ -339,6 +339,9 @@
     <ClInclude Include="Inc\WavFile.h">
       <Filter>Header Files\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\ShaderInitializerInc.h">
+      <Filter>Header Files\Drawing\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlContextManager.cpp">

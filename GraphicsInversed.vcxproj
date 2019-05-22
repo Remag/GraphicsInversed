@@ -230,6 +230,7 @@
     <ClInclude Include="Inc\ScreenBuffer.h" />
     <ClInclude Include="Inc\Screenshots.h" />
     <ClInclude Include="Inc\Shader.h" />
+    <ClInclude Include="Inc\ShaderInitializerInc.h" />
     <ClInclude Include="Inc\ShaderProgram.h" />
     <ClInclude Include="Inc\Sprite.h" />
     <ClInclude Include="Inc\State.h" />

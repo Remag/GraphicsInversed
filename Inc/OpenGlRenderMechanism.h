@@ -1,5 +1,6 @@
 #pragma once
 #include <RenderMechanism.h>
+#include <ShaderInitializerInc.h>
 
 namespace Gin {
 
@@ -26,6 +27,7 @@ public:
 	virtual CArray<BYTE> ReadScreenBuffer( TTexelFormat format, CVector2<int>& bufferSize ) const override final;
 
 private:
+	CPtrOwner<IShaderInitializer> globalShaderInitializer;
 	CGlContextManager& glContextManager;
 	HDC windowDc;
 	CColor backgroundColor;

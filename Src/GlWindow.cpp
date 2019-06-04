@@ -85,8 +85,15 @@ CVector2<int> CGlWindow::findDefaultResolution()
 	DEVMODE currentSettings;
 	currentSettings.dmSize = sizeof( currentSettings );
 	currentSettings.dmDriverExtra = 0;
-	const bool enumSuccess = ::EnumDisplaySettings( 0, ENUM_REGISTRY_SETTINGS, &currentSettings ) != 0 ;
-	assert( enumSuccess );
+
+	if( ::EnumDisplaySettings( nullptr, ENUM_REGISTRY_SETTINGS, &currentSettings ) == 0 ) {
+		// Apparently, the previous call can fail on some devices for an unknown reason. Use ENUM_CURRENT_SETTINGS as a fall back and revert to a hard coded resolution if that fails as well.
+		currentSettings.dmSize = sizeof( currentSettings );
+		currentSettings.dmDriverExtra = 0;
+		if( ::EnumDisplaySettings( nullptr, ENUM_CURRENT_SETTINGS, &currentSettings ) == 0 ) {
+			return CVector2<int>( 1920, 1080 );
+		}
+	}
 	return getResolution( currentSettings );
 }
 

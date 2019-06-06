@@ -65,8 +65,10 @@ CFontRenderer::CFontRenderer()
 	fontTexture.SetSamplerObject( GetLinearSampler() );
 }
 
-CFontRenderer::CFontRenderer( CFontView _font ) :
-	font( _font )
+CFontRenderer::CFontRenderer( CFontView _font, int fontPxHeight ) :
+	font( _font ),
+	fontSize( _font.CreateSizeObject( static_cast<float>( fontPxHeight ) ) ),
+	fontPixelHeight( fontPxHeight )
 {
 }
 
@@ -83,10 +85,12 @@ void CFontRenderer::ClearShaderData()
 	shaderData = nullptr;
 }
 
-void CFontRenderer::LoadFont( CFontView newFont )
+void CFontRenderer::LoadFont( CFontView newFont, int fontPxHeight )
 {
 	UnloadFont();
 	font = newFont;
+	fontSize = font.CreateSizeObject( static_cast<float>( fontPxHeight ) );
+	fontPixelHeight = fontPxHeight;
 }
 
 void CFontRenderer::UnloadFont()
@@ -122,7 +126,7 @@ void CFontRenderer::LoadCharSet( CUnicodePart str )
 		}
 
 		// Get the glyph and send the fondData.
-		glyphs.Add( font.GetGlyph( glyphCode ) );
+		glyphs.Add( font.GetGlyph( glyphCode, fontSize ) );
 		const CGlyphData glyphData = glyphs.Last().GetGlyphData();
 		fontData.Set( glyphCode, CRenderGlyphData( glyphData, atlasNewSize.X() ) );
 
@@ -316,7 +320,7 @@ void CFontRenderer::addCharToTexture( int charCode, CRenderGlyphData& result ) c
 {
 	assert( font.IsLoaded() );
 
-	CGlyph charGlyph = font.GetGlyph( charCode );
+	CGlyph charGlyph = font.GetGlyph( charCode, fontSize );
 	const CGlyphData glyphData = charGlyph.GetGlyphData();
 	result.GlyphData = glyphData;
 	const auto atlasIntegerSize = getIntegerAtlasSize();

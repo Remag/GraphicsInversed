@@ -68,7 +68,7 @@ private:
 class GINAPI CFontRenderer {
 public:
 	CFontRenderer();
-	explicit CFontRenderer( CFontView font );
+	explicit CFontRenderer( CFontView font, int fontPxHeight );
 
 	// Initialize the font shader. Called automatically during application initialization.
 	static void InitializeShaderData();
@@ -78,11 +78,14 @@ public:
 	bool IsFontLoaded() const
 		{ return font.IsLoaded(); }
 	// Load an external font. Ownership is not taken.
-	void LoadFont( CFontView font );
+	// All existing text meshes are invalidated.
+	void LoadFont( CFontView font, int fontPxHeight );
 	// Unload all characters, delete the texture and invalidate all rendered text meshes.
 	void UnloadFont();
 	CFontView GetFont() const
 		{ return font; }
+	int GetPixelHeight() const
+		{ return fontPixelHeight; }
 
 	// Populate the texture with basic ASCII symbols.
 	void LoadBasicCharSet();
@@ -141,6 +144,8 @@ private:
 
 	// Font used by the renderer.
 	CFontView font;
+	CFontSizeOwner fontSize;
+	int fontPixelHeight = 0;
 
 	// Map containing connections between symbol codes and their offset in the texture atlas.
 	mutable CMap<int, CRenderGlyphData> fontData;

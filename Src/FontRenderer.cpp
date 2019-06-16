@@ -195,7 +195,11 @@ int CFontRenderer::parseUtf16Character( CUnicodePart str, int& strPos ) const
 		if( !Unicode::TryConvertWideToInt( str[strPos], str[nextPos], result ) ) {
 			Log::Warning( invalidStrError.SubstParam( str ), this );
 			result = str[nextPos];
+			strPos++;
+		} else {
+			strPos += 2;
 		}
+	} else {
 		strPos++;
 	}
 	return result;
@@ -286,7 +290,7 @@ void CFontRenderer::renderUtf16Line( CUnicodePart line, CVector2<int>& fontPos, 
 	const int lineLength = line.Length();
 	// The loop variable can skip through surrogate pairs, we need to remember the number of rendered symbols separately.
 	int symbolIndex = dataOffset;
-	for( int i = 0; i < lineLength; i++ ) {
+	for( int i = 0; i < lineLength; ) {
 		// Find the glyph's UTF32 code.
 		const int glyphCode = parseUtf16Character( line, i );
 		symbolIndex = addNewGlyph( glyphCode, boundRect, fontPos, symbolIndex, lineVertexCount, stringData );
@@ -298,7 +302,7 @@ void CFontRenderer::renderUtf8Line( CStringPart line, CVector2<int>& fontPos, in
 	const int lineLength = line.Length();
 	// The loop variable can skip through surrogate pairs, we need to remember the number of rendered symbols separately.
 	int symbolIndex = dataOffset;
-	for( int i = 0; i < lineLength; i++ ) {
+	for( int i = 0; i < lineLength; ) {
 		// Find the glyph's UTF32 code.
 		const int glyphCode = parseUtf8Character( line, i );
 		symbolIndex = addNewGlyph( glyphCode, boundRect, fontPos, symbolIndex, lineVertexCount, stringData );

@@ -90,7 +90,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>.\Ext\Lib\$(Configuration);..\ReversedLibrary\Lib\$(Configuration);..\ReversedLibrary\Ext\Lib\$(Configuration);$(SolutionDir)Lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\Ext\Lib\$(Configuration);..\ReversedLibrary\Ext\Lib\$(Configuration);$(SolutionDir)Lib\$(Configuration)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)Lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>

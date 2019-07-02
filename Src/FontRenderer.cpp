@@ -67,7 +67,7 @@ CFontRenderer::CFontRenderer()
 
 CFontRenderer::CFontRenderer( CFontView _font, int fontPxHeight ) :
 	font( _font ),
-	fontSize( _font.CreateSizeObject( static_cast<float>( fontPxHeight ) ) ),
+	fontSize( _font.CreateSizeObject( fontPxHeight ) ),
 	fontPixelHeight( fontPxHeight )
 {
 }
@@ -89,7 +89,7 @@ void CFontRenderer::LoadFont( CFontView newFont, int fontPxHeight )
 {
 	UnloadFont();
 	font = newFont;
-	fontSize = font.CreateSizeObject( static_cast<float>( fontPxHeight ) );
+	fontSize = font.CreateSizeObject( fontPxHeight );
 	fontPixelHeight = fontPxHeight;
 }
 

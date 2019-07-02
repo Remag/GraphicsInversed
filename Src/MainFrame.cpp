@@ -60,7 +60,7 @@ CUnicodeView CMainFrame::getMainWindowClassName()
 
 void CMainFrame::initializeCommon( CGlWindowSettings initialSettings, HICON windowIcon )
 {
-	registerWindowClass( windowIcon );
+	registerWindowClass( windowIcon, initialSettings.TrackMouseLeave );
 	mainWindow->Create( getMainWindowClassName(), initialSettings );
 	inputHandler->SetNewWindow( mainWindow->Handle() );
 	initOpenAL();
@@ -72,11 +72,11 @@ bool CMainFrame::IsInitialized() const
 		&& inputHandler != nullptr && inputHandler->HasMouseController();
 }
 
-void CMainFrame::registerWindowClass( HICON windowIcon )
+void CMainFrame::registerWindowClass( HICON windowIcon, bool trackMouseLeave )
 {
 	assert( windowClass == nullptr );
 	CMainWindowDispatcher dispatcher( *this, *mainWindow, GinInternal::GetApplication(), GetStateManager(), *inputHandler );
-	windowClass = CreateOwner<CWindowClass<CMainWindowDispatcher>>( getMainWindowClassName(), windowIcon, move( dispatcher ) );
+	windowClass = CreateOwner<CWindowClass<CMainWindowDispatcher>>( getMainWindowClassName(), windowIcon, move( dispatcher ), trackMouseLeave );
 }
 
 void CMainFrame::initOpenAL()

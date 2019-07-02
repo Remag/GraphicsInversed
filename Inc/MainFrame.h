@@ -63,7 +63,7 @@ private:
 	static CUnicodeView getMainWindowClassName();
 	
 	void initializeCommon( CGlWindowSettings initialSettings, HICON windowIcon );
-	void registerWindowClass( HICON windowIcon );
+	void registerWindowClass( HICON windowIcon, bool trackMouseLeave );
 	void initOpenAL();
 
 	// Copying is prohibited.

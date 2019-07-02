@@ -9,7 +9,7 @@ namespace Gin {
 template <class Dispatcher>
 class CWindowClass : public CSingleton<CWindowClass<Dispatcher>> {
 public:
-	explicit CWindowClass( CUnicodeView className, HICON windowIcon, Dispatcher dispatcher );
+	explicit CWindowClass( CUnicodeView className, HICON windowIcon, Dispatcher dispatcher, bool mouseLeaveTracking );
 	~CWindowClass();
 
 private:
@@ -17,18 +17,26 @@ private:
 	CUnicodeString className;
 	// Window message handler.
 	Dispatcher dispatcher;
+	// Should the mouse leave function be tracked.
+	bool startLeaveTracking;
 
+	static CWindowClass<Dispatcher>& getInstance()
+		{ return *CSingleton<CWindowClass<Dispatcher>>::GetInstance(); }
 	static Dispatcher& getDispatcher()
-		{ return CSingleton<CWindowClass<Dispatcher>>::GetInstance()->dispatcher; }
+		{ return getInstance().dispatcher; }
 	static LRESULT WINAPI windowProcedure( HWND window, UINT message, WPARAM wParam, LPARAM lParam );
+
+	static void tryStartMouseTracking();
+	static void startMouseTracking();
 };
 
 //////////////////////////////////////////////////////////////////////////
 
 template<class Dispatcher>
-CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HICON windowIcon, Dispatcher _dispatcher ) :
+CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HICON windowIcon, Dispatcher _dispatcher, bool mouseLeaveTracking ) :
 	className( _className ),
-	dispatcher( move( _dispatcher ) )
+	dispatcher( move( _dispatcher ) ),
+	startLeaveTracking( mouseLeaveTracking )
 {
 	WNDCLASSEX wndclass;
 	::ZeroMemory( &wndclass, sizeof( wndclass ) );
@@ -91,9 +99,11 @@ LRESULT WINAPI CWindowClass<Dispatcher>::windowProcedure( HWND wnd, UINT msg, WP
 			break;
 		case WM_MOUSEMOVE:
 			getDispatcher().OnMouseMove( wnd, static_cast<int>( LOWORD( lParam ) ), static_cast<int>( HIWORD( lParam ) ) );
+			tryStartMouseTracking();
 			break;
 		case WM_MOUSELEAVE:
 			getDispatcher().OnMouseLeave( wnd );
+			getInstance().startLeaveTracking = true;
 			break;
 		case WM_LBUTTONDOWN:
 			getDispatcher().OnMousePress( wnd, VK_LBUTTON, true );
@@ -138,6 +148,27 @@ LRESULT WINAPI CWindowClass<Dispatcher>::windowProcedure( HWND wnd, UINT msg, WP
 			return ::DefWindowProc( wnd, msg, wParam, lParam );
 	}
 	return 0;
+}
+
+template<class Dispatcher>
+void CWindowClass<Dispatcher>::tryStartMouseTracking()
+{
+	if( getInstance().startLeaveTracking ) {
+		startMouseTracking();
+	}
+}
+
+template<class Dispatcher>
+void CWindowClass<Dispatcher>::startMouseTracking()
+{
+	getInstance().startLeaveTracking = false;
+
+	TRACKMOUSEEVENT e;
+	e.cbSize = sizeof( e );
+	e.dwFlags = TME_LEAVE;
+	e.dwHoverTime = 0;
+	e.hwndTrack = GetMainWindow().Handle();
+	::TrackMouseEvent( &e );
 }
 
 //////////////////////////////////////////////////////////////////////////

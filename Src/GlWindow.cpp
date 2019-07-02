@@ -109,7 +109,7 @@ CVector2<int> CGlWindow::findWindowTopLeft( CVector2<int> originOffset, TWindowO
 
 void CGlWindow::Show( bool isShown )
 {
-	ShowWindow( windowHandle, isShown ? SW_SHOW : SW_HIDE );
+	::ShowWindow( windowHandle, isShown ? SW_SHOW : SW_HIDE );
 }
 
 void CGlWindow::SendCloseCommand()
@@ -134,7 +134,7 @@ int CGlWindow::GetSupportedResolutions( CVector2<int> minResolution, CArray<CVec
 	DEVMODE currentSettings;
 	currentSettings.dmSize = sizeof( currentSettings );
 	currentSettings.dmDriverExtra = 0;
-	const bool enumSuccess = EnumDisplaySettings( 0, ENUM_CURRENT_SETTINGS, &currentSettings ) != 0 ;
+	const bool enumSuccess = ::EnumDisplaySettings( 0, ENUM_CURRENT_SETTINGS, &currentSettings ) != 0 ;
 	assert( enumSuccess );
 	const CVector2<int> currentResolution = getResolution( currentSettings );
 
@@ -142,7 +142,7 @@ int CGlWindow::GetSupportedResolutions( CVector2<int> minResolution, CArray<CVec
 	settings.dmSize = sizeof( settings );
 	settings.dmDriverExtra = 0;
 	int currentResPos = NotFound;
-	for( int modePos = 0; EnumDisplaySettings( 0, modePos, &settings ) != 0; modePos++ ) {
+	for( int modePos = 0; ::EnumDisplaySettings( 0, modePos, &settings ) != 0; modePos++ ) {
 		if( !compareDisplaySettings( currentSettings, settings ) ) {
 			// Different display mode, doesn't need to be in the resolution list.
 			continue;
@@ -182,7 +182,7 @@ bool CGlWindow::compareDisplaySettings( const DEVMODE& left, const DEVMODE& righ
 void CGlWindow::updateWindowSize()
 {
 	RECT windowRect;
-	GetClientRect( windowHandle, &windowRect );
+	::GetClientRect( windowHandle, &windowRect );
 	setWindowSize( windowRect.right, windowRect.bottom );
 }
 
@@ -336,7 +336,7 @@ void CGlWindow::SetActivation( bool isSet )
 		// Restore initial system settings.
 		// This call can actually fail in a weird case, when the activation is happening after the user has pressed ctrl-alt-delete.
 		// Hopefully, in this case, the activation is triggered twice and the second call doesn't fail.
-		ChangeDisplaySettings( nullptr, CDS_FULLSCREEN );
+		::ChangeDisplaySettings( nullptr, CDS_FULLSCREEN );
 	}
 }
 

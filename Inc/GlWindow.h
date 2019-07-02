@@ -18,10 +18,11 @@ struct CGlWindowSettings {
 	CVector2<int> WindowSize;
 	TWindowOriginPoint Origin;
 	bool IsFullscreen = false;
+	bool TrackMouseLeave = false;
 
 	CGlWindowSettings() = default;
-	CGlWindowSettings( DWORD style, CVector2<int> topLeft, CVector2<int> size, TWindowOriginPoint origin, bool isFullscreen ) : 
-		WindowStyle( style ), WindowPosition( topLeft ), WindowSize( size ), Origin( origin ), IsFullscreen( isFullscreen ) {}
+	CGlWindowSettings( DWORD style, CVector2<int> topLeft, CVector2<int> size, TWindowOriginPoint origin, bool isFullscreen, bool trackMouseLeave ) : 
+		WindowStyle( style ), WindowPosition( topLeft ), WindowSize( size ), Origin( origin ), IsFullscreen( isFullscreen ), TrackMouseLeave( trackMouseLeave ) {}
 };
 
 //////////////////////////////////////////////////////////////////////////

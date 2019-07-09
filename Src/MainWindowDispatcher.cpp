@@ -156,11 +156,6 @@ int CMainWindowDispatcher::processRawKeyboard( RAWKEYBOARD input ) const
 	}
 }
 
-void CMainWindowDispatcher::OnHotkey( HWND, WPARAM wParam ) const
-{
-	inputHandler.OnHotkeyPress( wParam );
-}
-
 void CMainWindowDispatcher::OnMouseWheel( HWND, int wheelDelta ) const
 {
 	const auto isDown = wheelDelta < 0;

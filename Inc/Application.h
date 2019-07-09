@@ -7,6 +7,7 @@ namespace Gin {
 
 class CEngine;
 class CStateManager;
+class CInputSettingsController;
 struct CGlWindowSettings;
 //////////////////////////////////////////////////////////////////////////
 
@@ -20,6 +21,8 @@ public:
 		{ return mainFrame; }
 	CStateManager& StateManager()
 		{ return *stateManager; }
+	CInputSettingsController& GetInputSettingsController()
+		{ return *inputSettingsController; }
 
 	CEngine* GetEngine() 
 		{ return engine; }
@@ -36,6 +39,8 @@ public:
 	// Add an additional window to the rendering loop.
 	CAdditionalWindowInfo& AddAdditionalWindow( CGlWindow window, CPtrOwner<IRenderMechanism> renderer );
 	void DeleteAdditionalWindow( const CAdditionalWindowInfo& info );
+	// Commit pending changes to globally defined input keys.
+	void CommitInputKeyChanges( CStringPart controlSchemeName );
 
 	// Initialize the application by creating the first state and running custom onInitialize logic.
 	// If the initialization was aborted, false is returned.
@@ -80,6 +85,8 @@ protected:
 		{ return true; }
 	// Additional actions on application destruction.
 	virtual void onApplicationDestruction() {}
+	// Return the file path to an file with user input key binds.
+	virtual CUnicodeString getInputSettingsFileName();
 
 	// Manipulation with the application engine.
 	void SetEngine( CPtrOwner<CEngine> newEngine );
@@ -99,6 +106,8 @@ private:
 	CPtrOwner<CStateManager> stateManager;
 	// Application engine. Updates current state.
 	CPtrOwner<CEngine> engine;
+	// Application rebindable input controller.
+	CPtrOwner<CInputSettingsController> inputSettingsController;
 	// List of arbitrary actions to execute after the drawing routine is finished.
 	CArray<CMutableActionOwner<void()>> postDrawActions;
 	// List of arbitrary actions to execute after the update is finished.

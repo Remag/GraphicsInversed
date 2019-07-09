@@ -9,6 +9,7 @@ class IRenderMechanism;
 class CPixelVector;
 class CApplication;
 class CInputHandler;
+class CInputSettings;
 class CMainFrame;
 class CStateManager;
 class CGlWindow;
@@ -43,6 +44,9 @@ GINAPI void ExecutePostOsQueue( CMutableActionOwner<void()> action );
 // Create a new main window with the given settings. Previous main window is destroyed.
 GINAPI void ReopenMainWindow( CGlWindowSettings windowSettings, HICON windowIcon );
 
+// Save all the changes made to key bindings in the input settings file.
+GINAPI void CommitInputKeyChanges( CStringPart controlSchemeName );
+
 // Part of the library has nothing interesting to the user.
 namespace GinInternal {
 	
@@ -50,6 +54,7 @@ CApplication& GetApplication();
 CMainFrame& GetMainFrame();
 CInputHandler& GetInputHandler();
 CActionListInputController& GetDefaultInputController();
+const CInputTranslator& GetInputTranslator( CStringPart translatorName );
 
 }
 

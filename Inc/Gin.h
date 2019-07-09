@@ -31,6 +31,7 @@
 #include <GlWindow.h>
 #include <GlWindowUtils.h>
 #include <ImageData.h>
+#include <InputBinding.h>
 #include <InputController.h>
 #include <InputHandler.h>
 #include <InputSettings.h>

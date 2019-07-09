@@ -13,8 +13,6 @@ public:
 
 	// Actions on user input given the virtual key code and the flag indicating the new key state.
 	virtual void OnUserInput( int keyCode, bool isKeyDown ) = 0;
-	// Actions on a global hotkey press.
-	virtual void OnUserHotkey( int keyCode ) = 0;
 
 private:
 	// Copying is prohibited.
@@ -37,7 +35,6 @@ public:
 		{ currentTranslator = newValue; }
 
 	virtual void OnUserInput( int keyCode, bool isKeyDown ) override final;
-	virtual void OnUserHotkey( int keyCode ) override final;
 
 private:
 	const CInputTranslator* currentTranslator;

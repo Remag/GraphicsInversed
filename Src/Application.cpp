@@ -9,6 +9,7 @@
 #include <RenderMechanism.h>
 #include <MainFrame.h>
 #include <AdditionalWindowInfo.h>
+#include <InputSettingsController.h>
 
 namespace Gin {
 
@@ -16,7 +17,6 @@ namespace Gin {
 
 CApplication::CApplication()
 {
-
 }
 
 CApplication::~CApplication()
@@ -24,6 +24,11 @@ CApplication::~CApplication()
 	assert( postDrawActions.IsEmpty() );
 	assert( postUpdateActions.IsEmpty() );
 	assert( postOsQueueActions.IsEmpty() );
+}
+
+CUnicodeString CApplication::getInputSettingsFileName()
+{
+	return UnicodeStr( L"InputSettings.cfg" );
 }
 
 void CApplication::SetEngine( CPtrOwner<CEngine> newEngine )
@@ -75,9 +80,15 @@ void CApplication::DeleteAdditionalWindow( const CAdditionalWindowInfo& info )
 	assert( false );
 }
 
+void CApplication::CommitInputKeyChanges( CStringPart controlSchemeName )
+{
+	inputSettingsController->ResetInputSettings( controlSchemeName );
+}
+
 bool CApplication::Initialize( CUnicodeView commandLine )
 {
 	stateManager = CreateOwner<CStateManager>();
+	inputSettingsController = CreateOwner<CInputSettingsController>( getInputSettingsFileName() );
 	auto firstState = onInitialize( commandLine );
 	if( firstState == nullptr ) {
 		return false;

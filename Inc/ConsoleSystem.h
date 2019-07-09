@@ -43,7 +43,7 @@ public:
 
 private:
 	// Commands dictionary.
-	CMap<CUnicodeString, IConsoleValue*, CIniKeyHashStrategy> nameToSetting;
+	CMap<CUnicodeString, IConsoleValue*, CCaselessUnicodeHash> nameToSetting;
 
 	// Copying is prohibited.
 	CConsoleSystem( CConsoleSystem& ) = delete;

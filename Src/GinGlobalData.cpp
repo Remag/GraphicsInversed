@@ -14,9 +14,9 @@
 
 namespace Gin {
 
-CArray<CPair<CUnicodeView, int>> CInputSettings::keyNameCodePairs = CInputSettings::CreateKeyNamePairs();
-CArray<CUnicodeView> CInputSettings::codeToKeyName = CInputSettings::CreateCodeToKeyNameArray();
-CMap<CUnicodeView, int, CIniKeyHashStrategy> CInputSettings::keyNameToCode = CInputSettings::CreateKeyNameToCodeMap();
+CArray<CPair<CStringView, TGinVirtualKey>> CInputSettings::keyNameCodePairs = CInputSettings::CreateKeyNamePairs();
+CArray<CStringView> CInputSettings::codeToKeyName = CInputSettings::CreateCodeToKeyNameArray();
+CMap<CStringView, TGinVirtualKey, CCaselessStringHash> CInputSettings::keyNameToCode = CInputSettings::CreateKeyNameToCodeMap();
 
 extern const CError Err_GeneralGlError{ L"General OpenGL error! Error code: %0." };
 const CUnicodeView CDdsException::generalDdsFileError = L"DDS parsing error: %1.\nFile name: %0";
@@ -34,6 +34,10 @@ CArray<void*> CActionTargetController::actionTargets;
 extern const CInputTranslator DefaultTranslator{};
 
 GINAPI CConsoleSystem GinGlobalConsoleSystem;
+
+// Created input binding lists.
+GINAPI CArray<CInputBinding*> ActiveFileKeyBindings;
+GINAPI CArray<CSystemInputBinding*> ActiveBasicKeyBindings;
 
 }	// namespace GinInternal.
 

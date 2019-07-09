@@ -2,7 +2,6 @@
 #pragma hdrstop
 
 #include <InputUtils.h>
-#include <InputSettings.h>
 #include <InputHandler.h>
 #include <InputController.h>
 #include <GinGlobals.h>
@@ -26,28 +25,6 @@ CPtrOwner<TUserAction> CInputTranslator::DetachAction( int keyCode, bool isDown 
 {
 	const int pos = getActionIndex( keyCode, isDown );
 	return pos < actions.Size() ? move( actions[pos] ) : nullptr;
-}
-
-CPtrOwner<TUserAction> CInputTranslator::SetHotkeyAction( int keyCode, CPtrOwner<TUserAction> action )
-{
-	auto result = DetachHotkeyAction( keyCode );
-	hotkeyActions.Add( keyCode, move( action ) );
-	return result;
-}
-
-CPtrOwner<TUserAction> CInputTranslator::DetachHotkeyAction( int keyCode )
-{
-	const int hotkeyCount = hotkeyActions.Size();
-	for( int i = 0; i < hotkeyCount; i++ ) {
-		auto& hotkey = hotkeyActions[i];
-		if( hotkey.KeyCode == keyCode ) {
-			auto result = move( hotkey.Action );
-			hotkeyActions.DeleteAt( i );
-			return result;
-		}
-	}
-	
-	return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -103,33 +80,25 @@ bool CTextTranslatorSwitcher::IsInTextMode()
 
 //////////////////////////////////////////////////////////////////////////
 
-CInputSettings* CInputSwitcher::currentSettings = 0;
-
 CInputSwitcher::CInputSwitcher( CInputTranslator* newTranslator, IMouseMoveController* newController ) :
 	transSwt( newTranslator ),
 	moveSwt( newController )
 {
 }
 
-CInputSwitcher::CInputSwitcher( CUnicodePart _settingsSectionName, IMouseMoveController* newController ) :
-	transSwt( getTranslator( currentSettings, _settingsSectionName ) ),
+CInputSwitcher::CInputSwitcher( CStringPart _settingsSectionName, IMouseMoveController* newController ) :
+	transSwt( &getTranslator( _settingsSectionName ) ),
 	moveSwt( newController )
 {
 }
 
-const CInputTranslator* CInputSwitcher::getTranslator( const CInputSettings* settings, CUnicodePart name )
+const CInputTranslator& CInputSwitcher::getTranslator( CStringPart name )
 {
-	assert( settings != nullptr );
-	return &settings->GetTranslator( name );
+	return GinInternal::GetInputTranslator( name );
 }
 
 CInputSwitcher::~CInputSwitcher()
 {
-}
-
-void CInputSwitcher::SetInputSettings( CInputSettings& newValue )
-{
-	currentSettings = &newValue;
 }
 
 //////////////////////////////////////////////////////////////////////////

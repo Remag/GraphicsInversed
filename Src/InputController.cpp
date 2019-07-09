@@ -27,15 +27,6 @@ void CActionListInputController::OnUserInput( int keyCode, bool isKeyDown )
 	}
 }
 
-void CActionListInputController::OnUserHotkey( int keyCode )
-{
-	assert( currentTranslator != nullptr );
-	const auto action = currentTranslator->GetHotkeyAction( keyCode );
-	if( action != nullptr ) {
-		action->Invoke();
-	}
-}
-
 }	// namespace GinInternal.
 
 //////////////////////////////////////////////////////////////////////////

@@ -4,7 +4,7 @@
 #include <InputSettings.h>
 #include <InputHandler.h>
 #include <GinGlobals.h>
-#include <UtilityUserInputActions.h>
+#include <ControlScheme.h>
 
 namespace Gin {
 
@@ -14,13 +14,13 @@ CInputSettings::CInputSettings( CUnicodeView _fileName ) :
 	fileName( _fileName ),
 	fileData( parseCfgFile() )
 {
-	initializeTranslators();
 }
 
 CArray<CInputTranslatorData> CInputSettings::parseCfgFile() const
 {
 	CArray<CInputTranslatorData> result;
-	const auto fileStr = File::ReadUnicodeText( fileName );
+	CFileReader settingsReader( fileName, FCM_CreateOrOpen );
+	const auto fileStr = File::ReadText( settingsReader );
 
 	CInputTranslatorData* currentData = &result.Add();
 	for( auto str : fileStr.Split( L'\n' ) ) {
@@ -38,20 +38,20 @@ CArray<CInputTranslatorData> CInputSettings::parseCfgFile() const
 	return result;
 }
 
-const auto commentSymbol = L'/';
-bool CInputSettings::shouldSkip( CUnicodePart str ) const
+const auto commentSymbol = '/';
+bool CInputSettings::shouldSkip( CStringPart str ) const
 {
 	const bool isComment = str.Length() >= 2 && str[0] == commentSymbol && str[2] == commentSymbol;
 	return str.IsEmpty() || isComment;
 }
 
-bool CInputSettings::isSectionName( CUnicodePart str ) const
+bool CInputSettings::isSectionName( CStringPart str ) const
 {
-	return str[0] == L'[';
+	return str[0] == '[';
 }
 
 const CUnicodeView unknownConfigStr = L"Invalid string in configuration file: %0.\r\nFile name: %1";
-CUnicodePart CInputSettings::parseSectionName( CUnicodePart str ) const
+CStringPart CInputSettings::parseSectionName( CStringPart str ) const
 {
 	const auto endCommentPos = findEndCommentPos( str );
 	auto endPos = str.Find( L']', 1 );
@@ -63,12 +63,12 @@ CUnicodePart CInputSettings::parseSectionName( CUnicodePart str ) const
 	return str.Mid( 1, endPos - 1 ).TrimSpaces();
 }
 
-void CInputSettings::unknownStrWarning( CUnicodePart str ) const
+void CInputSettings::unknownStrWarning( CStringPart str ) const
 {
 	Log::Warning( unknownConfigStr.SubstParam( str, fileName ), this );
 }
 
-int CInputSettings::findEndCommentPos( CUnicodePart str )
+int CInputSettings::findEndCommentPos( CStringPart str )
 {
 	const int length = str.Length();
 	for( int i = str.Find( commentSymbol ); i != NotFound; i = str.Find( commentSymbol, i + 1 ) ) {
@@ -81,7 +81,7 @@ int CInputSettings::findEndCommentPos( CUnicodePart str )
 	return length;
 }
 
-void CInputSettings::parseKeyValuePair( CUnicodePart str, CInputTranslatorData& result ) const
+void CInputSettings::parseKeyValuePair( CStringPart str, CInputTranslatorData& result ) const
 {
 	const auto endCommentPos = findEndCommentPos( str );
 	const auto separatorPos = str.Find( L'=' );
@@ -101,219 +101,121 @@ void CInputSettings::parseKeyValuePair( CUnicodePart str, CInputTranslatorData& 
 	result.KeyActionPairs.Add( *newKey, actionName );
 }
 
-void CInputSettings::initializeTranslators()
-{
-	for( auto& translator : translatorTable ) {
-		translator.Value().Empty();
-	}
-
-	const auto& commonData = fileData[0];
-	assert( commonData.Name.IsEmpty() );
-
-	for( int i = 1; i < fileData.Size(); i++ ) {
-		auto& translator = translatorTable.GetOrCreate( copy( fileData[i].Name ) ).Value();
-		fillTranslator( commonData, translator );
-		fillTranslator( fileData[i], translator );
-	}
-}
-
-void CInputSettings::fillTranslator( const CInputTranslatorData& source, CInputTranslator& translator ) const
-{
-	const int actionCount = source.KeyActionPairs.Size();
-	for( int i = 0; i < actionCount; i++ ) {
-		const auto key = source.KeyActionPairs[i].First;
-		const CUnicodeView name = source.KeyActionPairs[i].Second;
-		createActionFromData( key, name, translator );
-	}
-}
-
-void CInputSettings::createActionFromData( CKeyCombination key, CUnicodeView actionName, CInputTranslator& translator ) const
-{
-	if( key.KeyModifier == KMT_None ) {
-		key.KeyModifier = KMT_Press;
-		if( !tryCreateUserAction( key, L'+' + actionName, translator ) ) {
-			createUserAction( key, actionName, translator );
-		} 
-		key.KeyModifier = KMT_Release;
-		tryCreateUserAction( key, L'-' + actionName, translator );
-	} else if( key.KeyModifier == KMT_Hotkey ) {
-		createUserHotkey( key, actionName, translator );
-	} else {
-		createUserAction( key, actionName, translator );
-	}
-}
-
-bool CInputSettings::tryCreateUserHotkey( CKeyCombination key, CUnicodeView actionName, CInputTranslator& translator ) const
-{
-	if( IsExternalName( actionName ) ) {
-		auto resultAction = createNewAction( actionName, key );
-		addTranslatorHotkey( key, move( resultAction ), translator );
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool CInputSettings::tryCreateUserAction( CKeyCombination key, CUnicodeView actionName, CInputTranslator& translator ) const
-{
-	if( IsExternalName( actionName ) ) {
-		auto resultAction = createNewAction( actionName, key );
-		addTranslatorAction( key, move( resultAction ), translator );
-		return true;
-	} else {
-		return false;
-	}
-}
-
-const CUnicodeView unknownActionWarning = L"Unknown input action: %0";
-void CInputSettings::createUserHotkey( CKeyCombination key, CUnicodeView actionName, CInputTranslator& translator ) const
-{
-	if( !tryCreateUserHotkey( key, actionName, translator ) ) {
-		const auto warningStr = unknownActionWarning.SubstParam( actionName );
-		Log::Warning( warningStr, this );
-	}
-}
-
-void CInputSettings::createUserAction( CKeyCombination key, CUnicodeView actionName, CInputTranslator& translator ) const
-{
-	if( !tryCreateUserAction( key, actionName, translator ) ) {
-		const auto warningStr = unknownActionWarning.SubstParam( actionName );
-		Log::Warning( warningStr, this );
-	}
-}
-
-const CUnicodeView invalidHotkeyMsg = L"Hotkey failed to register.";
-void CInputSettings::addTranslatorHotkey( CKeyCombination key, CPtrOwner<TUserAction> action, CInputTranslator& translator ) const
-{
-	assert( key.KeyModifier == KMT_Hotkey );
-	auto oldAction = translator.DetachHotkeyAction( key.MainKey );
-	translator.SetHotkeyAction( key.MainKey, mergeActions( move( action ), move( oldAction ) ) );
-}
-
-void CInputSettings::addTranslatorAction( CKeyCombination key, CPtrOwner<TUserAction> action, CInputTranslator& translator ) const
-{
-	assert( key.KeyModifier == KMT_Press || key.KeyModifier == KMT_Release );
-	const bool isDown = key.KeyModifier == KMT_Press;
-	auto oldAction = translator.DetachAction( key.MainKey, isDown );
-	translator.SetAction( key.MainKey, isDown, mergeActions( move( action ), move( oldAction ) ) );
-}
-
 CInputSettings::~CInputSettings()
 {
 	Save();
 }
 
-CArray<CPair<CUnicodeView, int>> CInputSettings::CreateKeyNamePairs()
+CArray<CPair<CStringView, TGinVirtualKey>> CInputSettings::CreateKeyNamePairs()
 {
-	static CArrayView<CPair<CUnicodeView, int>> keyValuePairs {
-		{ L"NoKey", 0 },
-		{ L"Null", 0 },
-		{ L"LMouse", VK_LBUTTON },
-		{ L"RMouse", VK_RBUTTON },
-		{ L"MMouse", VK_MBUTTON },
-		{ L"Mouse4", VK_XBUTTON1 },
-		{ L"Mouse5", VK_XBUTTON2 },
-		{ L"LDClick", 0x3A },
-		{ L"RDClick", 0x3B },
-		{ L"MDClick", 0x3C },
-		{ L"WheelDown", 0x0E },
-		{ L"WheelUp", 0x0F },
-		{ L"Esc", VK_ESCAPE },
-		{ L"Space", VK_SPACE },
-		{ L"LShift", VK_LSHIFT },
-		{ L"RShift", VK_RSHIFT },
-		{ L"Shift", VK_SHIFT },
-		{ L"LCtrl", VK_LCONTROL },
-		{ L"RCtrl", VK_RCONTROL },
-		{ L"Ctrl", VK_CONTROL },
-		{ L"Enter", VK_RETURN },
-		{ L"Backspace", VK_BACK },
-		{ L"Delete", VK_DELETE },
-		{ L"Home", VK_HOME },
-		{ L"End", VK_END },
-		{ L"Tab", VK_TAB },
-		{ L"Left", VK_LEFT },
-		{ L"Up", VK_UP },
-		{ L"Right", VK_RIGHT },
-		{ L"Down", VK_DOWN },
-		{ L"Num0", VK_NUMPAD0 },
-		{ L"Num1", VK_NUMPAD1 },
-		{ L"Num2", VK_NUMPAD2 },
-		{ L"Num3", VK_NUMPAD3 },
-		{ L"Num4", VK_NUMPAD4 },
-		{ L"Num5", VK_NUMPAD5 },
-		{ L"Num6", VK_NUMPAD6 },
-		{ L"Num7", VK_NUMPAD7 },
-		{ L"Num8", VK_NUMPAD8 },
-		{ L"Num9", VK_NUMPAD9 },
-		{ L"F1", VK_F1 },
-		{ L"F2", VK_F2 },
-		{ L"F3", VK_F3 },
-		{ L"F4", VK_F4 },
-		{ L"F5", VK_F5 },
-		{ L"F6", VK_F6 },
-		{ L"F7", VK_F7 },
-		{ L"F8", VK_F8 },
-		{ L"F9", VK_F9 },
-		{ L"F10", VK_F10 },
-		{ L"F11", VK_F11 },
-		{ L"F12", VK_F12 },
-		{ L"A", 0x41 },
-		{ L"B", 0x42 },
-		{ L"C", 0x43 },
-		{ L"D", 0x44 },
-		{ L"E", 0x45 },
-		{ L"F", 0x46 },
-		{ L"G", 0x47 },
-		{ L"H", 0x48 },
-		{ L"I", 0x49 },
-		{ L"J", 0x4A },
-		{ L"K", 0x4B },
-		{ L"L", 0x4C },
-		{ L"M", 0x4D },
-		{ L"N", 0x4E },
-		{ L"O", 0x4F },
-		{ L"P", 0x50 },
-		{ L"Q", 0x51 },
-		{ L"R", 0x52 },
-		{ L"S", 0x53 },
-		{ L"T", 0x54 },
-		{ L"U", 0x55 },
-		{ L"V", 0x56 },
-		{ L"W", 0x57 },
-		{ L"X", 0x58 },
-		{ L"Y", 0x59 },
-		{ L"Z", 0x5A },
-		{ L"0", 0x30 },
-		{ L"1", 0x31 },
-		{ L"2", 0x32 },
-		{ L"3", 0x33 },
-		{ L"4", 0x34 },
-		{ L"5", 0x35 },
-		{ L"6", 0x36 },
-		{ L"7", 0x37 },
-		{ L"8", 0x38 },
-		{ L"9", 0x39 },
-		{ L"`", VK_OEM_3 },
-		{ L"~", VK_OEM_3 },
-		{ L"Minus", VK_OEM_MINUS },
-		{ L"Equal", VK_OEM_PLUS },
-		{ L"\\", VK_OEM_5 },
-		{ L"'", VK_OEM_7 },
-		{ L";", VK_OEM_1 },
-		{ L"[", VK_OEM_4 },
-		{ L"]", VK_OEM_6 },
-		{ L"/", VK_OEM_2 },
-		{ L".", VK_OEM_PERIOD },
-		{ L",", VK_OEM_COMMA },
+	static CArrayView<CPair<CStringView, TGinVirtualKey>> keyValuePairs {
+		{ "NoKey", GVK_Null },
+		{ "Null", GVK_Null },
+		{ "LMouse", GVK_LMouse },
+		{ "RMouse", GVK_RMouse },
+		{ "MMouse", GVK_MMouse },
+		{ "Mouse4", GVK_Mouse4 },
+		{ "Mouse5", GVK_Mouse5 },
+		{ "LDClick", GVK_LDClick },
+		{ "RDClick", GVK_RDClick },
+		{ "MDClick", GVK_MDClick },
+		{ "WheelDown", GVK_WheelDown },
+		{ "WheelUp", GVK_WheelUp },
+		{ "Esc", GVK_Escape },
+		{ "Space", GVK_Space },
+		{ "LShift", GVK_LShift },
+		{ "RShift", GVK_RShift },
+		{ "LCtrl", GVK_LCtrl },
+		{ "RCtrl", GVK_RCtrl },
+		{ "Enter", GVK_Enter },
+		{ "Backspace", GVK_Backspace },
+		{ "Delete", GVK_Delete },
+		{ "Home", GVK_Home },
+		{ "Insert", GVK_Insert },
+		{ "End", GVK_End },
+		{ "Tab", GVK_Tab },
+		{ "Left", GVK_Left },
+		{ "Up", GVK_Up },
+		{ "Right", GVK_Right },
+		{ "Down", GVK_Down },
+		{ "Num0", GVK_Num0 },
+		{ "Num1", GVK_Num1 },
+		{ "Num2", GVK_Num2 },
+		{ "Num3", GVK_Num3 },
+		{ "Num4", GVK_Num4 },
+		{ "Num5", GVK_Num5 },
+		{ "Num6", GVK_Num6 },
+		{ "Num7", GVK_Num7 },
+		{ "Num8", GVK_Num8 },
+		{ "Num9", GVK_Num9 },
+		{ "F1", GVK_F1 },
+		{ "F2", GVK_F2 },
+		{ "F3", GVK_F3 },
+		{ "F4", GVK_F4 },
+		{ "F5", GVK_F5 },
+		{ "F6", GVK_F6 },
+		{ "F7", GVK_F7 },
+		{ "F8", GVK_F8 },
+		{ "F9", GVK_F9 },
+		{ "F10", GVK_F10 },
+		{ "F11", GVK_F11 },
+		{ "F12", GVK_F12 },
+		{ "A", GVK_A },
+		{ "B", GVK_B },
+		{ "C", GVK_C },
+		{ "D", GVK_D },
+		{ "E", GVK_E },
+		{ "F", GVK_F },
+		{ "G", GVK_G },
+		{ "H", GVK_H },
+		{ "I", GVK_I },
+		{ "J", GVK_J },
+		{ "K", GVK_K },
+		{ "L", GVK_L },
+		{ "M", GVK_M },
+		{ "N", GVK_N },
+		{ "O", GVK_O },
+		{ "P", GVK_P },
+		{ "Q", GVK_Q },
+		{ "R", GVK_R },
+		{ "S", GVK_S },
+		{ "T", GVK_T },
+		{ "U", GVK_U },
+		{ "V", GVK_V },
+		{ "W", GVK_W },
+		{ "X", GVK_X },
+		{ "Y", GVK_Y },
+		{ "Z", GVK_Z },
+		{ "0", GVK_0 },
+		{ "1", GVK_1 },
+		{ "2", GVK_2 },
+		{ "3", GVK_3 },
+		{ "4", GVK_4 },
+		{ "5", GVK_5 },
+		{ "6", GVK_6 },
+		{ "7", GVK_7 },
+		{ "8", GVK_8 },
+		{ "9", GVK_9 },
+		{ "`", GVK_Tilde },
+		{ "~", GVK_Tilde },
+		{ "Minus", GVK_Minus },
+		{ "Equal", GVK_Equal },
+		{ "\\", GVK_BackSlash },
+		{ "'", GVK_SingleQuote },
+		{ ";", GVK_Semicolon },
+		{ "[", GVK_OpenBracket },
+		{ "]", GVK_CloseBracket },
+		{ "/", GVK_Slash },
+		{ ".", GVK_Period },
+		{ ",", GVK_Comma },
 	};
 
-	return CopyTo<CArray<CPair<CUnicodeView, int>>>( keyValuePairs );
+	return CopyTo<CArray<CPair<CStringView, TGinVirtualKey>>>( keyValuePairs );
 }
 
-CArray<CUnicodeView> CInputSettings::CreateCodeToKeyNameArray()
+CArray<CStringView> CInputSettings::CreateCodeToKeyNameArray()
 {
-	CArray<CUnicodeView> result;
+	CArray<CStringView> result;
 	for( auto keyValue : keyNameCodePairs ) {
 		const int code = keyValue.Second;
 		if( code >= result.Size() ) {
@@ -325,9 +227,9 @@ CArray<CUnicodeView> CInputSettings::CreateCodeToKeyNameArray()
 	return result;
 }
 
-CMap<CUnicodeView, int, CIniKeyHashStrategy> CInputSettings::CreateKeyNameToCodeMap()
+CMap<CStringView, TGinVirtualKey, CCaselessStringHash> CInputSettings::CreateKeyNameToCodeMap()
 {
-	CMap<CUnicodeView, int, CIniKeyHashStrategy> result;
+	CMap<CStringView, TGinVirtualKey, CCaselessStringHash> result;
 	result.ReserveBuffer( keyNameCodePairs.Size() );
 	for( auto keyValue : keyNameCodePairs ) {
 		result.Add( keyValue.First, keyValue.Second );
@@ -336,30 +238,50 @@ CMap<CUnicodeView, int, CIniKeyHashStrategy> CInputSettings::CreateKeyNameToCode
 	return result;
 }
 
-CUnicodeString CInputSettings::GetKeyName( int keyCode )
+CString CInputSettings::GetKeyName( int keyCode )
 {
 	if( keyCode >= 0 && codeToKeyName.Size() > keyCode ) {
-		CUnicodeView keyName = codeToKeyName[keyCode];
+		CStringView keyName = codeToKeyName[keyCode];
 		if( !keyName.IsEmpty() ) {
-			return UnicodeStr( keyName );
+			return Str( keyName );
 		}
 	}
 
-	CUnicodeString codeStr = UnicodeStr( keyCode );
-	return L"$(" + move( codeStr ) + L')';
+	auto codeStr = Str( keyCode );
+	return "$(" + move( codeStr ) + ')';
 }
 
-CUnicodeString CInputSettings::GetFullKeyName( int keyCode, bool isDown )
+CString CInputSettings::GetFullKeyName( CKeyCombination key )
 {
-	return getFullKeyString( keyCode, isDown );
+	CString result;
+	const auto modifier = key.KeyModifier;
+	if( key.AdditionalKey != 0 ) {
+		result += GetKeyName( key.AdditionalKey );
+		if( modifier == KMT_Undefined ) {
+			result += '*';
+		}
+	}
+
+	if( modifier == KMT_Press ) {
+		result += '+';
+	} else if( modifier == KMT_Release ) {
+		result += '-';
+	}
+	result += GetKeyName( key.MainKey );
+	return result;
 }
 
-CKeyCombination CInputSettings::createKeyCombination( int mainKey, TKeyModifierType modifier, int additionalKey )
+CKeyCombination CInputSettings::createKeyCombination( TGinVirtualKey mainKey, TKeyModifierType modifier, TGinVirtualKey additionalKey )
 {
-	return CKeyCombination{ mainKey, additionalKey, modifier };
+	return CKeyCombination{ mainKey, modifier, additionalKey };
 }
 
-int CInputSettings::GetKeyCode( CUnicodePart key )
+bool CInputSettings::isSameKey( CKeyCombination left, CKeyCombination right )
+{
+	return left.MainKey == right.MainKey && left.AdditionalKey == right.AdditionalKey && left.KeyModifier == right.KeyModifier;
+}
+
+TGinVirtualKey CInputSettings::GetKeyCode( CStringPart key )
 {
 	// Check for a direct code string.
 	if( key[0] == L'$' && key[1] == L'(' ) {
@@ -368,19 +290,19 @@ int CInputSettings::GetKeyCode( CUnicodePart key )
 			const auto codeStr = key.Mid( 2, codeEnd - 2 ).TrimSpaces();
 			const auto codeValue = Value<int>( codeStr );
 			if( codeValue.IsValid() ) {
-				return *codeValue;
+				return TGinVirtualKey( *codeValue );
 			}
 		}
 	} 
 		
 	// Check for a user-readable code name.
 	auto result = keyNameToCode.Get( key );
-	return result == nullptr ? NotFound : *result;
+	return result == nullptr ? GVK_Undefined : *result;
 }
 
-COptional<CKeyCombination> CInputSettings::ParseKeyCombination( CUnicodePart keyStr )
+COptional<CKeyCombination> CInputSettings::ParseKeyCombination( CStringPart keyStr )
 {
-	const auto additionalEndPos = keyStr.FindOneOf( L"*+-@" );
+	const auto additionalEndPos = keyStr.FindOneOf( "*+-" );
 	CKeyCombination result;
 	if( additionalEndPos != NotFound ) {
 		const auto additionalStr = keyStr.Left( additionalEndPos ).TrimRight();
@@ -393,10 +315,10 @@ COptional<CKeyCombination> CInputSettings::ParseKeyCombination( CUnicodePart key
 			result.AdditionalKey = code;
 			keyStr = keyStr.Mid( additionalEndPos );
 		} else {
-			result.AdditionalKey = 0;
+			result.AdditionalKey = GVK_Null;
 		}
 	} else {
-		result.AdditionalKey = 0;
+		result.AdditionalKey = GVK_Null;
 	}
 
 	if( keyStr.IsEmpty() ) {
@@ -411,13 +333,10 @@ COptional<CKeyCombination> CInputSettings::ParseKeyCombination( CUnicodePart key
 		result.KeyModifier = KMT_Release;
 		keyStr = keyStr.Mid( 1 ).TrimLeft();
 	} else if( firstCh == L'*' ) {
-		result.KeyModifier = KMT_None;
-		keyStr = keyStr.Mid( 1 ).TrimLeft();
-	} else if( firstCh == L'@' ) {
-		result.KeyModifier = KMT_Hotkey;
+		result.KeyModifier = KMT_Undefined;
 		keyStr = keyStr.Mid( 1 ).TrimLeft();
 	} else {
-		result.KeyModifier = KMT_None;
+		result.KeyModifier = KMT_Undefined;
 	}
 
 	const auto mainCode = GetKeyCode( keyStr );
@@ -425,20 +344,9 @@ COptional<CKeyCombination> CInputSettings::ParseKeyCombination( CUnicodePart key
 	return mainCode == NotFound ? COptional<CKeyCombination>{} : CreateOptional( result );
 }
 
-CArray<CInputTranslatorData> CInputSettings::ExportSettings() const
-{
-	return copy( fileData );
-}
-
-void CInputSettings::ImportSettings( CArray<CInputTranslatorData> data )
-{
-	fileData = move( data );
-	initializeTranslators();
-}
-
 void CInputSettings::Save()
 {
-	CUnicodeString resultStr;
+	CString resultStr;
 	
 	assert( fileData[0].Name.IsEmpty() );
 	saveKeyActionPairs( fileData[0], resultStr );
@@ -448,236 +356,45 @@ void CInputSettings::Save()
 		saveKeyActionPairs( fileData[i], resultStr );
 	}
 
-	File::WriteUnicodeText( fileName, resultStr );
+	File::WriteText( fileName, resultStr );
 }
 
-CUnicodeString CInputSettings::createSectionNameStr( CUnicodeView section )
+CString CInputSettings::createSectionNameStr( CStringPart section )
 {
-	return L'[' + section + L"]\r\n";
+	return '[' + section + "]\r\n";
 }
 
-void CInputSettings::saveKeyActionPairs( CInputTranslatorData& data, CUnicodeString& result )
+void CInputSettings::saveKeyActionPairs( CInputTranslatorData& data, CString& result )
 {
 	for( const auto& keyValuePair : data.KeyActionPairs ) {
 		saveKeyActionPair( keyValuePair.First, keyValuePair.Second, result );
 	}
 }
 
-void CInputSettings::saveKeyActionPair( CKeyCombination key, CUnicodeView action, CUnicodeString& result )
+void CInputSettings::saveKeyActionPair( CKeyCombination key, CStringPart action, CString& result )
 {
-	const auto modifier = key.KeyModifier;
-	if( key.AdditionalKey != 0 ) {
-		result += GetKeyName( key.AdditionalKey );
-		if( modifier == KMT_None ) {
-			result += L'*';
-		}
-	}
-
-	if( modifier == KMT_Press ) {
-		result += L"+";
-	} else if( modifier == KMT_Release ) {
-		result += L"-";
-	} else if( modifier == KMT_Hotkey ) {
-		result += L"@";
-	}
-	result += GetKeyName( key.MainKey );
-
-	result += L" = ";
+	result += GetFullKeyName( key );
+	result += " = ";
 	result += action;
-	result += L"\r\n";
+	result += "\r\n";
 }
 
-CUnicodeString CInputSettings::getFullKeyString( int code, bool isDown )
-{
-	const CUnicodeView prefix = isDown ? L"+" : L"-";
-	return prefix + GetKeyName( code );
-}
-
-const CInputTranslator& CInputSettings::GetTranslator( CUnicodePart name ) const
+const CInputTranslator& CInputSettings::GetInputTranslator( CStringPart name ) const
 {
 	const auto resultPtr = translatorTable.Get( name );
-	const CUnicodeView emptyStr;
-	return resultPtr == nullptr ? translatorTable[emptyStr] : *resultPtr;
+	return resultPtr == nullptr ? emptyTranslator : resultPtr->GetTranslator();
 }
 
-CArrayView<CPair<CKeyCombination, CUnicodeString>> CInputSettings::GetKeyValuePairs( CUnicodePart translatorName ) const
-{
-	return findTranslatorData( translatorName ).KeyActionPairs;
-}
-
-void CInputSettings::DeleteAllActions( int keyCode, bool isDown, CUnicodePart translatorName )
+void CInputSettings::Empty( CStringPart segmentName )
 {
 	isModified = true;
-	auto& translator = translatorTable.GetOrCreate( translatorName ).Value();
-	auto result = translator.DetachAction( keyCode, isDown );
-	const auto keyCombination = createKeyCombination( keyCode, isDown ? KMT_Press : KMT_Release, 0 );
-	auto filteredAction = filterSpecificAction( move( result ), keyCombination );
-	translator.SetAction( keyCode, isDown, move( filteredAction ) );
-
-	auto& translatorData = findTranslatorData( translatorName );
-	for( int i = translatorData.KeyActionPairs.Size() - 1; i >= 0; i-- ) {
-		deleteEqualKeys( translatorData, i, keyCombination );
-	}
+	auto& translatorData = findTranslatorData( segmentName );
+	translatorData.KeyActionPairs.Empty();
+	auto& controlScheme = translatorTable.GetOrCreate( segmentName ).Value();
+	controlScheme.Empty();
 }
 
-CPtrOwner<TUserAction> CInputSettings::filterSpecificAction( CPtrOwner<TUserAction> action, CKeyCombination keyToFilter )
-{
-	// Filter both actions in the combined actions.
-	auto combinedAction = dynamic_cast<CCombinedUserInputAction*>( action.Ptr() );
-	if( combinedAction != nullptr ) {
-		auto newFirst = filterSpecificAction( combinedAction->DetachFirst(), keyToFilter );
-		auto newSecond = filterSpecificAction( combinedAction->DetachSecond(), keyToFilter );
-		if( newFirst == nullptr ) {
-			return newSecond;
-		} else if( newSecond == nullptr ) {
-			return newFirst;
-		} else {
-			combinedAction->SetFirst( move( newFirst ) );
-			combinedAction->SetSecond( move( newSecond ) );
-			return action;
-		}
-	}
-
-	// Remove an additional key action if the keys match.
-	const auto additionalKeyAction = dynamic_cast<CAdditionalKeyAction*>( action.Ptr() );
-	if( additionalKeyAction != nullptr ) {
-		const int additionalKey = additionalKeyAction->GetAdditionalKey();
-		return keyToFilter.AdditionalKey == additionalKey ? nullptr : move( action );
-	}
-
-	// No settings specific actions detected - check if a simple action needs to be removed and do it if necessary.
-	return keyToFilter.AdditionalKey == 0 ? nullptr : move( action );
-}
-
-void CInputSettings::deleteEqualKeys( CInputTranslatorData& target, int pos, CKeyCombination key )
-{
-	assert( key.KeyModifier == KMT_Press || key.KeyModifier == KMT_Release );
-	const bool isDown = key.KeyModifier == KMT_Press;
-	auto& targetKey = target.KeyActionPairs[pos].First;
-	auto& targetName = target.KeyActionPairs[pos].Second;
-
-	if( key.MainKey != targetKey.MainKey || key.AdditionalKey != targetKey.AdditionalKey || targetKey.KeyModifier == KMT_Hotkey ) {
-		return;
-	}
-	
-	if( targetKey.KeyModifier != KMT_None ) {
-		if( targetKey.KeyModifier == key.KeyModifier ) {
-			target.KeyActionPairs.DeleteAt( pos );
-		}
-		return;
-	}	
-
-	deleteActionPart( targetKey, targetName, isDown );
-}
-
-void CInputSettings::DeleteSingleAction( int keyCode, bool isDown, CUnicodePart actionName, CUnicodePart translatorName )
-{
-	isModified = true;
-
-	auto& translator = translatorTable.GetOrCreate( translatorName ).Value();
-	translator.DetachAction( keyCode, isDown );
-	const auto keyCombination = createKeyCombination( keyCode, isDown ? KMT_Press : KMT_Release, 0 );
-
-	// Recreate the combined action without the specific action name.
-	auto& translatorData = findTranslatorData( translatorName );
-	CPtrOwner<TUserAction> restoredAction;
-	for( int i = translatorData.KeyActionPairs.Size() - 1; i >= 0; i-- ) {
-		restoreInputAction( translatorData, i, keyCombination, actionName, restoredAction );
-	}
-
-	translator.SetAction( keyCode, isDown, move( restoredAction ) );
-}
-
-void CInputSettings::restoreInputAction( CInputTranslatorData& target, int pos, CKeyCombination key, CUnicodePart actionName, CPtrOwner<TUserAction>& result )
-{
-	assert( key.KeyModifier == KMT_Press || key.KeyModifier == KMT_Release );
-	const bool isDown = key.KeyModifier == KMT_Press;
-	auto& targetKey = target.KeyActionPairs[pos].First;
-	auto& targetName = target.KeyActionPairs[pos].Second;
-
-	if( key.MainKey != targetKey.MainKey || key.AdditionalKey != targetKey.AdditionalKey || targetKey.KeyModifier == KMT_Hotkey ) {
-		return;
-	}
-	
-	if( targetKey.KeyModifier != KMT_None ) {
-		if( targetKey.KeyModifier != key.KeyModifier ) {
-			return;
-		}
-
-		if( actionName == targetName ) {
-			target.KeyActionPairs.DeleteAt( pos );
-		} else {
-			auto mergedAction = mergeActions( createNewAction( targetName, targetKey ), move( result ) );
-			result = move( mergedAction );
-		}
-		return;
-	}	
-
-	const auto deletedSign = isDown ? L'+' : L'-';
-	const auto deletedName = deletedSign + targetName;
-	if( deletedName != actionName ) {
-		auto mergedAction = mergeActions( createNewAction( targetName, targetKey ), move( result ) );
-		result = move( mergedAction );
-		return;
-	}
-
-	deleteActionPart( targetKey, targetName, isDown );
-}
-
-void CInputSettings::deleteActionPart( CKeyCombination& targetKey, CUnicodeString& targetName, bool deleteDown )
-{
-	targetKey.KeyModifier = deleteDown ? KMT_Release : KMT_Press;
-	const auto signCh = deleteDown ? L'-' : L'+';
-	if( targetName[0] == L'-' || targetName[0] == L'+' ) {
-		targetName[0] = signCh;
-	} else {
-		targetName = signCh + targetName;
-	}
-}
-
-void CInputSettings::AddAction( int keyCode, bool isDown, CUnicodePart actionName, CUnicodePart translatorName )
-{
-	isModified = true;
-	auto& translator = translatorTable.GetOrCreate( translatorName ).Value();
-	const auto keyCombination = createKeyCombination( keyCode, isDown ? KMT_Press : KMT_Release, 0 );
-	addTranslatorAction( keyCombination, createNewAction( actionName, keyCombination ), translator );
-
-	auto& translatorData = findTranslatorData( translatorName );
-	addActionData( keyCombination, actionName, translatorData );
-}
-
-void CInputSettings::addActionData( CKeyCombination key, CUnicodePart action, CInputTranslatorData& targetData )
-{
-	assert( key.KeyModifier == KMT_Press || key.KeyModifier == KMT_Release );
-	const bool isDown = key.KeyModifier == KMT_Press;
-	const auto targetCh = isDown ? L'+' : L'-';
-	const auto firstCh = action[0];
-	if( firstCh == targetCh ) {
-		const auto oppositeCh = isDown ? L'-' : L'+';
-		const int pairCount = targetData.KeyActionPairs.Size();
-		for( int i = pairCount - 1; i >= 0; i-- ) {
-			auto& keyValuePair = targetData.KeyActionPairs[i];
-			const auto targetKey = keyValuePair.First;
-			const auto targetName = keyValuePair.Second.Mid( 1 );
-			// Merge the action with an existing one if they match.
-			if(	targetKey.MainKey == key.MainKey
-				&& targetKey.AdditionalKey == key.AdditionalKey
-				&& targetKey.KeyModifier != key.KeyModifier 
-				&& keyValuePair.Second[0] == oppositeCh 
-				&& targetName == action.Mid( 1 ) )
-			{
-				keyValuePair.Second = targetName;
-				keyValuePair.First.KeyModifier = KMT_None;
-				return;
-			}
-		}
-	}
-
-	// Merging conditions were not met, simply add the action.
-	targetData.KeyActionPairs.Add( key, action );
-}
-
-CInputTranslatorData& CInputSettings::findTranslatorData( CUnicodePart name )
+CInputTranslatorData& CInputSettings::findTranslatorData( CStringPart name )
 {
 	for( auto& data : fileData ) {
 		if( data.Name == name ) {
@@ -690,16 +407,96 @@ CInputTranslatorData& CInputSettings::findTranslatorData( CUnicodePart name )
 	return newData;
 }
 
-CPtrOwner<TUserAction> CInputSettings::mergeActions( CPtrOwner<TUserAction> newAction, CPtrOwner<TUserAction> oldAction )
+CKeyCombination CInputSettings::RegisterPrimaryFileAction( CKeyCombination defaultKey, CStringPart actionName, CStringPart segmentName )
 {
-	assert( newAction != nullptr );
-	return oldAction == nullptr ? move( newAction ) : ptr_static_cast<TUserAction>( CreateOwner<CCombinedUserInputAction>( move( oldAction ), move( newAction ) ) );
+	auto& controlScheme = translatorTable.GetOrCreate( segmentName ).Value();
+	auto& translatorData = findTranslatorData( segmentName );
+	for( const auto& keyAction : translatorData.KeyActionPairs ) {
+		if( actionName == keyAction.Second ) {
+			createActionFromData( keyAction.First, actionName, controlScheme );
+			return keyAction.First;
+		}
+	}
+
+	createActionFromData( defaultKey, actionName, controlScheme );
+	createDynamicFileAction( defaultKey, actionName, translatorData );
+	return defaultKey;
 }
 
-CPtrOwner<TUserAction> CInputSettings::createNewAction( CUnicodePart name, CKeyCombination key )
+CKeyCombination CInputSettings::RegisterSecondaryFileAction( CKeyCombination defaultKey, CStringPart actionName, CStringPart segmentName )
 {
-	auto newAction = CreateUniqueObject<TUserAction>( name );
-	return key.AdditionalKey == 0 ? move( newAction ) : ptr_static_cast<TUserAction>( CreateOwner<CAdditionalKeyAction>( move( newAction ), key.AdditionalKey ) );
+	auto& controlScheme = translatorTable.GetOrCreate( segmentName ).Value();
+	auto& translatorData = findTranslatorData( segmentName );
+	int matchCount = 0;
+	for( const auto& keyAction : translatorData.KeyActionPairs ) {
+		if( actionName == keyAction.Second && ( ++matchCount == 2 ) ) {
+			createActionFromData( keyAction.First, actionName, controlScheme );
+			return keyAction.First;
+		}
+	}
+
+	createActionFromData( defaultKey, actionName, controlScheme );
+	createDynamicFileAction( defaultKey, actionName, translatorData );
+	return defaultKey;
+}
+
+void CInputSettings::createDynamicFileAction( CKeyCombination keyCombination, CStringPart actionName, CInputTranslatorData& translatorData )
+{
+	isModified = true;
+	translatorData.KeyActionPairs.Add( keyCombination, actionName );
+}
+
+void CInputSettings::createActionFromData( CKeyCombination key, CStringPart actionName, CControlScheme& controlScheme ) const
+{
+	if( key.KeyModifier == KMT_Undefined ) {
+		key.KeyModifier = KMT_Press;
+		if( !tryCreateUserAction( key, '+' + actionName, controlScheme ) ) {
+			createUserAction( key, actionName, controlScheme );
+		} 
+		key.KeyModifier = KMT_Release;
+		tryCreateUserAction( key, '-' + actionName, controlScheme );
+	} else {
+		createUserAction( key, actionName, controlScheme );
+	}
+}
+
+bool CInputSettings::tryCreateUserAction( CKeyCombination key, CStringPart actionName, CControlScheme& controlScheme ) const
+{
+	auto unicodeAction = UnicodeStr( actionName );
+	if( IsExternalName( unicodeAction ) ) {
+		auto newAction = createInputAction( unicodeAction );
+		addControlSchemeAction( key, move( newAction ), controlScheme );
+		return true;
+	} else {
+		return false;
+	}
+}
+
+CPtrOwner<TUserAction> CInputSettings::createInputAction( CUnicodePart actionName ) const
+{
+	return CreateUniqueObject<TUserAction>( actionName );
+}
+
+const CUnicodeView unknownActionWarning = L"Unknown input action: %0";
+void CInputSettings::createUserAction( CKeyCombination key, CStringPart actionName, CControlScheme& controlScheme ) const
+{
+	if( !tryCreateUserAction( key, actionName, controlScheme ) ) {
+		const auto warningStr = unknownActionWarning.SubstParam( actionName );
+		Log::Warning( warningStr, this );
+	}
+}
+
+void CInputSettings::addControlSchemeAction( CKeyCombination key, CPtrOwner<TUserAction> action, CControlScheme& controlScheme ) const
+{
+	assert( key.KeyModifier == KMT_Press || key.KeyModifier == KMT_Release );
+	controlScheme.AddAction( key, move( action ) );
+}
+
+void CInputSettings::AddBasicAction( CKeyCombination keyCombination, CPtrOwner<TUserAction> action, CStringPart segmentName )
+{
+	assert( keyCombination.KeyModifier != KMT_Undefined );
+	auto& controlScheme = translatorTable.GetOrCreate( segmentName ).Value();
+	addControlSchemeAction( keyCombination, move( action ), controlScheme );
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -6,6 +6,7 @@
 #include <GlContextManager.h>
 #include <GlWindow.h>
 #include <RenderMechanism.h>
+#include <InputSettingsController.h>
 
 namespace Gin {
 
@@ -67,6 +68,11 @@ void ReopenMainWindow( CGlWindowSettings windowSettings, HICON windowIcon )
 	::DestroyWindow( prevMainHandle );
 }
 
+void CommitInputKeyChanges( CStringPart controlSchemeName )
+{
+	return GinInternal::GetApplication().CommitInputKeyChanges( controlSchemeName );
+}
+
 CAdditionalWindowInfo& CreateAdditionalWindow( CGlWindow newWindow, CPtrOwner<IRenderMechanism> renderer )
 {
 	return GinInternal::GetApplication().AddAdditionalWindow( move( newWindow ), move( renderer ) );
@@ -92,6 +98,11 @@ CActionListInputController& GetDefaultInputController()
 CMainFrame& GetMainFrame()
 {
 	return GetApplication().MainFrame();
+}
+
+const CInputTranslator& GetInputTranslator( CStringPart translatorName )
+{
+	return GetApplication().GetInputSettingsController().GetInputTranslator( translatorName );
 }
 
 }	// namespace GinInternal.

@@ -342,6 +342,15 @@
     <ClInclude Include="Inc\ShaderInitializerInc.h">
       <Filter>Header Files\Drawing\Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\InputBinding.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ControlScheme.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\InputSettingsController.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlContextManager.cpp">
@@ -534,6 +543,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Inc\VideoSettingsUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ControlScheme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\InputSettingsController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

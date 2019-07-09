@@ -91,9 +91,6 @@ LRESULT WINAPI CWindowClass<Dispatcher>::windowProcedure( HWND wnd, UINT msg, WP
 			getDispatcher().OnInput( wnd, lParam );
 			// The application must call DefWindowProc so the system can perform cleanup.
 			return ::DefWindowProc( wnd, msg, wParam, lParam );
-		case WM_HOTKEY:
-			getDispatcher().OnHotkey( wnd, wParam );
-			return ::DefWindowProc( wnd, msg, wParam, lParam );
 		case WM_MOUSEWHEEL:
 			getDispatcher().OnMouseWheel( wnd, GET_WHEEL_DELTA_WPARAM( wParam ) );
 			break;

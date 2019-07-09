@@ -180,6 +180,7 @@
     <ClInclude Include="Inc\ClipRect.h" />
     <ClInclude Include="Inc\ClipVector.h" />
     <ClInclude Include="Inc\ConsoleSystem.h" />
+    <ClInclude Include="Inc\ControlScheme.h" />
     <ClInclude Include="Inc\DdsImage.h" />
     <ClInclude Include="Inc\DdsUtils.h" />
     <ClInclude Include="Inc\DefaultSamplerContainer.h" />
@@ -203,9 +204,11 @@
     <ClInclude Include="Inc\GlWindow.h" />
     <ClInclude Include="Inc\GlWindowUtils.h" />
     <ClInclude Include="Inc\ImageData.h" />
+    <ClInclude Include="Inc\InputBinding.h" />
     <ClInclude Include="Inc\InputController.h" />
     <ClInclude Include="Inc\InputHandler.h" />
     <ClInclude Include="Inc\InputSettings.h" />
+    <ClInclude Include="Inc\InputSettingsController.h" />
     <ClInclude Include="Inc\InputUtils.h" />
     <ClInclude Include="Inc\MainFrame.h" />
     <ClInclude Include="Inc\MainWindowDispatcher.h" />
@@ -275,6 +278,7 @@
     <ClCompile Include="Src\BufferMapper.cpp" />
     <ClCompile Include="Src\Camera.cpp" />
     <ClCompile Include="Src\Clipboard.cpp" />
+    <ClCompile Include="Src\ControlScheme.cpp" />
     <ClCompile Include="Src\DdsImage.cpp" />
     <ClCompile Include="Src\DefaultSamplerContainer.cpp" />
     <ClCompile Include="Src\DrawFunctions.cpp" />
@@ -295,6 +299,7 @@
     <ClCompile Include="Src\InputController.cpp" />
     <ClCompile Include="Src\InputHandler.cpp" />
     <ClCompile Include="Src\InputSettings.cpp" />
+    <ClCompile Include="Src\InputSettingsController.cpp" />
     <ClCompile Include="Src\InputUtils.cpp" />
     <ClCompile Include="Src\MainFrame.cpp" />
     <ClCompile Include="Src\MainWindowDispatcher.cpp" />

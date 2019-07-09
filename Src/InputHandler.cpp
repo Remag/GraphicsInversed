@@ -77,12 +77,6 @@ void CInputHandler::OnMousePress( int keyCode, bool isDown )
 	return currentInputController->OnUserInput( keyCode, isDown );
 }
 
-void CInputHandler::OnHotkeyPress( int keyCode )
-{
-	assert( currentInputController != nullptr );
-	return currentInputController->OnUserHotkey( keyCode );
-}
-
 void CInputHandler::OnSymbolMessage( int symbolCode )
 {
 	if( currentTextTranslator != 0 && !shouldIgnoreSymbol( symbolCode ) ) {

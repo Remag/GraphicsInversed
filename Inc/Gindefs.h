@@ -55,6 +55,9 @@ namespace Gin {
 
 	class CInputHandler;
 	class CInputTranslator;
+	class CControlScheme;
+	class CInputBinding;
+	class CSystemInputBinding;
 	class IInputController;
 	class IRenderMechanism;
 	class IState;

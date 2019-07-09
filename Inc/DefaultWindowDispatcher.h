@@ -19,7 +19,6 @@ public:
 	void OnPaint( HWND, WPARAM, LPARAM ) const {}
 	void OnChar( HWND, WPARAM ) const {}
 	void OnInput( HWND, LPARAM ) const {}
-	void OnHotkey( HWND, WPARAM ) const {}
 	void OnMouseWheel( HWND, int ) const {}
 	void OnMouseMove( HWND, int, int ) const {}
 	void OnMouseLeave( HWND ) const {}

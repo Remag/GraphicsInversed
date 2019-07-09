@@ -35,7 +35,6 @@ public:
 	// Translatable actions.
 	void OnKeyboardPress( int keyCode, bool isDown );
 	void OnMousePress( int keyCode, bool isDown );
-	void OnHotkeyPress( int keyCode );
 	void OnSymbolMessage( int symbolCode );
 	void OnMouseMove( int x, int y );
 	void OnMouseLeave();

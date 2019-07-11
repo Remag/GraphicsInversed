@@ -1,4 +1,5 @@
 #pragma once
+#include <Gindefs.h>
 
 namespace Gin {
 
@@ -12,7 +13,7 @@ class IRenderParameters {};
 
 // General interface for the used rendering mechanism.
 // The mechanism contains reactions to window and update events.
-class IRenderMechanism {
+class GINAPI IRenderMechanism {
 public:
 	virtual ~IRenderMechanism() {}
 
@@ -25,7 +26,7 @@ public:
 	// Actions on the WM_ERASEBKGND message.
 	virtual LRESULT OnEraseBackground( HWND window, WPARAM wParam, LPARAM lParam ) = 0;
 	// Actions taken on a draw call that happens on each frame.
-	virtual void OnDraw( const IState& currentState ) const = 0;
+	virtual void OnDraw( const IState& currentState, const CGlWindow& target ) const = 0;
 	virtual void OnPostDraw( const CGlWindow& target ) const = 0;
 	// Actions taken on a WM_PAINT message.
 	virtual LRESULT OnPaintMessage( HWND window, WPARAM wParam, LPARAM lParam, const IState& currentState ) const = 0;

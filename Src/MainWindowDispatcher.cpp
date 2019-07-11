@@ -76,7 +76,7 @@ void CMainWindowDispatcher::OnWindowActiveResize( HWND ) const
 
 	const auto state = stateManager.TryGetCurrentState();
 	if( state != nullptr ) {
-		renderer.OnDraw( *state );
+		renderer.OnDraw( *state, mainWindow );
 		renderer.OnPostDraw( mainWindow );
 	}
 }

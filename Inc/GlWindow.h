@@ -35,6 +35,8 @@ public:
 	CGlWindow& operator=( CGlWindow&& other );
 	~CGlWindow();
 
+	CUnicodeView GetWindowClassName() const
+		{ return windowClassName; }
 	CVector2<int> WindowSize() const
 		{ return windowSize; }
 	bool IsFullscreen() const
@@ -43,7 +45,7 @@ public:
 	HDC GetDeviceContext() const
 		{ return windowDC; }
 
-	void Create( CUnicodeView windowClassName, CGlWindowSettings initialSettings );
+	void Create( CUnicodeView className, CGlWindowSettings initialSettings );
 
 	// Get current screen resolution.
 	CVector2<int> GetScreenResolution() const;
@@ -71,7 +73,7 @@ public:
 		{ return windowHandle; }
 	// Is the window created.
 	bool IsCreated() const
-		{ return windowHandle != 0; }
+		{ return windowHandle != nullptr; }
 
 	// Update the size cache.
 	// Called from the mainframe during WM_SIZE handling.
@@ -79,7 +81,9 @@ public:
 	// Update the size cache from an ongoing drag operation.
 	void UpdateFromActiveResize( RECT dragRect );
 	void SetActivation( bool isSet );
+	void BringToForeground();
 	void Show( bool isShown );
+
 
 	// Send the close message emulating the user pressing the close icon.
 	void SendCloseCommand();
@@ -87,6 +91,7 @@ public:
 	void ForceDestroy();
 
 private:
+	CUnicodeString windowClassName;
 	// Native handle to the window.
 	HWND windowHandle = nullptr;
 	HDC windowDC = nullptr;

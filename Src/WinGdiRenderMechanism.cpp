@@ -47,7 +47,7 @@ void CWinGdiRenderMechanism::OnWindowResize( CVector2<int> newSize )
 	windowSize = newSize;
 }
 
-void CWinGdiRenderMechanism::OnDraw( const IState& ) const
+void CWinGdiRenderMechanism::OnDraw( const IState&, const CGlWindow& ) const
 {
 }
 

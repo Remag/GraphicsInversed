@@ -1,5 +1,6 @@
 #pragma once
 #include <Gindefs.h>
+#include <ShaderInitializerInc.h>
 
 namespace Gin {
 
@@ -28,6 +29,8 @@ public:
 		{ return renderContextHanle != nullptr; }
 	// Create the context for the given window.
 	void CreateContext( HDC dc );
+	// Prepare the given window to be used with an openGL context.
+	void SetDcPixelFormat( HDC dc );
 	// Change a device context that is connected to the rendering context.
 	void SetContextTarget( HDC newDc );
 	// Delete the context.
@@ -48,6 +51,8 @@ private:
 
 	// Container for default texture samplers.
 	CPtrOwner<CDefaultSamplerContainer> samplerContainer;
+	// Container for shader programs.
+	CPtrOwner<IShaderInitializer> globalShaderInitializer;
 
 	void createContext( HDC dc );
 	void updateToExtendedContext( HDC dc );
@@ -55,6 +60,7 @@ private:
 	void enableFaceCulling();
 	void enableDepthTesting();
 	void setPixelAlignment();
+	void initializeGlobalShaders();
 
 	void checkGlGeneralError( bool condition );
 

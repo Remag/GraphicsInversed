@@ -75,8 +75,8 @@ bool CMainFrame::IsInitialized() const
 void CMainFrame::registerWindowClass( HICON windowIcon, bool trackMouseLeave )
 {
 	assert( windowClass == nullptr );
-	CMainWindowDispatcher dispatcher( *this, *mainWindow, GinInternal::GetApplication(), GetStateManager(), *inputHandler );
-	windowClass = CreateOwner<CWindowClass<CMainWindowDispatcher>>( getMainWindowClassName(), windowIcon, move( dispatcher ), trackMouseLeave );
+	CMainWindowDispatcher dispatcher( *this, *mainWindow, GinInternal::GetApplication(), GetStateManager(), *inputHandler, trackMouseLeave );
+	windowClass = CreateOwner<CWindowClass<CMainWindowDispatcher>>( getMainWindowClassName(), windowIcon, move( dispatcher ) );
 }
 
 void CMainFrame::initOpenAL()

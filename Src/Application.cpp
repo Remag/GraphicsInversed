@@ -80,6 +80,16 @@ void CApplication::DeleteAdditionalWindow( const CAdditionalWindowInfo& info )
 	assert( false );
 }
 
+CGlWindow* CApplication::FindAdditionalWindow( CUnicodePart windowClassName )
+{
+	for( auto& window : additionalWindows ) {
+		if( window.Window.GetWindowClassName() == windowClassName ) {
+			return &window.Window;
+		}
+	}
+	return nullptr;
+}
+
 void CApplication::CommitInputKeyChanges( CStringPart controlSchemeName )
 {
 	inputSettingsController->ResetInputSettings( controlSchemeName );
@@ -163,7 +173,7 @@ void CApplication::runUpdateLoop()
 	if( frameInfo.RunDraw ) {
 		const auto& renderer = mainFrame.GetRenderer();
 		const auto& currentState = stateManager->GetCurrentState();
-		renderer.OnDraw( currentState );
+		renderer.OnDraw( currentState, mainFrame.GetMainGlWindow() );
 		executeActions( postDrawActions );
 		renderer.OnPostDraw( mainFrame.GetMainGlWindow() );
 		drawAdditionalWindows( currentState );
@@ -177,7 +187,7 @@ void CApplication::drawAdditionalWindows( const IState& currentState ) const
 	for( const auto& window : additionalWindows ) {
 		auto& renderer = const_cast<IRenderMechanism&>( *window.Renderer );
 		renderer.ActivateWindowTarget( window.Window );
-		renderer.OnDraw( currentState );
+		renderer.OnDraw( currentState, window.Window );
 		renderer.OnPostDraw( window.Window );
 	}
 

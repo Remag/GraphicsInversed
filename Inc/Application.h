@@ -39,6 +39,7 @@ public:
 	// Add an additional window to the rendering loop.
 	CAdditionalWindowInfo& AddAdditionalWindow( CGlWindow window, CPtrOwner<IRenderMechanism> renderer );
 	void DeleteAdditionalWindow( const CAdditionalWindowInfo& info );
+	CGlWindow* FindAdditionalWindow( CUnicodePart windowClassName );
 	// Commit pending changes to globally defined input keys.
 	void CommitInputKeyChanges( CStringPart controlSchemeName );
 

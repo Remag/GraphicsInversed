@@ -15,11 +15,8 @@ namespace Gin {
 COpenGlRenderMechanism::COpenGlRenderMechanism( const CGlWindow& window, CGlContextManager& _glContextManager ) :
 	glContextManager( _glContextManager )
 {
-	const CUnicodeView initializerExternalName = L"Gin.ShaderInitializer";
-	if( IsExternalName( initializerExternalName ) ) {
-		globalShaderInitializer = CreateUniqueObject<IShaderInitializer>( initializerExternalName );
-	}
 	backgroundBrush = ::CreateSolidBrush( RGB( 0, 0, 0 ) );
+	assert( window.IsCreated() );
 	OnWindowResize( window.WindowSize() );
 }
 
@@ -55,7 +52,7 @@ LRESULT COpenGlRenderMechanism::OnEraseBackground( HWND, WPARAM wParam, LPARAM )
 	return 1;
 }
 
-void COpenGlRenderMechanism::OnDraw( const IState& currentState ) const
+void COpenGlRenderMechanism::OnDraw( const IState& currentState, const CGlWindow& target ) const
 {
 	// Set the clear values.
 	gl::ClearColor( backgroundColor.GetRed(), backgroundColor.GetGreen(), backgroundColor.GetBlue(), backgroundColor.GetAlpha() );
@@ -66,7 +63,7 @@ void COpenGlRenderMechanism::OnDraw( const IState& currentState ) const
 	// Clear the buffer.
 	gl::Clear( gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT | gl::STENCIL_BUFFER_BIT );
 
-	currentState.Draw( COpenGlRenderParameters{} );
+	currentState.Draw( COpenGlRenderParameters( target ) );
 }
 
 void COpenGlRenderMechanism::OnPostDraw( const CGlWindow& target ) const

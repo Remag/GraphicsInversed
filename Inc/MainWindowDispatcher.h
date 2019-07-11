@@ -8,8 +8,11 @@ namespace Gin {
 
 class CMainWindowDispatcher : public CDefaultWindowDispatcher {
 public:
-	CMainWindowDispatcher( CMainFrame& _mainFrame, CGlWindow& _mainWindow, CApplication& _application, CStateManager& _stateManager, CInputHandler& _inputHandler ) :
-		mainFrame( _mainFrame ), mainWindow( _mainWindow ), application( _application ), stateManager( _stateManager ), inputHandler( _inputHandler ) {}
+	CMainWindowDispatcher( CMainFrame& _mainFrame, CGlWindow& _mainWindow, CApplication& _application, CStateManager& _stateManager, CInputHandler& _inputHandler, bool _trackMouseLeave ) :
+		mainFrame( _mainFrame ), mainWindow( _mainWindow ), application( _application ), stateManager( _stateManager ), inputHandler( _inputHandler ), trackMouseLeave( _trackMouseLeave ) {}
+
+	bool ShouldTrackMouseLeave() const
+		{ return trackMouseLeave; }
 
 	LRESULT OnEraseBackground( HWND window, WPARAM wParam, LPARAM lParam ) const;
 	LRESULT OnPaint( HWND, WPARAM, LPARAM ) const;
@@ -32,6 +35,7 @@ private:
 	CApplication& application;
 	CStateManager& stateManager;
 	CInputHandler& inputHandler;
+	bool trackMouseLeave;
 
 	int processRawKeyboard( RAWKEYBOARD input ) const;
 };

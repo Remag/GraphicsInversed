@@ -9,6 +9,7 @@ namespace Gin {
 //////////////////////////////////////////////////////////////////////////
 
 CGlWindow::CGlWindow( CGlWindow&& other ) :
+	windowClassName( move( other.windowClassName ) ),
 	windowHandle( other.windowHandle ),
 	windowDC( other.windowDC ),
 	windowStyle( other.windowStyle ),
@@ -24,6 +25,7 @@ CGlWindow::CGlWindow( CGlWindow&& other ) :
 
 CGlWindow& CGlWindow::operator=( CGlWindow&& other )
 {
+	swap( windowClassName, other.windowClassName );
 	swap( windowHandle, other.windowHandle );
 	swap( windowDC, other.windowDC );
 	swap( windowStyle, other.windowStyle );
@@ -44,8 +46,11 @@ CGlWindow::~CGlWindow()
 	}
 }
 
-void CGlWindow::Create( CUnicodeView windowClassName, CGlWindowSettings initialSettings )
+void CGlWindow::Create( CUnicodeView className, CGlWindowSettings initialSettings )
 {
+	assert( windowHandle == nullptr );
+
+	windowClassName = className;
 	windowStyle = initialSettings.WindowStyle;
 
 	// Find screen resolution.
@@ -338,6 +343,11 @@ void CGlWindow::SetActivation( bool isSet )
 		// Hopefully, in this case, the activation is triggered twice and the second call doesn't fail.
 		::ChangeDisplaySettings( nullptr, CDS_FULLSCREEN );
 	}
+}
+
+void CGlWindow::BringToForeground()
+{
+	::SetForegroundWindow( windowHandle );
 }
 
 //////////////////////////////////////////////////////////////////////////

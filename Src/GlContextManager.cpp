@@ -8,6 +8,7 @@
 #include <GlLoad\wgl_load.hpp>
 #include <FaceCullSwitcher.h>
 #include <DefaultSamplerContainer.h>
+#include <ShaderInitializerInc.h>
 #include <FontRenderer.h>
 
 namespace Gin {
@@ -36,21 +37,13 @@ void CGlContextManager::CreateContext( HDC dc )
 	enableFaceCulling();
 	enableDepthTesting();
 	setPixelAlignment();
+	initializeGlobalShaders();
 	CheckGlError();
 	CFontRenderer::InitializeShaderData();
 }
 
-void CGlContextManager::SetContextTarget( HDC newDc )
+void CGlContextManager::SetDcPixelFormat( HDC dc )
 {
-	assert( HasContext() );
-	::wglMakeCurrent( newDc, renderContextHanle );
-}
-
-void CGlContextManager::createContext( HDC dc )
-{
-	assert( dc != 0 );
-
-	// Set the pixel format.
 	PIXELFORMATDESCRIPTOR pfd;
 	ZeroMemory( &pfd, sizeof( pfd ) );
 	pfd.nSize = sizeof( pfd );
@@ -64,6 +57,20 @@ void CGlContextManager::createContext( HDC dc )
 	const int formatIndex = ::ChoosePixelFormat( dc, &pfd );
 	checkLastError( formatIndex != 0 );
 	checkLastError( ::SetPixelFormat( dc, formatIndex, &pfd ) != 0 );
+}
+
+void CGlContextManager::SetContextTarget( HDC newDc )
+{
+	assert( HasContext() );
+	::wglMakeCurrent( newDc, renderContextHanle );
+}
+
+void CGlContextManager::createContext( HDC dc )
+{
+	assert( dc != 0 );
+
+	// Set the pixel format.
+	SetDcPixelFormat( dc );
 
 	// Create the rendering context and set is as current.
 	renderContextHanle = ::wglCreateContext( dc );
@@ -168,6 +175,14 @@ void CGlContextManager::setPixelAlignment()
 {
 	gl::PixelStorei( gl::UNPACK_ALIGNMENT, 1 );
 	gl::PixelStorei( gl::PACK_ALIGNMENT, 1 );
+}
+
+void CGlContextManager::initializeGlobalShaders()
+{
+	const CUnicodeView initializerExternalName = L"Gin.ShaderInitializer";
+	if( IsExternalName( initializerExternalName ) ) {
+		globalShaderInitializer = CreateUniqueObject<IShaderInitializer>( initializerExternalName );
+	}
 }
 
 extern const CError Err_GeneralGlError;

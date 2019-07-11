@@ -9,8 +9,11 @@ namespace Gin {
 template <class Dispatcher>
 class CWindowClass : public CSingleton<CWindowClass<Dispatcher>> {
 public:
-	explicit CWindowClass( CUnicodeView className, HICON windowIcon, Dispatcher dispatcher, bool mouseLeaveTracking );
+	explicit CWindowClass( CUnicodeView className, HICON windowIcon, Dispatcher dispatcher );
 	~CWindowClass();
+
+	CUnicodeView GetClassName() const
+		{ return className; }
 
 private:
 	// Class name.
@@ -33,10 +36,10 @@ private:
 //////////////////////////////////////////////////////////////////////////
 
 template<class Dispatcher>
-CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HICON windowIcon, Dispatcher _dispatcher, bool mouseLeaveTracking ) :
+CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HICON windowIcon, Dispatcher _dispatcher ) :
 	className( _className ),
 	dispatcher( move( _dispatcher ) ),
-	startLeaveTracking( mouseLeaveTracking )
+	startLeaveTracking( dispatcher.ShouldTrackMouseLeave() )
 {
 	WNDCLASSEX wndclass;
 	::ZeroMemory( &wndclass, sizeof( wndclass ) );

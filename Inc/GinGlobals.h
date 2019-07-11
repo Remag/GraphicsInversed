@@ -47,6 +47,22 @@ GINAPI void ReopenMainWindow( CGlWindowSettings windowSettings, HICON windowIcon
 // Save all the changes made to key bindings in the input settings file.
 GINAPI void CommitInputKeyChanges( CStringPart controlSchemeName );
 
+// Add the given window to an application rendering procedure.
+GINAPI CAdditionalWindowInfo& AttachAdditionalWindow( CGlWindow newWindow, CPtrOwner<IRenderMechanism> renderer );
+// Find an existing additional window with the given class name.
+// Returns null if no window was found.
+GINAPI CGlWindow* FindAdditionalWindow( CUnicodePart className );
+// Find an existing additional window with the given dispatcher.
+// Returns null if no window was found.
+template <class Dispatcher>
+CGlWindow* FindAdditionalWindow()
+{
+	return FindAdditionalWindow( CWindowClass<Dispatcher>::GetInstance()->GetClassName() );
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+
 // Part of the library has nothing interesting to the user.
 namespace GinInternal {
 	

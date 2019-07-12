@@ -1,16 +1,15 @@
 #pragma once
-#include <DefaultWindowDispatcher.h>
 #include <Gindefs.h>
 
 namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
 
-class CMainWindowDispatcher : public CDefaultWindowDispatcher {
+class GINAPI CStandardWindowDispatcher {
 public:
-	CMainWindowDispatcher( CMainFrame& _mainFrame, CGlWindow& _mainWindow, CApplication& _application, CStateManager& _stateManager, CInputHandler& _inputHandler, bool _trackMouseLeave ) :
-		mainFrame( _mainFrame ), mainWindow( _mainWindow ), application( _application ), stateManager( _stateManager ), inputHandler( _inputHandler ), trackMouseLeave( _trackMouseLeave ) {}
+	explicit CStandardWindowDispatcher( bool _trackMouseLeave ) : trackMouseLeave( _trackMouseLeave ) {}
 
+	void AcceptNewWindow( CGlWindow& newWindow );
 	bool ShouldTrackMouseLeave() const
 		{ return trackMouseLeave; }
 
@@ -30,11 +29,7 @@ public:
 	void OnMousePress( HWND, int, bool ) const;
 
 private:
-	CMainFrame& mainFrame;
-	CGlWindow& mainWindow;
-	CApplication& application;
-	CStateManager& stateManager;
-	CInputHandler& inputHandler;
+	CGlWindow* targetWindow = nullptr;
 	bool trackMouseLeave;
 
 	int processRawKeyboard( RAWKEYBOARD input ) const;

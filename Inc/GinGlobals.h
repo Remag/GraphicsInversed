@@ -48,7 +48,7 @@ GINAPI void ReopenMainWindow( CGlWindowSettings windowSettings, HICON windowIcon
 GINAPI void CommitInputKeyChanges( CStringPart controlSchemeName );
 
 // Add the given window to an application rendering procedure.
-GINAPI CAdditionalWindowInfo& AttachAdditionalWindow( CGlWindow newWindow, CPtrOwner<IRenderMechanism> renderer );
+GINAPI void AttachAdditionalWindow( CPtrOwner<CGlWindow> newWindow, TWindowRendererType rendererType );
 // Find an existing additional window with the given class name.
 // Returns null if no window was found.
 GINAPI CGlWindow* FindAdditionalWindow( CUnicodePart className );

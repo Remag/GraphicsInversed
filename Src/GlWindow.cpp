@@ -8,37 +8,6 @@ namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
 
-CGlWindow::CGlWindow( CGlWindow&& other ) :
-	windowClassName( move( other.windowClassName ) ),
-	windowHandle( other.windowHandle ),
-	windowDC( other.windowDC ),
-	windowStyle( other.windowStyle ),
-	windowSize( other.windowSize ),
-	fullscreenResolution( other.fullscreenResolution ),
-	initialScreenResolution( other.initialScreenResolution ),
-	windowedModeRect( other.windowedModeRect ),
-	isFullscreen( other.isFullscreen )
-{
-	other.windowHandle = nullptr;
-	other.windowDC = nullptr;
-}
-
-CGlWindow& CGlWindow::operator=( CGlWindow&& other )
-{
-	swap( windowClassName, other.windowClassName );
-	swap( windowHandle, other.windowHandle );
-	swap( windowDC, other.windowDC );
-	swap( windowStyle, other.windowStyle );
-	swap( windowSize, other.windowSize );
-
-	swap( fullscreenResolution, other.fullscreenResolution );
-	swap( initialScreenResolution, other.initialScreenResolution );
-	swap( windowedModeRect, other.windowedModeRect );
-	swap( isFullscreen, other.isFullscreen );
-
-	return *this;
-}
-
 CGlWindow::~CGlWindow()
 {
 	if( windowDC != nullptr ) {
@@ -46,7 +15,13 @@ CGlWindow::~CGlWindow()
 	}
 }
 
-void CGlWindow::Create( CUnicodeView className, CGlWindowSettings initialSettings )
+void CGlWindow::setRenderMechanism( IRenderMechanism& newValue )
+{
+	assert( renderMechanism == nullptr );
+	renderMechanism = &newValue;
+}
+
+void CGlWindow::doCreate( CUnicodeView className, CGlWindowSettings initialSettings )
 {
 	assert( windowHandle == nullptr );
 

@@ -8,8 +8,8 @@
 #include <AlContextManager.h>
 #include <RenderMechanism.h>
 #include <MainFrame.h>
-#include <AdditionalWindowInfo.h>
 #include <InputSettingsController.h>
+#include <AdditionalWindowContainer.h>
 
 namespace Gin {
 
@@ -44,10 +44,11 @@ void CApplication::ReopenMainWindow( CGlWindowSettings settings, HICON icon )
 	onInitializeGlContext();
 }
 
-bool CApplication::TryCloseMainWindow()
+bool CApplication::TryCloseWindow( HWND window )
 {
-	if( checkMainWindowClose() ) {
-		onMainWindowClose();
+	if( checkWindowClose( window ) ) {
+		onWindowClose( window );
+		additionalWindows->TryCloseAdditionalWindow( window );
 		return true;
 	}
 	return false;
@@ -64,30 +65,14 @@ bool CApplication::TryQuitOnWindowDestruction( HWND destroyedWindow )
 	return false;
 }
 
-CAdditionalWindowInfo& CApplication::AddAdditionalWindow( CGlWindow window, CPtrOwner<IRenderMechanism> renderer )
+void CApplication::AddAdditionalWindow( CPtrOwner<CGlWindow> window, TWindowRendererType rendererType )
 {
-	return additionalWindows.Add( move( window ), move( renderer ) );
-}
-
-void CApplication::DeleteAdditionalWindow( const CAdditionalWindowInfo& info )
-{
-	for( int i = additionalWindows.Size() - 1; i >= 0; i-- ) {
-		if( &additionalWindows[i] == &info ) {
-			additionalWindows.DeleteAt( i );
-			return;
-		}
-	}
-	assert( false );
+	additionalWindows->AddAdditionalWindow( mainFrame, move( window ), rendererType );
 }
 
 CGlWindow* CApplication::FindAdditionalWindow( CUnicodePart windowClassName )
 {
-	for( auto& window : additionalWindows ) {
-		if( window.Window.GetWindowClassName() == windowClassName ) {
-			return &window.Window;
-		}
-	}
-	return nullptr;
+	return additionalWindows->FindWindowByClass( windowClassName );
 }
 
 void CApplication::CommitInputKeyChanges( CStringPart controlSchemeName )
@@ -97,6 +82,7 @@ void CApplication::CommitInputKeyChanges( CStringPart controlSchemeName )
 
 bool CApplication::Initialize( CUnicodeView commandLine )
 {
+	additionalWindows = CreateOwner<CAdditionalWindowContainer>();
 	stateManager = CreateOwner<CStateManager>();
 	inputSettingsController = CreateOwner<CInputSettingsController>( getInputSettingsFileName() );
 	auto firstState = onInitialize( commandLine );
@@ -173,27 +159,12 @@ void CApplication::runUpdateLoop()
 	if( frameInfo.RunDraw ) {
 		const auto& renderer = mainFrame.GetRenderer();
 		const auto& currentState = stateManager->GetCurrentState();
-		renderer.OnDraw( currentState, mainFrame.GetMainGlWindow() );
+		renderer.OnDraw( currentState );
 		executeActions( postDrawActions );
-		renderer.OnPostDraw( mainFrame.GetMainGlWindow() );
-		drawAdditionalWindows( currentState );
+		renderer.OnPostDraw();
+		additionalWindows->DrawAdditionalWindows( mainFrame, currentState );
 		// This assert most likely fires if a post-update action is added during the draw phase.
 		assert( postUpdateActions.IsEmpty() );
-	}
-}
-
-void CApplication::drawAdditionalWindows( const IState& currentState ) const
-{
-	for( const auto& window : additionalWindows ) {
-		auto& renderer = const_cast<IRenderMechanism&>( *window.Renderer );
-		renderer.ActivateWindowTarget( window.Window );
-		renderer.OnDraw( currentState, window.Window );
-		renderer.OnPostDraw( window.Window );
-	}
-
-	if( !additionalWindows.IsEmpty() ) {
-		auto& renderer = const_cast<IRenderMechanism&>( mainFrame.GetRenderer() );
-		renderer.ActivateWindowTarget( mainFrame.GetMainGlWindow() );
 	}
 }
 

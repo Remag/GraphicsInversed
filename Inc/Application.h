@@ -1,6 +1,7 @@
 #pragma once
 #include <Gindefs.h>
 #include <MainFrame.h>
+#include <RenderMechanism.h>
 #include <InputHandler.h>
 
 namespace Gin {
@@ -9,6 +10,7 @@ class CEngine;
 class CStateManager;
 class CInputSettingsController;
 struct CGlWindowSettings;
+enum TWindowRendererType;
 //////////////////////////////////////////////////////////////////////////
 
 // Application class. Provides necessary initialization routines for an OpenGL application.
@@ -37,8 +39,7 @@ public:
 	void AddPostOsQueueAction( CMutableActionOwner<void()> action )
 		{ postOsQueueActions.Add( move( action ) ); }
 	// Add an additional window to the rendering loop.
-	CAdditionalWindowInfo& AddAdditionalWindow( CGlWindow window, CPtrOwner<IRenderMechanism> renderer );
-	void DeleteAdditionalWindow( const CAdditionalWindowInfo& info );
+	void AddAdditionalWindow( CPtrOwner<CGlWindow> window, TWindowRendererType rendererType );
 	CGlWindow* FindAdditionalWindow( CUnicodePart windowClassName );
 	// Commit pending changes to globally defined input keys.
 	void CommitInputKeyChanges( CStringPart controlSchemeName );
@@ -50,7 +51,7 @@ public:
 	void Run( CUnicodeView commandLine );
 
 	void ReopenMainWindow( CGlWindowSettings settings, HICON icon );
-	bool TryCloseMainWindow();
+	bool TryCloseWindow( HWND window );
 	bool TryQuitOnWindowDestruction( HWND destroyedWindow );
 
 	// Actions on window resize.
@@ -77,10 +78,10 @@ protected:
 	virtual void onExit() {}
 	// Actions taken when the close command is sent.
 	// Returns if the window should actually be closed.
-	virtual bool checkMainWindowClose() const
+	virtual bool checkWindowClose( HWND ) const
 		{ return true; }
 	// Additional actions on window close.
-	virtual void onMainWindowClose() {}
+	virtual void onWindowClose( HWND ) {}
 	// Check if the application should quit after the main window is destroyed.
 	virtual bool checkApplicationDestruction() const
 		{ return true; }
@@ -109,15 +110,14 @@ private:
 	CPtrOwner<CEngine> engine;
 	// Application rebindable input controller.
 	CPtrOwner<CInputSettingsController> inputSettingsController;
+	// Container for dynamically created additional windows.
+	CPtrOwner<CAdditionalWindowContainer> additionalWindows;
 	// List of arbitrary actions to execute after the drawing routine is finished.
 	CArray<CMutableActionOwner<void()>> postDrawActions;
 	// List of arbitrary actions to execute after the update is finished.
 	CArray<CMutableActionOwner<void()>> postUpdateActions;
 	// List of arbitrary actions to execute after the OS queue processing is finished.
 	CArray<CMutableActionOwner<void()>> postOsQueueActions;
-	CArray<CAdditionalWindowInfo> additionalWindows;
-
-	void drawAdditionalWindows( const IState& currentState ) const;
 
 	// Execute the given action queue.
 	static void executeActions( CArray<CMutableActionOwner<void()>>& actions );

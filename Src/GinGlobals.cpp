@@ -73,9 +73,9 @@ void CommitInputKeyChanges( CStringPart controlSchemeName )
 	return GinInternal::GetApplication().CommitInputKeyChanges( controlSchemeName );
 }
 
-CAdditionalWindowInfo& AttachAdditionalWindow( CGlWindow newWindow, CPtrOwner<IRenderMechanism> renderer )
+void AttachAdditionalWindow( CPtrOwner<CGlWindow> newWindow, TWindowRendererType rendererType )
 {
-	return GinInternal::GetApplication().AddAdditionalWindow( move( newWindow ), move( renderer ) );
+	return GinInternal::GetApplication().AddAdditionalWindow( move( newWindow ), rendererType );
 }
 
 CGlWindow* FindAdditionalWindow( CUnicodePart className )

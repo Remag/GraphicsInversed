@@ -10,14 +10,8 @@ namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
 
-CWinGdiRenderMechanism::CWinGdiRenderMechanism( const CGlWindow& newWindow )
+CWinGdiRenderMechanism::CWinGdiRenderMechanism()
 {
-	windowDc = newWindow.GetDeviceContext();
-	backBufferDc = ::CreateCompatibleDC( windowDc );
-	const auto size = newWindow.WindowSize();
-	backBufferBitmap = ::CreateCompatibleBitmap( windowDc, size.X(), size.Y() );
-	backgroundBrush = ::CreateSolidBrush( RGB( 0, 0, 0 ) );
-	clipRegion = ::CreateRectRgn( 0, 0, 1, 1 );
 }
 
 CWinGdiRenderMechanism::~CWinGdiRenderMechanism()
@@ -28,9 +22,18 @@ CWinGdiRenderMechanism::~CWinGdiRenderMechanism()
 	::DeleteDC( backBufferDc );
 }
 
-void CWinGdiRenderMechanism::ActivateWindowTarget( const CGlWindow& newTarget )
+void CWinGdiRenderMechanism::AttachNewWindow( const CGlWindow& newWindow )
 {
-	windowDc = newTarget.GetDeviceContext();
+	windowDc = newWindow.GetDeviceContext();
+	backBufferDc = ::CreateCompatibleDC( windowDc );
+	const auto size = newWindow.WindowSize();
+	backBufferBitmap = ::CreateCompatibleBitmap( windowDc, size.X(), size.Y() );
+	backgroundBrush = ::CreateSolidBrush( RGB( 0, 0, 0 ) );
+	clipRegion = ::CreateRectRgn( 0, 0, 1, 1 );
+}
+
+void CWinGdiRenderMechanism::ActivateWindowTarget()
+{
 }
 
 void CWinGdiRenderMechanism::SetBackgroundColor( CColor newValue )
@@ -47,11 +50,11 @@ void CWinGdiRenderMechanism::OnWindowResize( CVector2<int> newSize )
 	windowSize = newSize;
 }
 
-void CWinGdiRenderMechanism::OnDraw( const IState&, const CGlWindow& ) const
+void CWinGdiRenderMechanism::OnDraw( const IState& ) const
 {
 }
 
-void CWinGdiRenderMechanism::OnPostDraw( const CGlWindow& ) const
+void CWinGdiRenderMechanism::OnPostDraw() const
 {
 }
 

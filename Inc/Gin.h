@@ -3,7 +3,7 @@
 
 #include <Gindefs.h>
 
-#include <AdditionalWindowInfo.h>
+#include <AdditionalWindowContainer.h>
 #include <Application.h>
 #include <BaseParticleEmitter.h>
 #include <BlendModeSwitcher.h>
@@ -18,7 +18,7 @@
 #include <ConsoleSystem.h>
 #include <DdsImage.h>
 #include <DefaultSamplerContainer.h>
-#include <DefaultWindowDispatcher.h>
+#include <StandardWindowDispatcher.h>
 #include <DrawFunctions.h>
 #include <DrawMaskSwitchers.h>
 #include <Engine.h>

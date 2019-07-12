@@ -12,12 +12,10 @@ namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
 
-COpenGlRenderMechanism::COpenGlRenderMechanism( const CGlWindow& window, CGlContextManager& _glContextManager ) :
+COpenGlRenderMechanism::COpenGlRenderMechanism( CGlContextManager& _glContextManager ) :
 	glContextManager( _glContextManager )
 {
 	backgroundBrush = ::CreateSolidBrush( RGB( 0, 0, 0 ) );
-	assert( window.IsCreated() );
-	OnWindowResize( window.WindowSize() );
 }
 
 COpenGlRenderMechanism::~COpenGlRenderMechanism()
@@ -25,9 +23,16 @@ COpenGlRenderMechanism::~COpenGlRenderMechanism()
 	::DeleteObject( backgroundBrush );
 }
 
-void COpenGlRenderMechanism::ActivateWindowTarget( const CGlWindow& newTarget )
+void COpenGlRenderMechanism::AttachNewWindow( const CGlWindow& newWindow )
 {
-	glContextManager.SetContextTarget( newTarget.GetDeviceContext() );
+	assert( newWindow.IsCreated() );
+	targetWindow = &newWindow;
+	OnWindowResize( newWindow.WindowSize() );
+}
+
+void COpenGlRenderMechanism::ActivateWindowTarget()
+{
+	glContextManager.SetContextTarget( targetWindow->GetDeviceContext() );
 }
 
 void COpenGlRenderMechanism::SetBackgroundColor( CColor newValue )
@@ -52,7 +57,7 @@ LRESULT COpenGlRenderMechanism::OnEraseBackground( HWND, WPARAM wParam, LPARAM )
 	return 1;
 }
 
-void COpenGlRenderMechanism::OnDraw( const IState& currentState, const CGlWindow& target ) const
+void COpenGlRenderMechanism::OnDraw( const IState& currentState ) const
 {
 	// Set the clear values.
 	gl::ClearColor( backgroundColor.GetRed(), backgroundColor.GetGreen(), backgroundColor.GetBlue(), backgroundColor.GetAlpha() );
@@ -63,12 +68,12 @@ void COpenGlRenderMechanism::OnDraw( const IState& currentState, const CGlWindow
 	// Clear the buffer.
 	gl::Clear( gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT | gl::STENCIL_BUFFER_BIT );
 
-	currentState.Draw( COpenGlRenderParameters( target ) );
+	currentState.Draw( COpenGlRenderParameters( *targetWindow ) );
 }
 
-void COpenGlRenderMechanism::OnPostDraw( const CGlWindow& target ) const
+void COpenGlRenderMechanism::OnPostDraw() const
 {
-	::SwapBuffers( target.GetDeviceContext() );
+	::SwapBuffers( targetWindow->GetDeviceContext() );
 }
 
 LRESULT COpenGlRenderMechanism::OnPaintMessage( HWND window, WPARAM wParam, LPARAM lParam, const IState& ) const

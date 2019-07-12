@@ -31,8 +31,6 @@ struct CGlWindowSettings {
 class GINAPI CGlWindow {
 public:
 	CGlWindow() = default;
-	CGlWindow( CGlWindow&& other );
-	CGlWindow& operator=( CGlWindow&& other );
 	~CGlWindow();
 
 	CUnicodeView GetWindowClassName() const
@@ -41,11 +39,16 @@ public:
 		{ return windowSize; }
 	bool IsFullscreen() const
 		{ return isFullscreen; }
+	IRenderMechanism& GetRenderer() 
+		{ return *renderMechanism; }
+	const IRenderMechanism& GetRenderer() const
+		{ return *renderMechanism; }
 
 	HDC GetDeviceContext() const
 		{ return windowDC; }
 
-	void Create( CUnicodeView className, CGlWindowSettings initialSettings );
+	template <class Dispatcher>
+	void Create( CWindowClass<Dispatcher>& windowClass, CGlWindowSettings initialSettings );
 
 	// Get current screen resolution.
 	CVector2<int> GetScreenResolution() const;
@@ -90,8 +93,13 @@ public:
 	// Destroy the window right away.
 	void ForceDestroy();
 
+	// Window containers need to attach the renderer information.
+	friend class CAdditionalWindowContainer;
+	friend class CMainFrame;
+
 private:
 	CUnicodeString windowClassName;
+	IRenderMechanism* renderMechanism = nullptr;
 	// Native handle to the window.
 	HWND windowHandle = nullptr;
 	HDC windowDC = nullptr;
@@ -109,6 +117,9 @@ private:
 	// Is the window currently in fullscreen mode.
 	bool isFullscreen = false;
 
+	void setRenderMechanism( IRenderMechanism& newValue );
+	void doCreate( CUnicodeView className, CGlWindowSettings initialSettings );
+
 	static CVector2<int> findDefaultResolution();
 	static bool compareDisplaySettings( const DEVMODE& left, const DEVMODE& right );
 	static CVector2<int> getResolution( const DEVMODE& settings );
@@ -123,6 +134,15 @@ private:
 	CGlWindow( const CGlWindow& ) = delete;
 	void operator=( const CGlWindow& ) = delete;
 };
+
+//////////////////////////////////////////////////////////////////////////
+
+template<class Dispatcher>
+void CGlWindow::Create( CWindowClass<Dispatcher>& windowClass, CGlWindowSettings initialSettings )
+{
+	windowClass.GetDispatcher().AcceptNewWindow( *this );
+	doCreate( windowClass.GetClassName(), initialSettings );
+}
 
 //////////////////////////////////////////////////////////////////////////
 

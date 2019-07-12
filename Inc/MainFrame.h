@@ -6,7 +6,7 @@ namespace Gin {
 class IState;
 class IRenderMechanism;
 class CDefaultSamplerContainer;
-class CMainWindowDispatcher;
+class CStandardWindowDispatcher;
 struct CGlWindowSettings;
 struct COpenGlVersion;
 //////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ private:
 	// Input handler.
 	CPtrOwner<CInputHandler> inputHandler;
 	// Main window class.
-	CPtrOwner<CWindowClass<CMainWindowDispatcher>> windowClass;
+	CPtrOwner<CWindowClass<CStandardWindowDispatcher>> windowClass;
 
 	static CUnicodeView getMainWindowClassName();
 	

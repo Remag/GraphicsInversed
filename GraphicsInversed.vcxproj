@@ -162,7 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
-    <ClInclude Include="Inc\AdditionalWindowInfo.h" />
+    <ClInclude Include="Inc\AdditionalWindowContainer.h" />
     <ClInclude Include="Inc\AlContextManager.h" />
     <ClInclude Include="Inc\AlGlobals.h" />
     <ClInclude Include="Inc\Application.h" />
@@ -184,7 +184,7 @@
     <ClInclude Include="Inc\DdsImage.h" />
     <ClInclude Include="Inc\DdsUtils.h" />
     <ClInclude Include="Inc\DefaultSamplerContainer.h" />
-    <ClInclude Include="Inc\DefaultWindowDispatcher.h" />
+    <ClInclude Include="Inc\NullWindowDispatcher.h" />
     <ClInclude Include="Inc\DrawEnums.h" />
     <ClInclude Include="Inc\DrawFunctions.h" />
     <ClInclude Include="Inc\DrawMaskSwitchers.h" />
@@ -211,7 +211,7 @@
     <ClInclude Include="Inc\InputSettingsController.h" />
     <ClInclude Include="Inc\InputUtils.h" />
     <ClInclude Include="Inc\MainFrame.h" />
-    <ClInclude Include="Inc\MainWindowDispatcher.h" />
+    <ClInclude Include="Inc\StandardWindowDispatcher.h" />
     <ClInclude Include="Inc\MaterialDatabase.h" />
     <ClInclude Include="Inc\Mesh.h" />
     <ClInclude Include="Inc\Model.h" />
@@ -267,6 +267,7 @@
     </ClCompile>
     <ClCompile Include="Inc\GlWindowUtils.cpp" />
     <ClCompile Include="Inc\VideoSettingsUtils.cpp" />
+    <ClCompile Include="Src\AdditionalWindowContainer.cpp" />
     <ClCompile Include="Src\AlContextManager.cpp" />
     <ClCompile Include="Src\AlGlobals.cpp" />
     <ClCompile Include="Src\Application.cpp" />
@@ -302,7 +303,7 @@
     <ClCompile Include="Src\InputSettingsController.cpp" />
     <ClCompile Include="Src\InputUtils.cpp" />
     <ClCompile Include="Src\MainFrame.cpp" />
-    <ClCompile Include="Src\MainWindowDispatcher.cpp" />
+    <ClCompile Include="Src\StandardWindowDispatcher.cpp" />
     <ClCompile Include="Src\MaterialDatabase.cpp" />
     <ClCompile Include="Src\Mesh.cpp" />
     <ClCompile Include="Src\Model.cpp" />

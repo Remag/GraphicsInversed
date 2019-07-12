@@ -12,6 +12,8 @@ public:
 	explicit CWindowClass( CUnicodeView className, HICON windowIcon, Dispatcher dispatcher );
 	~CWindowClass();
 
+	Dispatcher& GetDispatcher()
+		{ return dispatcher; }
 	CUnicodeView GetClassName() const
 		{ return className; }
 

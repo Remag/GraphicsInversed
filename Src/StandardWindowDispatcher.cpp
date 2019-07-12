@@ -1,7 +1,8 @@
 #include <common.h>
 #pragma hdrstop
 
-#include <MainWindowDispatcher.h>
+#include <StandardWindowDispatcher.h>
+#include <GinGlobals.h>
 #include <MainFrame.h>
 #include <RenderMechanism.h>
 #include <Application.h>
@@ -12,86 +13,94 @@ namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
 
-LRESULT CMainWindowDispatcher::OnEraseBackground( HWND wnd, WPARAM wParam, LPARAM lParam ) const
+void CStandardWindowDispatcher::AcceptNewWindow( CGlWindow& newWindow )
 {
-	return mainFrame.GetRenderer().OnEraseBackground( wnd, wParam, lParam );
+	targetWindow = &newWindow;
 }
 
-LRESULT CMainWindowDispatcher::OnPaint( HWND wnd, WPARAM wParam, LPARAM lParam ) const
+LRESULT CStandardWindowDispatcher::OnEraseBackground( HWND wnd, WPARAM wParam, LPARAM lParam ) const
 {
-	const auto currentState = stateManager.TryGetCurrentState();
+	return GinInternal::GetMainFrame().GetRenderer().OnEraseBackground( wnd, wParam, lParam );
+}
+
+LRESULT CStandardWindowDispatcher::OnPaint( HWND wnd, WPARAM wParam, LPARAM lParam ) const
+{
+	const auto currentState = GetStateManager().TryGetCurrentState();
 	if( currentState != nullptr ) {
-		return mainFrame.GetRenderer().OnPaintMessage( wnd, wParam, lParam, *currentState );
+		return targetWindow->GetRenderer().OnPaintMessage( wnd, wParam, lParam, *currentState );
 	} else {
 		return ::DefWindowProc( wnd, WM_PAINT, wParam, lParam );
 	}
 }
 
-void CMainWindowDispatcher::OnWindowDestroy( HWND wnd ) const
+void CStandardWindowDispatcher::OnWindowDestroy( HWND wnd ) const
 {
-	if( application.TryQuitOnWindowDestruction( wnd ) ) {
+	if( GinInternal::GetApplication().TryQuitOnWindowDestruction( wnd ) ) {
 		::PostQuitMessage( 0 );
 	}
 }
 
-void CMainWindowDispatcher::OnWindowClose( HWND wnd ) const
+void CStandardWindowDispatcher::OnWindowClose( HWND wnd ) const
 {
-	if( application.TryCloseMainWindow() ) {
+	if( GinInternal::GetApplication().TryCloseWindow( wnd ) ) {
 		checkLastError( ::DestroyWindow( wnd ) != 0 );
 	}
 }
 
-void CMainWindowDispatcher::OnWindowActivation( HWND, WPARAM wParam ) const
+void CStandardWindowDispatcher::OnWindowActivation( HWND, WPARAM wParam ) const
 {
+	auto& application = GinInternal::GetApplication();
 	if( wParam != WA_INACTIVE ) {
 		application.OnRestore();
-		mainWindow.SetActivation( true );
+		targetWindow->SetActivation( true );
 	} else {
-		inputHandler.ClearPressedKeys();
+		GinInternal::GetInputHandler().ClearPressedKeys();
 		application.OnSleep();
-		mainWindow.SetActivation( false );
+		targetWindow->SetActivation( false );
 	}
 }
 
-void CMainWindowDispatcher::OnWindowResize( HWND, WPARAM wParam, int newWidth, int newHeight ) const
+void CStandardWindowDispatcher::OnWindowResize( HWND, WPARAM wParam, int newWidth, int newHeight ) const
 {
 	if( wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED ) {
+		auto& application = GinInternal::GetApplication();
 		// Window may post WM_SIZE during its creation.
-		if( mainWindow.Handle() != nullptr ) {
-			mainWindow.RefreshCachedValues();
+		if( targetWindow->IsCreated() ) {
+			targetWindow->RefreshCachedValues();
 			const CVector2<int> newSize{ newWidth, newHeight };
-			mainFrame.GetRenderer().OnWindowResize( newSize );
+			targetWindow->GetRenderer().OnWindowResize( newSize );
 			application.OnMainWindowResize( newSize, wParam == SIZE_MAXIMIZED );
 		}
 	}
 }
 
-void CMainWindowDispatcher::OnWindowActiveResize( HWND ) const
+void CStandardWindowDispatcher::OnWindowActiveResize( HWND ) const
 {
-	mainWindow.RefreshCachedValues();
-	const auto newSize = mainWindow.WindowSize();
-	auto& renderer = mainFrame.GetRenderer();
+	auto& application = GinInternal::GetApplication();
+	targetWindow->RefreshCachedValues();
+	const auto newSize = targetWindow->WindowSize();
+	auto& renderer = targetWindow->GetRenderer();
 	renderer.OnWindowResize( newSize );
 	application.OnMainWindowResize( newSize, false );
 
-	const auto state = stateManager.TryGetCurrentState();
+	const auto state = GetStateManager().TryGetCurrentState();
 	if( state != nullptr ) {
-		renderer.OnDraw( *state, mainWindow );
-		renderer.OnPostDraw( mainWindow );
+		renderer.OnDraw( *state );
+		renderer.OnPostDraw();
 	}
 }
 
-void CMainWindowDispatcher::OnWindowMove( HWND ) const
+void CStandardWindowDispatcher::OnWindowMove( HWND ) const
 {
-	mainWindow.RefreshCachedValues();
+	targetWindow->RefreshCachedValues();
 }
 
-void CMainWindowDispatcher::OnChar( HWND, WPARAM wParam ) const
+void CStandardWindowDispatcher::OnChar( HWND, WPARAM wParam ) const
 {
-	inputHandler.OnSymbolMessage( wParam );
+	GinInternal::GetInputHandler().OnSymbolMessage( wParam );
 }
 
-void CMainWindowDispatcher::OnInput( HWND, LPARAM lParam ) const
+void CStandardWindowDispatcher::OnInput( HWND, LPARAM lParam ) const
 {
 	RAWINPUT resultInput;
 	UINT size = sizeof( resultInput );
@@ -106,10 +115,10 @@ void CMainWindowDispatcher::OnInput( HWND, LPARAM lParam ) const
 	}
 
 	const bool isKeyDown = !HasFlag( resultInput.data.keyboard.Flags, RI_KEY_BREAK );
-	inputHandler.OnKeyboardPress( processedInput, isKeyDown );
+	GinInternal::GetInputHandler().OnKeyboardPress( processedInput, isKeyDown );
 }
 
-int CMainWindowDispatcher::processRawKeyboard( RAWKEYBOARD input ) const
+int CStandardWindowDispatcher::processRawKeyboard( RAWKEYBOARD input ) const
 {
 	const auto virtualKey = input.VKey;
 	const bool isE0 = HasFlag( input.Flags, RI_KEY_E0 );
@@ -156,27 +165,27 @@ int CMainWindowDispatcher::processRawKeyboard( RAWKEYBOARD input ) const
 	}
 }
 
-void CMainWindowDispatcher::OnMouseWheel( HWND, int wheelDelta ) const
+void CStandardWindowDispatcher::OnMouseWheel( HWND, int wheelDelta ) const
 {
 	const auto isDown = wheelDelta < 0;
 	const int wheelCode = isDown ? 0x0E : 0x0F;
-	inputHandler.OnMousePress( wheelCode, true );
-	inputHandler.OnMousePress( wheelCode, false );
+	GinInternal::GetInputHandler().OnMousePress( wheelCode, true );
+	GinInternal::GetInputHandler().OnMousePress( wheelCode, false );
 }
 
-void CMainWindowDispatcher::OnMouseMove( HWND, int mouseX, int mouseY ) const
+void CStandardWindowDispatcher::OnMouseMove( HWND, int mouseX, int mouseY ) const
 {
-	inputHandler.OnMouseMove( mouseX, mouseY );
+	GinInternal::GetInputHandler().OnMouseMove( mouseX, mouseY );
 }
 
-void CMainWindowDispatcher::OnMouseLeave( HWND ) const
+void CStandardWindowDispatcher::OnMouseLeave( HWND ) const
 {
-	inputHandler.OnMouseLeave();
+	GinInternal::GetInputHandler().OnMouseLeave();
 }
 
-void CMainWindowDispatcher::OnMousePress( HWND, int virtualCode, bool isPressed ) const
+void CStandardWindowDispatcher::OnMousePress( HWND, int virtualCode, bool isPressed ) const
 {
-	inputHandler.OnMousePress( virtualCode, isPressed );
+	GinInternal::GetInputHandler().OnMousePress( virtualCode, isPressed );
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -40,12 +40,11 @@
 #include <Redefs.h>
 
 namespace Gin {
+	enum TWindowRendererType;
 	enum TTextureBindingTarget;
 	enum TTextureGlFormat;
 	enum TTexelFormat;
 	enum TBufferType;
-
-	struct CAdditionalWindowInfo;
 
 	class CApplication;
 	class CMainFrame;
@@ -53,6 +52,7 @@ namespace Gin {
 	class CGlContextManager;
 	class CStateManager;
 
+	class CAdditionalWindowContainer;
 	class CInputHandler;
 	class CInputTranslator;
 	class CControlScheme;

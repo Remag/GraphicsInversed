@@ -63,9 +63,6 @@
     <ClInclude Include="common.h">
       <Filter>Precompiled Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\AdditionalWindowInfo.h">
-      <Filter>Header Files\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\AlContextManager.h">
       <Filter>Header Files\Audio</Filter>
     </ClInclude>
@@ -125,9 +122,6 @@
     </ClInclude>
     <ClInclude Include="Inc\ConsoleSystem.h">
       <Filter>Header Files\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\DefaultWindowDispatcher.h">
-      <Filter>Header Files\Windows</Filter>
     </ClInclude>
     <ClInclude Include="Inc\DrawEnums.h">
       <Filter>Header Files\Drawing</Filter>
@@ -200,9 +194,6 @@
     </ClInclude>
     <ClInclude Include="Inc\MainFrame.h">
       <Filter>Header Files\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\MainWindowDispatcher.h">
-      <Filter>Header Files\Windows</Filter>
     </ClInclude>
     <ClInclude Include="Inc\MaterialDatabase.h">
       <Filter>Header Files\Drawing\Models</Filter>
@@ -351,6 +342,15 @@
     <ClInclude Include="Inc\InputSettingsController.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\NullWindowDispatcher.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\StandardWindowDispatcher.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AdditionalWindowContainer.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlContextManager.cpp">
@@ -452,9 +452,6 @@
     <ClCompile Include="Src\MainFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\MainWindowDispatcher.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\MaterialDatabase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -549,6 +546,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\InputSettingsController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\StandardWindowDispatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\AdditionalWindowContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,12 +1,16 @@
 #pragma once
+#include <Gindefs.h>
 
 namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
 
-// Class that provides default window handling messages.
+// Class that provides noop window handling messages.
 class CDefaultWindowDispatcher {
 public:
+	// Called before window creation.
+	void AcceptNewWindow( const CGlWindow& ) {}
+	// Called during class creation to determine if the mouse needs to be tracked when leaving the window.
 	bool ShouldTrackMouseLeave() const
 		{ return false; }
 

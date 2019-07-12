@@ -5,7 +5,7 @@
 #include <Application.h>
 #include <GinGlobals.h>
 
-#include <MainWindowDispatcher.h>
+#include <StandardWindowDispatcher.h>
 #include <WindowClass.h>
 #include <GlWindow.h>
 #include <State.h>
@@ -41,14 +41,17 @@ void CMainFrame::InitializeOpenGL( CGlWindowSettings initialSettings, COpenGlVer
 	initializeCommon( initialSettings, windowIcon );
 	glContextManager = CreateOwner<CGlContextManager>( requestedGlVersion );
 	glContextManager->CreateContext( mainWindow->GetDeviceContext() );
-	renderer = CreateOwner<COpenGlRenderMechanism>( *mainWindow, *glContextManager );
+	renderer = CreateOwner<COpenGlRenderMechanism>( *glContextManager );
+	renderer->AttachNewWindow( *mainWindow );
+	mainWindow->setRenderMechanism( *renderer );
 	mainWindow->Show( true );
 }
 
 void CMainFrame::InitializeWinGDI( CGlWindowSettings initialSettings, HICON windowIcon )
 {
 	initializeCommon( initialSettings, windowIcon );
-	renderer = CreateOwner<CWinGdiRenderMechanism>( *mainWindow );
+	renderer = CreateOwner<CWinGdiRenderMechanism>();
+	renderer->AttachNewWindow( *mainWindow );
 	mainWindow->Show( true );
 }
 
@@ -61,7 +64,7 @@ CUnicodeView CMainFrame::getMainWindowClassName()
 void CMainFrame::initializeCommon( CGlWindowSettings initialSettings, HICON windowIcon )
 {
 	registerWindowClass( windowIcon, initialSettings.TrackMouseLeave );
-	mainWindow->Create( getMainWindowClassName(), initialSettings );
+	mainWindow->Create( *windowClass, initialSettings );
 	inputHandler->SetNewWindow( mainWindow->Handle() );
 	initOpenAL();
 }
@@ -75,8 +78,8 @@ bool CMainFrame::IsInitialized() const
 void CMainFrame::registerWindowClass( HICON windowIcon, bool trackMouseLeave )
 {
 	assert( windowClass == nullptr );
-	CMainWindowDispatcher dispatcher( *this, *mainWindow, GinInternal::GetApplication(), GetStateManager(), *inputHandler, trackMouseLeave );
-	windowClass = CreateOwner<CWindowClass<CMainWindowDispatcher>>( getMainWindowClassName(), windowIcon, move( dispatcher ) );
+	CStandardWindowDispatcher dispatcher( trackMouseLeave );
+	windowClass = CreateOwner<CWindowClass<CStandardWindowDispatcher>>( getMainWindowClassName(), windowIcon, move( dispatcher ) );
 }
 
 void CMainFrame::initOpenAL()
@@ -98,10 +101,10 @@ void CMainFrame::ReopenMainWindow( CGlWindowSettings settings, HICON )
 {
 	// TODO: window icon change.
 	mainWindow = CreateOwner<CGlWindow>();
-	mainWindow->Create( getMainWindowClassName(), settings );
+	mainWindow->Create( *windowClass, settings );
 	inputHandler->SetNewWindow( mainWindow->Handle() );
-	renderer->ActivateWindowTarget( *mainWindow );
-	renderer->OnWindowResize( mainWindow->WindowSize() );
+	renderer->AttachNewWindow( *mainWindow );
+	renderer->ActivateWindowTarget();
 	mainWindow->Show( true );
 }
 

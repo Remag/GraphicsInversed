@@ -17,8 +17,10 @@ class GINAPI IRenderMechanism {
 public:
 	virtual ~IRenderMechanism() {}
 
-	// Change the render target to a new window.
-	virtual void ActivateWindowTarget( const CGlWindow& newTarget ) = 0;
+	// Attach a window target to the render mechanism.
+	virtual void AttachNewWindow( const CGlWindow& newWindow ) = 0;
+	// Change the render target to the target window.
+	virtual void ActivateWindowTarget() = 0;
 	// Set the initial screen color.
 	virtual void SetBackgroundColor( CColor newValue ) = 0;
 	// Actions taken on window resize.
@@ -26,8 +28,8 @@ public:
 	// Actions on the WM_ERASEBKGND message.
 	virtual LRESULT OnEraseBackground( HWND window, WPARAM wParam, LPARAM lParam ) = 0;
 	// Actions taken on a draw call that happens on each frame.
-	virtual void OnDraw( const IState& currentState, const CGlWindow& target ) const = 0;
-	virtual void OnPostDraw( const CGlWindow& target ) const = 0;
+	virtual void OnDraw( const IState& currentState ) const = 0;
+	virtual void OnPostDraw() const = 0;
 	// Actions taken on a WM_PAINT message.
 	virtual LRESULT OnPaintMessage( HWND window, WPARAM wParam, LPARAM lParam, const IState& currentState ) const = 0;
 	// Read the pixels from the screen framebuffer.

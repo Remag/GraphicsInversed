@@ -52,6 +52,7 @@ void CMainFrame::InitializeWinGDI( CGlWindowSettings initialSettings, HICON wind
 	initializeCommon( initialSettings, windowIcon );
 	renderer = CreateOwner<CWinGdiRenderMechanism>();
 	renderer->AttachNewWindow( *mainWindow );
+	mainWindow->setRenderMechanism( *renderer );
 	mainWindow->Show( true );
 }
 

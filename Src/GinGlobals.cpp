@@ -35,6 +35,11 @@ CPixelVector MousePixelPos()
 	return GinInternal::GetInputHandler().GetMousePixelPos();
 }
 
+const CGlWindow* GetMouseHoverWindow()
+{
+	return GinInternal::GetInputHandler().GetHoverWindow();
+}
+
 IRenderMechanism& GetRenderMechanism()
 {
 	return GinInternal::GetMainFrame().GetRenderer();

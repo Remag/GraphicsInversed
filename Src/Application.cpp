@@ -44,20 +44,22 @@ void CApplication::ReopenMainWindow( CGlWindowSettings settings, HICON icon )
 	onInitializeGlContext();
 }
 
-bool CApplication::TryCloseWindow( HWND window )
+bool CApplication::TryCloseWindow( const CGlWindow& targetWindow )
 {
-	if( checkWindowClose( window ) ) {
-		onWindowClose( window );
-		additionalWindows->TryCloseAdditionalWindow( window );
+	if( checkWindowClose( targetWindow ) ) {
+		onWindowClose( targetWindow );
 		return true;
 	}
 	return false;
 }
 
-bool CApplication::TryQuitOnWindowDestruction( HWND destroyedWindow )
+bool CApplication::HandleWindowDestruction( const CGlWindow& targetWindow )
 {
-	const auto currentMainWindow = mainFrame.GetMainGlWindow().Handle();
-	if( currentMainWindow == destroyedWindow && checkApplicationDestruction() ) {
+	const auto& currentMainWindow = mainFrame.GetMainGlWindow();
+	if( &currentMainWindow != &targetWindow ) {
+		onAdditionalWindowDestroy( targetWindow );
+		additionalWindows->TryDestroyAdditionalWindow( targetWindow );
+	} else if( checkApplicationDestruction() ) {
 		onApplicationDestruction();
 		stateManager->ClearStates();
 		return true;
@@ -67,7 +69,11 @@ bool CApplication::TryQuitOnWindowDestruction( HWND destroyedWindow )
 
 void CApplication::AddAdditionalWindow( CPtrOwner<CGlWindow> window, TWindowRendererType rendererType )
 {
+	assert( window != nullptr );
+	auto windowPtr = window.Ptr();
 	additionalWindows->AddAdditionalWindow( mainFrame, move( window ), rendererType );
+	onAdditionalWindowCreate( *windowPtr );
+	windowPtr->Show( true );
 }
 
 CGlWindow* CApplication::FindAdditionalWindow( CUnicodePart windowClassName )

@@ -84,6 +84,7 @@ private:
 	static int findEndCommentPos( CStringPart str );
 	void unknownStrWarning( CStringPart str ) const;
 
+	void tryCreateActionFromData( CKeyCombination key, CStringPart actionName, CControlScheme& controlScheme ) const;
 	void createActionFromData( CKeyCombination key, CStringPart actionName, CControlScheme& controlScheme ) const;
 	bool tryCreateUserAction( CKeyCombination key, CStringPart actionName, CControlScheme& controlScheme ) const;
 	CPtrOwner<TUserAction> createInputAction( CUnicodePart actionName ) const;

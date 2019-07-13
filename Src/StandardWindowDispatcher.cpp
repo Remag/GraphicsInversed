@@ -33,16 +33,17 @@ LRESULT CStandardWindowDispatcher::OnPaint( HWND wnd, WPARAM wParam, LPARAM lPar
 	}
 }
 
-void CStandardWindowDispatcher::OnWindowDestroy( HWND wnd ) const
+void CStandardWindowDispatcher::OnWindowDestroy( HWND ) const
 {
-	if( GinInternal::GetApplication().TryQuitOnWindowDestruction( wnd ) ) {
+	GinInternal::GetInputHandler().OnWindowDestruction( targetWindow );
+	if( GinInternal::GetApplication().HandleWindowDestruction( *targetWindow ) ) {
 		::PostQuitMessage( 0 );
 	}
 }
 
 void CStandardWindowDispatcher::OnWindowClose( HWND wnd ) const
 {
-	if( GinInternal::GetApplication().TryCloseWindow( wnd ) ) {
+	if( GinInternal::GetApplication().TryCloseWindow( *targetWindow ) ) {
 		checkLastError( ::DestroyWindow( wnd ) != 0 );
 	}
 }
@@ -69,7 +70,7 @@ void CStandardWindowDispatcher::OnWindowResize( HWND, WPARAM wParam, int newWidt
 			targetWindow->RefreshCachedValues();
 			const CVector2<int> newSize{ newWidth, newHeight };
 			targetWindow->GetRenderer().OnWindowResize( newSize );
-			application.OnMainWindowResize( newSize, wParam == SIZE_MAXIMIZED );
+			application.OnWindowResize( *targetWindow, newSize, wParam == SIZE_MAXIMIZED );
 		}
 	}
 }
@@ -81,7 +82,7 @@ void CStandardWindowDispatcher::OnWindowActiveResize( HWND ) const
 	const auto newSize = targetWindow->WindowSize();
 	auto& renderer = targetWindow->GetRenderer();
 	renderer.OnWindowResize( newSize );
-	application.OnMainWindowResize( newSize, false );
+	application.OnWindowResize( *targetWindow, newSize, false );
 
 	const auto state = GetStateManager().TryGetCurrentState();
 	if( state != nullptr ) {
@@ -175,7 +176,7 @@ void CStandardWindowDispatcher::OnMouseWheel( HWND, int wheelDelta ) const
 
 void CStandardWindowDispatcher::OnMouseMove( HWND, int mouseX, int mouseY ) const
 {
-	GinInternal::GetInputHandler().OnMouseMove( mouseX, mouseY );
+	GinInternal::GetInputHandler().OnMouseMove( mouseX, mouseY, *targetWindow );
 }
 
 void CStandardWindowDispatcher::OnMouseLeave( HWND ) const

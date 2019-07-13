@@ -127,6 +127,8 @@ CArray<CPair<CStringView, TGinVirtualKey>> CInputSettings::CreateKeyNamePairs()
 		{ "RShift", GVK_RShift },
 		{ "LCtrl", GVK_LCtrl },
 		{ "RCtrl", GVK_RCtrl },
+		{ "LAlt", GVK_LAlt },
+		{ "RAlt", GVK_RAlt },
 		{ "Enter", GVK_Enter },
 		{ "Backspace", GVK_Backspace },
 		{ "Delete", GVK_Delete },
@@ -413,12 +415,15 @@ CKeyCombination CInputSettings::RegisterPrimaryFileAction( CKeyCombination defau
 	auto& translatorData = findTranslatorData( segmentName );
 	for( const auto& keyAction : translatorData.KeyActionPairs ) {
 		if( actionName == keyAction.Second ) {
-			createActionFromData( keyAction.First, actionName, controlScheme );
+			tryCreateActionFromData( keyAction.First, actionName, controlScheme );
 			return keyAction.First;
 		}
 	}
 
-	createActionFromData( defaultKey, actionName, controlScheme );
+	if( defaultKey.MainKey != GVK_Null ) {
+		createActionFromData( defaultKey, actionName, controlScheme );
+	}
+	// Create an empty primary action even for null keys, to distinguish between primary and secondary actions.
 	createDynamicFileAction( defaultKey, actionName, translatorData );
 	return defaultKey;
 }
@@ -430,13 +435,15 @@ CKeyCombination CInputSettings::RegisterSecondaryFileAction( CKeyCombination def
 	int matchCount = 0;
 	for( const auto& keyAction : translatorData.KeyActionPairs ) {
 		if( actionName == keyAction.Second && ( ++matchCount == 2 ) ) {
-			createActionFromData( keyAction.First, actionName, controlScheme );
+			tryCreateActionFromData( keyAction.First, actionName, controlScheme );
 			return keyAction.First;
 		}
 	}
 
-	createActionFromData( defaultKey, actionName, controlScheme );
-	createDynamicFileAction( defaultKey, actionName, translatorData );
+	if( defaultKey.MainKey != GVK_Null ) {
+		createActionFromData( defaultKey, actionName, controlScheme );
+		createDynamicFileAction( defaultKey, actionName, translatorData );
+	}
 	return defaultKey;
 }
 
@@ -444,6 +451,13 @@ void CInputSettings::createDynamicFileAction( CKeyCombination keyCombination, CS
 {
 	isModified = true;
 	translatorData.KeyActionPairs.Add( keyCombination, actionName );
+}
+
+void CInputSettings::tryCreateActionFromData( CKeyCombination key, CStringPart actionName, CControlScheme& controlScheme ) const
+{
+	if( key.MainKey != GVK_Null ) {
+		createActionFromData( key, actionName, controlScheme );
+	}
 }
 
 void CInputSettings::createActionFromData( CKeyCombination key, CStringPart actionName, CControlScheme& controlScheme ) const

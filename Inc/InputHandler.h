@@ -16,8 +16,6 @@ public:
 	GinInternal::CActionListInputController& GetDefaultInputController()
 		{ return *defaultController; }
 
-	void SetNewWindow( HWND newHandle );
-
 	// Delete pressed key information.
 	void ClearPressedKeys()
 		{ pressedKeys.Empty(); }
@@ -25,9 +23,13 @@ public:
 	// Check if a given key is being held right now.
 	bool IsKeyPressed( int keyCode ) const;
 
-	// Get cached current mouse position in pixel coordinates. It's updated on every move message.
+	// Reset mouse hover window if necessary.
+	void OnWindowDestruction( const CGlWindow* targetWindow );
+	// Get cached mouse position in pixel coordinates relative to the window that has the cursor over it. If no application window has the mouse (-1,-1) is returned.
 	CPixelVector GetMousePixelPos() const
 		{ return mousePixelPos; }
+	CGlWindow* GetHoverWindow() 
+		{ return mouseHoverWindow; }
 
 	// Actions on the end of every frame. Gets called after the update phase has been finished and the buffers have been swapped.
 	void OnFrameEnd();
@@ -36,7 +38,7 @@ public:
 	void OnKeyboardPress( int keyCode, bool isDown );
 	void OnMousePress( int keyCode, bool isDown );
 	void OnSymbolMessage( int symbolCode );
-	void OnMouseMove( int x, int y );
+	void OnMouseMove( int x, int y, CGlWindow& targetWindow );
 	void OnMouseLeave();
 
 	bool HasMouseController() const
@@ -56,8 +58,8 @@ public:
 	friend class CActionDataSwitcher;
 
 private:
-	// Window that sends the input.
-	HWND windowHandle = nullptr;
+	// Window that has the cursor over it.
+	CGlWindow* mouseHoverWindow = nullptr;
 	
 	// Default input controller. Translates input into actions.
 	CPtrOwner<GinInternal::CActionListInputController> defaultController;
@@ -82,9 +84,7 @@ private:
 	// Only a single mouse movement is handled during each transition.
 	bool mouseMoveHandled = false;
 
-	void initializeNonTextInput( HWND window );
-	void initializeTextInput( HWND window );
-	void initializeRawInput( HWND window, DWORD kbFlags );
+	void initializeRawInput();
 
 	ITextTranslator* getTextTranslator()
 		{ return currentTextTranslator; }
@@ -100,6 +100,7 @@ private:
 	void setInputController( IInputController& newValue )
 		{ currentInputController = &newValue; }
 
+	void resetMousePosition();
 	void updateMousePosition( int x, int y );
 	static bool shouldIgnoreSymbol( int symbolCode );
 

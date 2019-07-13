@@ -26,6 +26,7 @@ GINAPI CGlContextManager& GetGlContextManager();
 // Update engine.
 GINAPI CEngine& GetEngine();
 GINAPI CPixelVector MousePixelPos();
+GINAPI const CGlWindow* GetMouseHoverWindow();
 GINAPI IRenderMechanism& GetRenderMechanism();
 
 // Check if a given virtual key is being held by the user.

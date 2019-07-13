@@ -65,7 +65,6 @@ void CMainFrame::initializeCommon( CGlWindowSettings initialSettings, HICON wind
 {
 	registerWindowClass( windowIcon, initialSettings.TrackMouseLeave );
 	mainWindow->Create( *windowClass, initialSettings );
-	inputHandler->SetNewWindow( mainWindow->Handle() );
 	initOpenAL();
 }
 
@@ -102,7 +101,6 @@ void CMainFrame::ReopenMainWindow( CGlWindowSettings settings, HICON )
 	// TODO: window icon change.
 	mainWindow = CreateOwner<CGlWindow>();
 	mainWindow->Create( *windowClass, settings );
-	inputHandler->SetNewWindow( mainWindow->Handle() );
 	renderer->AttachNewWindow( *mainWindow );
 	renderer->ActivateWindowTarget();
 	mainWindow->Show( true );

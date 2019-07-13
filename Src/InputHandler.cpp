@@ -18,25 +18,16 @@ CInputHandler::CInputHandler() :
 	currentMouseController( defaultMouseController ),
 	currentInputController( defaultController )
 {
+	initializeRawInput();
 }
 
-void CInputHandler::initializeNonTextInput( HWND handle )
-{
-	initializeRawInput( handle, RIDEV_NOLEGACY );
-}
-
-void CInputHandler::initializeTextInput( HWND handle )
-{
-	initializeRawInput( handle, 0 );
-}
-
-void CInputHandler::initializeRawInput( HWND handle, DWORD kbFlags )
+void CInputHandler::initializeRawInput()
 {
 	RAWINPUTDEVICE device;
 	device.usUsagePage = 1;
 	device.usUsage = 6;
-	device.dwFlags = kbFlags;
-	device.hwndTarget = handle;
+	device.dwFlags = 0;
+	device.hwndTarget = nullptr;
 	::RegisterRawInputDevices( &device, 1, sizeof( device ) );
 }
 
@@ -44,15 +35,17 @@ CInputHandler::~CInputHandler()
 {
 }
 
-void CInputHandler::SetNewWindow( HWND newHandle )
-{
-	windowHandle = newHandle;
-	initializeNonTextInput( windowHandle );
-}
-
 bool CInputHandler::IsKeyPressed( int keyCode ) const
 {
 	return keyCode < virtualKeyCount && pressedKeys.Has( keyCode );
+}
+
+void CInputHandler::OnWindowDestruction( const CGlWindow* targetWindow )
+{
+	if( mouseHoverWindow == targetWindow ) {
+		mouseHoverWindow = nullptr;
+		resetMousePosition();
+	}
 }
 
 void CInputHandler::OnFrameEnd()
@@ -79,7 +72,7 @@ void CInputHandler::OnMousePress( int keyCode, bool isDown )
 
 void CInputHandler::OnSymbolMessage( int symbolCode )
 {
-	if( currentTextTranslator != 0 && !shouldIgnoreSymbol( symbolCode ) ) {
+	if( currentTextTranslator != nullptr && !shouldIgnoreSymbol( symbolCode ) ) {
 		currentTextTranslator->OnSymbolInput( static_cast<wchar_t>( symbolCode ) );
 	}
 }
@@ -91,19 +84,20 @@ bool CInputHandler::shouldIgnoreSymbol( int symbolCode )
 	return symbolCode < 32;
 }
 
-void CInputHandler::OnMouseMove( int x, int y )
+void CInputHandler::OnMouseMove( int x, int y, CGlWindow& targetWindow )
 {
 	if( mouseMoveHandled ) {
 		return;
 	}
 	assert( HasMouseController() );
 	// Sometimes the application receives mouse move messages that don't correspond to an actual movement. Filter them out.
-	if( prevMousePos.X() == x && prevMousePos.Y() == y ) {
+	if( mouseHoverWindow == &targetWindow && prevMousePos.X() == x && prevMousePos.Y() == y ) {
 		return;
 	}
 	mouseMoveHandled = true;
 	prevMousePos.X() = x;
 	prevMousePos.Y() = y;
+	mouseHoverWindow = &targetWindow;
 
 	updateMousePosition( x, y );
 	currentMouseController->OnMouseMove();
@@ -112,28 +106,25 @@ void CInputHandler::OnMouseMove( int x, int y )
 void CInputHandler::OnMouseLeave()
 {
 	assert( HasMouseController() );
+	resetMousePosition();
+	currentMouseController->OnMouseLeave();
+}
+
+void CInputHandler::resetMousePosition()
+{
 	prevMousePos.X() = prevMousePos.Y() = -1;
 	mousePixelPos.X() = mousePixelPos.Y() = -1.0f;
-	currentMouseController->OnMouseLeave();
 }
 
 void CInputHandler::updateMousePosition( int x, int y )
 {
-	const CVector2<int> windowSize = GetMainWindow().WindowSize();
-
+	const auto windowSize = mouseHoverWindow->WindowSize();
 	mousePixelPos.X() = x + 0.5f;
 	mousePixelPos.Y() = windowSize.Y() - y - 0.5f;
 }
 
 void CInputHandler::setTextTranslator( ITextTranslator* newValue )
 {
-	if( currentTextTranslator == nullptr ) {
-		initializeTextInput( windowHandle );
-	}
-	if( newValue == nullptr ) {
-		initializeNonTextInput( windowHandle );
-	}
-
 	currentTextTranslator = newValue;
 }
 

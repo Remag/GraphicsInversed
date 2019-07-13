@@ -18,7 +18,7 @@ class CAdditionalWindowContainer {
 public:
 	void AddAdditionalWindow( CMainFrame& mainFrame, CPtrOwner<CGlWindow> window, TWindowRendererType rendererType );
 	CGlWindow* FindWindowByClass( CUnicodePart className );
-	void TryCloseAdditionalWindow( HWND window );
+	void TryDestroyAdditionalWindow( const CGlWindow& targetWindow );
 	void DrawAdditionalWindows( CMainFrame& mainFrame, const IState& currentState ) const;
 
 private:

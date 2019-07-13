@@ -175,6 +175,8 @@ enum TGinVirtualKey {
 	GVK_RShift = VK_RSHIFT,
 	GVK_LCtrl = VK_LCONTROL,
 	GVK_RCtrl = VK_RCONTROL,
+	GVK_LAlt = VK_LMENU,
+	GVK_RAlt = VK_RMENU,
 	GVK_Enter = VK_RETURN,
 	GVK_Backspace = VK_BACK,
 	GVK_Delete = VK_DELETE,

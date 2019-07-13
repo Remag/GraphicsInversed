@@ -51,13 +51,15 @@ public:
 	void Run( CUnicodeView commandLine );
 
 	void ReopenMainWindow( CGlWindowSettings settings, HICON icon );
-	bool TryCloseWindow( HWND window );
-	bool TryQuitOnWindowDestruction( HWND destroyedWindow );
+	bool TryCloseWindow( const CGlWindow& targetWindow );
+	// Actions on window destruction. Returns true if the application should exit.
+	bool HandleWindowDestruction( const CGlWindow& targetWindow );
 
 	// Actions on window resize.
-	// First parameter is the new window size.
-	// Second parameter is true if the window was maximized, false otherwise.
-	virtual void OnMainWindowResize( CVector2<int>, bool ) {};
+	// First parameter is the target window.
+	// Second parameter is the new window size.
+	// Third parameter is true if the window was maximized, false otherwise.
+	virtual void OnWindowResize( CGlWindow&, CVector2<int>, bool ) {};
 	// Actions on system sleep/restore from task bar.
 	virtual void OnSleep() {}
 	virtual void OnRestore() {}
@@ -76,12 +78,16 @@ protected:
 	virtual void cleanupGlContext() {};
 	// Additional actions before the application exits.
 	virtual void onExit() {}
+	// Actions taken after an additional window is attached and before it's shown.
+	virtual void onAdditionalWindowCreate( const CGlWindow& ) {}
+	// Additional actions on window destruction.
+	virtual void onAdditionalWindowDestroy( const CGlWindow& ) {}
 	// Actions taken when the close command is sent.
 	// Returns if the window should actually be closed.
-	virtual bool checkWindowClose( HWND ) const
+	virtual bool checkWindowClose( const CGlWindow& ) const
 		{ return true; }
 	// Additional actions on window close.
-	virtual void onWindowClose( HWND ) {}
+	virtual void onWindowClose( const CGlWindow& ) {}
 	// Check if the application should quit after the main window is destroyed.
 	virtual bool checkApplicationDestruction() const
 		{ return true; }

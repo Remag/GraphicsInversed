@@ -29,7 +29,6 @@ void CAdditionalWindowContainer::AddAdditionalWindow( CMainFrame& mainFrame, CPt
 	renderer->AttachNewWindow( *window );
 	window->setRenderMechanism( *renderer );
 	auto& result = additionalWindows.Add( move( window ), move( renderer ) );
-	result.Window->Show( true );
 }
 
 CGlWindow* CAdditionalWindowContainer::FindWindowByClass( CUnicodePart windowClassName )
@@ -42,10 +41,10 @@ CGlWindow* CAdditionalWindowContainer::FindWindowByClass( CUnicodePart windowCla
 	return nullptr;
 }
 
-void CAdditionalWindowContainer::TryCloseAdditionalWindow( HWND window )
+void CAdditionalWindowContainer::TryDestroyAdditionalWindow( const CGlWindow& targetWindow )
 {
 	for( int i = additionalWindows.Size() - 1; i >= 0; i-- ) {
-		if( additionalWindows[i].Window->Handle() == window ) {
+		if( additionalWindows[i].Window == &targetWindow ) {
 			additionalWindows.DeleteAt( i );
 			return;
 		}

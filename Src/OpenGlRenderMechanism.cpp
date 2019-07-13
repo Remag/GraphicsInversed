@@ -42,11 +42,8 @@ void COpenGlRenderMechanism::SetBackgroundColor( CColor newValue )
 	backgroundBrush = ::CreateSolidBrush( RGB( newValue.R, newValue.G, newValue.B ) );
 }
 
-void COpenGlRenderMechanism::OnWindowResize( CVector2<int> newSize )
+void COpenGlRenderMechanism::OnWindowResize( CVector2<int> )
 {
-	newSize.X() = max( 1, newSize.X() );
-	newSize.Y() = max( 1, newSize.Y() );
-	CViewportSwitcher::SetBaseViewport( CVector2<int>{}, newSize );
 }
 
 LRESULT COpenGlRenderMechanism::OnEraseBackground( HWND, WPARAM wParam, LPARAM )
@@ -59,6 +56,7 @@ LRESULT COpenGlRenderMechanism::OnEraseBackground( HWND, WPARAM wParam, LPARAM )
 
 void COpenGlRenderMechanism::OnDraw( const IState& currentState ) const
 {
+	CViewportSwitcher::SetBaseViewport( CVector2<int>{}, targetWindow->WindowSize() );
 	// Set the clear values.
 	gl::ClearColor( backgroundColor.GetRed(), backgroundColor.GetGreen(), backgroundColor.GetBlue(), backgroundColor.GetAlpha() );
 	gl::ClearDepth( glContextManager.GetDepthZFar() );

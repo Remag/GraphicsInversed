@@ -150,22 +150,22 @@ public:
 		{ textureData.SetTextureMipmapRange( TBT_Texture2, baseValue, maxValue ); }
 
 	// Reserve memory for the first level of the texture.
-	void SetBuffer( CVector2<int> size )
-		{ CTypelessTextureOperations<TBT_Texture2>::SetBuffer( textureData, size, 0, format ); }
+	void SetBuffer( CVector2<int> pxSize )
+		{ CTypelessTextureOperations<TBT_Texture2>::SetBuffer( textureData, pxSize, 0, format ); }
 	// Increase buffer size without of the first level without destroying the texture contents.
-	void GrowBuffer( CVector2<int> prevSize, CVector2<int> newSize, TTexelFormat cFormat, TTexelDataType type )
-		{ CTypelessTextureOperations<TBT_Texture2>::GrowBuffer( textureData, prevSize, newSize, 0, format, cFormat, type ); }
+	void GrowBuffer( CVector2<int> prevPxSize, CVector2<int> newPxSize, TTexelFormat cFormat, TTexelDataType type )
+		{ CTypelessTextureOperations<TBT_Texture2>::GrowBuffer( textureData, prevPxSize, newPxSize, 0, format, cFormat, type ); }
 	// Load the texture data directly.
 	// data - the array to load.
-	// size - size of the texture in texels.
+	// pxSize - size of the texture in texels.
 	// level - the mipmap level to load.
 	// cFormat - the data format.
 	// type - type used by data.
-	void SetData( const void* data, CVector2<int> size, int level, TTexelFormat cFormat, TTexelDataType type )
-		{ CTypelessTextureOperations<TBT_Texture2>::SetData( textureData, data, size, level, format, cFormat, type ); }
+	void SetData( const void* data, CVector2<int> pxSize, int level, TTexelFormat cFormat, TTexelDataType type )
+		{ CTypelessTextureOperations<TBT_Texture2>::SetData( textureData, data, pxSize, level, format, cFormat, type ); }
 	// Load part of the data at a given offset.
-	void SetSubData( CVector2<int> offset, const void* data, CVector2<int> size, int level, TTexelFormat cFormat, TTexelDataType type )
-		{ CTypelessTextureOperations<TBT_Texture2>::SetSubData( textureData, offset, data, size, level, cFormat, type ); }
+	void SetSubData( CVector2<int> pxOffset, const void* data, CVector2<int> pxSize, int level, TTexelFormat cFormat, TTexelDataType type )
+		{ CTypelessTextureOperations<TBT_Texture2>::SetSubData( textureData, pxOffset, data, pxSize, level, cFormat, type ); }
 
 protected:
 	CEditTextureBase() : textureData( GetDefaultSampler() ) {}

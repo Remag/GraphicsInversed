@@ -17,8 +17,8 @@ class GINAPI CTypelessTextureOperations<TBT_Texture1> {
 public:
 	static void SetImageData( CTextureData textureData, const CImageData& data, TTextureGlFormat internalFormat );
 	static void SetData( CTextureData textureData, const void* data, int sizeX, int level, TTextureGlFormat glFormat, TTexelFormat cFormat, TTexelDataType type );
-	static void SetBuffer( CTextureData textureData, int size, int level, TTextureGlFormat glFormat );
-	static void SetSubData( CTextureData textureData, int offset, const void* data, int size, int level, TTexelFormat cFormat, TTexelDataType type );
+	static void SetBuffer( CTextureData textureData, int txSize, int level, TTextureGlFormat glFormat );
+	static void SetSubData( CTextureData textureData, int txOffset, const void* data, int txSize, int level, TTexelFormat cFormat, TTexelDataType type );
 
 private:
 	static void setImageNormalData( CTextureData textureData, const CImageData& data, TTextureGlFormat internalFormat );

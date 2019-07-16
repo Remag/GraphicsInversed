@@ -121,7 +121,7 @@ void CMeshCommonData::preMeshDraw( CShaderProgram shader ) const
 	shader;
 
 	gl::BindVertexArray( meshId );
-	assert( checkAllAttributePresence( shader ) );
+	debug_assert( checkAllAttributePresence( shader ) );
 }
 
 void CMeshCommonData::postMeshDraw() const

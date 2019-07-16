@@ -211,12 +211,12 @@ void CTypelessTextureOperations<TBT_Texture2>::SetData( CTextureData textureData
 	setDataCheckErrors( size, level, glFormat, cFormat, type, data );
 }
 
-void CTypelessTextureOperations<TBT_Texture2>::SetSubData( CTextureData textureData, CVector2<int> offset, const void* data, CVector2<int> size, int level, TTexelFormat cFormat, TTexelDataType type )
+void CTypelessTextureOperations<TBT_Texture2>::SetSubData( CTextureData textureData, CVector2<int> txOffset, const void* data, CVector2<int> txSize, int level, TTexelFormat cFormat, TTexelDataType type )
 {
-	assert( offset.X() >= 0 && offset.Y() >= 0 );
+	assert( txOffset.X() >= 0 && txOffset.Y() >= 0 );
 	assert( CTextureBinder::GetCurrentBindingId() == textureData.GetTextureId() );
 	textureData;
-	setSubDataCheckErrors( size, level, offset, cFormat, type, data );
+	setSubDataCheckErrors( txSize, level, txOffset, cFormat, type, data );
 }
 
 void CTypelessTextureOperations<TBT_Texture2>::setSubDataCheckErrors( CVector2<int> size, int level, CVector2<int> offset, TTexelFormat cFormat, TTexelDataType type, const void* data )

@@ -472,12 +472,12 @@ bool CFontRenderer::checkLineSeparator( CUnicodePart str, int& strPos )
 	return false;
 }
 
-bool CFontRenderer::checkLineSeparator( CStringPart str, int & strPos )
+bool CFontRenderer::checkLineSeparator( CStringPart str, int& strPos )
 {
 	const auto length = str.Length();
 	for( int i = strPos; i < length; i++ ) {
 		const auto ch = str[i];
-		if( ch == L'\n' ) {
+		if( ch == '\n' ) {
 			strPos = i + 1;
 			return true;
 		} else if( !str.IsCharWhiteSpace( ch ) ) {
@@ -530,7 +530,7 @@ CPixelRect CFontRenderer::renderUtf16Word( CUnicodePart str, CVector2<int>& symb
 	return wordRect;
 }
 
-CPixelRect CFontRenderer::renderUtf8Word( CStringPart str, CVector2<int>& symbolPos, int maxWidth, int & strPos, CArray<CVector4<float>>& wordBuffer ) const
+CPixelRect CFontRenderer::renderUtf8Word( CStringPart str, CVector2<int>& symbolPos, int maxWidth, int& strPos, CArray<CVector4<float>>& wordBuffer ) const
 {
 	CPixelRect wordRect;
 	const int length = str.Length();
@@ -603,10 +603,10 @@ CPixelRect CFontRenderer::startNewLine( CPixelVector lineOffset, CPixelRect word
 	return wordRect;
 }
 
-CTextMesh CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight ) const
+CParagraphRenderResult CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight, int startHOffset ) const
 {
 	if( str.IsEmpty() == 0 ) {
-		return CTextMesh( *this );
+		return CParagraphRenderResult( CTextMesh( *this ), CVector2<int>( startHOffset, 0 ) );
 	}
 	// Create mesh data from string.
 	CGlBufferOwner<BT_Array, CVector4<float>> stringData;
@@ -615,18 +615,19 @@ CTextMesh CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, i
 
 	CPixelRect boundRect;
 	int lineVertexCount = 0;
-	CBufferMapper( BWMM_Write, stringData, &CFontRenderer::renderMultipleUtf16Lines, this, str, lineWidth, lineHeight, boundRect, lineVertexCount );
+	CVector2<int> endOffset( startHOffset, 0 );
+	CBufferMapper( BWMM_Write, stringData, &CFontRenderer::renderMultipleUtf16Lines, this, str, lineWidth, lineHeight, boundRect, lineVertexCount, endOffset );
 
 	CMeshOwner<CArrayMesh> textMesh( MDM_Triangles );
 	textMesh.BindBuffer( stringData, { 0 } );
 
-	return CTextMesh( move( stringData ), move( textMesh ), boundRect, *this, lineVertexCount );
+	return CParagraphRenderResult( CTextMesh( move( stringData ), move( textMesh ), boundRect, *this, lineVertexCount ), endOffset );
 }
 
-CTextMesh CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight ) const
+CParagraphRenderResult CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight, int startHOffset ) const
 {
 	if( str.IsEmpty() == 0 ) {
-		return CTextMesh( *this );
+		return CParagraphRenderResult( CTextMesh( *this ), CVector2<int>( startHOffset, 0 ) );
 	}
 	// Create mesh data from string.
 	CGlBufferOwner<BT_Array, CVector4<float>> stringData;
@@ -635,52 +636,52 @@ CTextMesh CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, in
 
 	CPixelRect boundRect;
 	int lineVertexCount = 0;
-	CBufferMapper( BWMM_Write, stringData, &CFontRenderer::renderMultipleUtf8Lines, this, str, lineWidth, lineHeight, boundRect, lineVertexCount );
+	CVector2<int> endOffset( startHOffset, 0 );
+	CBufferMapper( BWMM_Write, stringData, &CFontRenderer::renderMultipleUtf8Lines, this, str, lineWidth, lineHeight, boundRect, lineVertexCount, endOffset );
 
 	CMeshOwner<CArrayMesh> textMesh( MDM_Triangles );
 	textMesh.BindBuffer( stringData, { 0 } );
 
-	return CTextMesh( move( stringData ), move( textMesh ), boundRect, *this, lineVertexCount );
+	return CParagraphRenderResult( CTextMesh( move( stringData ), move( textMesh ), boundRect, *this, lineVertexCount ), endOffset );
 }
 
 void CFontRenderer::renderMultipleUtf16Lines( CUnicodePart str, int lineWidth, int lineHeight, CPixelRect& boundRect,
-	int& totalVertexCount, CArrayBuffer<CVector4<float>> stringData ) const
+	int& totalVertexCount, CVector2<int>& lineOffset, CArrayBuffer<CVector4<float>> stringData ) const
 {
 	CArray<CVector4<float>> tempWordBuffer;
-	CVector2<int> linePos;
 	const int length = str.Length();
 	int strPos = 0;
 	// Render the string word by word.
 	while( strPos < length ) {
 		if( checkLineSeparator( str, strPos ) ) {
-			linePos.X() = 0;
-			linePos.Y() -= lineHeight;
+			lineOffset.X() = 0;
+			lineOffset.Y() -= lineHeight;
 			continue;
 		}
 
-		const auto prevLineEndPosX = linePos.X();
-		const auto wordRect = renderUtf16Word( str, linePos, lineWidth, strPos, tempWordBuffer );
-		copyWordToBuffer( wordRect, tempWordBuffer, lineWidth, lineHeight, prevLineEndPosX, linePos, boundRect, totalVertexCount, stringData );
+		const auto prevLineEndPosX = lineOffset.X();
+		const auto wordRect = renderUtf16Word( str, lineOffset, lineWidth, strPos, tempWordBuffer );
+		copyWordToBuffer( wordRect, tempWordBuffer, lineWidth, lineHeight, prevLineEndPosX, lineOffset, boundRect, totalVertexCount, stringData );
 	}
 }
 
-void CFontRenderer::renderMultipleUtf8Lines( CStringPart str, int lineWidth, int lineHeight, CPixelRect & boundRect, int & totalVertexCount, CArrayBuffer<CVector4<float>> stringData ) const
+void CFontRenderer::renderMultipleUtf8Lines( CStringPart str, int lineWidth, int lineHeight, CPixelRect& boundRect,
+	int& totalVertexCount, CVector2<int>& lineOffset, CArrayBuffer<CVector4<float>> stringData ) const
 {
 	CArray<CVector4<float>> tempWordBuffer;
-	CVector2<int> linePos;
 	const int length = str.Length();
 	int strPos = 0;
 	// Render the string word by word.
 	while( strPos < length ) {
 		if( checkLineSeparator( str, strPos ) ) {
-			linePos.X() = 0;
-			linePos.Y() -= lineHeight;
+			lineOffset.X() = 0;
+			lineOffset.Y() -= lineHeight;
 			continue;
 		}
 
-		const auto prevLineEndPosX = linePos.X();
-		const auto wordRect = renderUtf8Word( str, linePos, lineWidth, strPos, tempWordBuffer );
-		copyWordToBuffer( wordRect, tempWordBuffer, lineWidth, lineHeight, prevLineEndPosX, linePos, boundRect, totalVertexCount, stringData );
+		const auto prevLineEndPosX = lineOffset.X();
+		const auto wordRect = renderUtf8Word( str, lineOffset, lineWidth, strPos, tempWordBuffer );
+		copyWordToBuffer( wordRect, tempWordBuffer, lineWidth, lineHeight, prevLineEndPosX, lineOffset, boundRect, totalVertexCount, stringData );
 	}
 }
 

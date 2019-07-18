@@ -64,6 +64,15 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
+struct CParagraphRenderResult {
+	CTextMesh Mesh;
+	CVector2<int> EndOffset;
+
+	explicit CParagraphRenderResult( CTextMesh mesh, CVector2<int> endOffset ) : Mesh( move( Mesh ) ), EndOffset( endOffset ) {}
+};
+
+//////////////////////////////////////////////////////////////////////////
+
 // Class for rendering unicode characters.
 class GINAPI CFontRenderer {
 public:
@@ -104,9 +113,9 @@ public:
 	CTextMesh RenderLine( CStringPart str ) const;
 	// Separate the given string into lines with a maximum width and render each line separately.
 	void RenderMultipleLines( CUnicodePart str, int lineWidth, CArray<CTextMesh>& lines ) const;
-	CTextMesh RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight ) const;
+	CParagraphRenderResult RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight, int startHOffset ) const;
 	void RenderMultipleLines( CStringPart str, int lineWidth, CArray<CTextMesh>& lines ) const;
-	CTextMesh RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight ) const;
+	CParagraphRenderResult RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight, int startHOffset ) const;
 	// Draw the rendered string with the given pixel space position.
 	void DisplayText( const CTextMesh& textMesh, const CMatrix3<float>& modelToClip, CColor color ) const;
 
@@ -179,8 +188,10 @@ private:
 
 	CTextMesh doRenderTextLine( const void* lineBuffer, int length, void ( CFontRenderer::*renderMethod )( const void*, int, CPixelRect&, int&, CArrayBuffer<CVector4<float>> ) const ) const;
 	void renderSingleUtf16Line( const void* strBuffer, int length, CPixelRect& boundRect, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
-	void renderMultipleUtf16Lines( CUnicodePart str, int lineWidth, int lineHeight, CPixelRect& boundRect, int& totalVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
-	void renderMultipleUtf8Lines( CStringPart str, int lineWidth, int lineHeight, CPixelRect& boundRect, int& totalVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
+	void renderMultipleUtf16Lines( CUnicodePart str, int lineWidth, int lineHeight, CPixelRect& boundRect, int& totalVertexCount, CVector2<int>& lineOffset, 
+		CArrayBuffer<CVector4<float>> stringData ) const;
+	void renderMultipleUtf8Lines( CStringPart str, int lineWidth, int lineHeight, CPixelRect& boundRect, int& totalVertexCount, CVector2<int>& lineOffset,
+		CArrayBuffer<CVector4<float>> stringData ) const;
 	void copyWordToBuffer( CPixelRect wordRect, CArray<CVector4<float>>& wordBuffer, int lineWidth, int lineHeight, int prevLineEndPosX, CVector2<int>& linePos,
 		CPixelRect& boundRect, int& totalVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
 

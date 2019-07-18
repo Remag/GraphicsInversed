@@ -30,9 +30,9 @@ void CScalableFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth
 	getFontRenderer( fontPxSize ).RenderMultipleLines( str, lineWidth, lines );
 }
 
-CTextMesh CScalableFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight, int fontPxSize ) const
+CParagraphRenderResult CScalableFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight, int startHOffset, int fontPxSize ) const
 {
-	return getFontRenderer( fontPxSize ).RenderMultipleLines( str, lineWidth, lineHeight );
+	return getFontRenderer( fontPxSize ).RenderMultipleLines( str, lineWidth, lineHeight, startHOffset );
 }
 
 void CScalableFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, int fontPxSize, CArray<CTextMesh>& lines ) const
@@ -40,9 +40,9 @@ void CScalableFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth,
 	getFontRenderer( fontPxSize ).RenderMultipleLines( str, lineWidth, lines );
 }
 
-CTextMesh CScalableFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight, int fontPxSize ) const
+CParagraphRenderResult CScalableFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight, int startHOffset, int fontPxSize ) const
 {
-	return getFontRenderer( fontPxSize ).RenderMultipleLines( str, lineWidth, lineHeight );
+	return getFontRenderer( fontPxSize ).RenderMultipleLines( str, lineWidth, lineHeight, startHOffset );
 }
 
 const CFontRenderer& CScalableFontRenderer::getFontRenderer( int fontPxSize ) const

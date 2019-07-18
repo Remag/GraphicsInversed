@@ -18,9 +18,9 @@ public:
 	CTextMesh RenderLine( CStringPart str, int fontPxSize ) const;
 	// Separate the given string into lines with a maximum width and render each line separately.
 	void RenderMultipleLines( CUnicodePart str, int lineWidth, int fontPxSize, CArray<CTextMesh>& lines ) const;
-	CTextMesh RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight, int fontPxSize ) const;
+	CParagraphRenderResult RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight, int startHOffset, int fontPxSize ) const;
 	void RenderMultipleLines( CStringPart str, int lineWidth, int fontPxSize, CArray<CTextMesh>& lines ) const;
-	CTextMesh RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight, int fontPxSize ) const;
+	CParagraphRenderResult RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight, int startHOffset, int fontPxSize ) const;
 
 private:
 	CFontEdit font;

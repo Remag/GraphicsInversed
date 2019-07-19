@@ -87,8 +87,8 @@ void CPngFile::Read( CArray<CColor>& result, CVector2<int>& resultSize ) const
 
 	CPngLibFileReader reader( fileName, fileData, pngImage );
 	pngImage.format = PNG_FORMAT_RGBA;
+	result.IncreaseSize( pngImage.height * pngImage.width );
 	const auto rowStride = PNG_IMAGE_ROW_STRIDE( pngImage );
-	result.IncreaseSize( pngImage.height * rowStride );
 	reader.FinalizeReading( result, rowStride );
 	resultSize.X() = pngImage.width;
 	resultSize.Y() = pngImage.height;

@@ -176,7 +176,7 @@ void CTypelessTextureOperations<TBT_Texture2>::GrowBuffer( CTextureData textureD
 {
 	assert( CTextureBinder::GetCurrentBindingId() == textureData.GetTextureId() );
 
-	if( prevSize.IsNull() ) {
+	if( prevSize.X() == 0 || prevSize.Y() == 0 ) {
 		SetBuffer( textureData, newSize, level, glFormat );
 		return;
 	}

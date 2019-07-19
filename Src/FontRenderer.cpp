@@ -186,13 +186,13 @@ int CFontRenderer::parseUtf16Character( CUnicodePart str, int& strPos ) const
 {
 	assert( strPos < str.Length() );
 	int result;
-	if( !Unicode::TryConvertWideToInt( str[strPos], result ) ) {
+	if( !Unicode::TryConvertUtf16ToUtf32( str[strPos], result ) ) {
 		const auto nextPos = strPos + 1;
 		if( nextPos == str.Length() ) {
 			Log::Warning( invalidStrError.SubstParam( str ), this );
 			return str[strPos];
 		}
-		if( !Unicode::TryConvertWideToInt( str[strPos], str[nextPos], result ) ) {
+		if( !Unicode::TryConvertUtf16ToUtf32( str[strPos], str[nextPos], result ) ) {
 			Log::Warning( invalidStrError.SubstParam( str ), this );
 			result = str[nextPos];
 			strPos++;
@@ -209,7 +209,7 @@ int CFontRenderer::parseUtf8Character( CStringPart str, int& strPos ) const
 {
 	assert( strPos < str.Length() );
 	int result;
-	const auto parsedCount = Unicode::TryConvertUtf8ToInt( str.begin() + strPos, str.Length() - strPos, result );
+	const auto parsedCount = Unicode::TryConvertUtf8ToUtf32( str.begin() + strPos, str.Length() - strPos, result );
 	if( parsedCount == 0 ) {
 		Log::Warning( invalidStrError.SubstParam( UnicodeStr( str ) ), this );
 		strPos++;
@@ -369,7 +369,9 @@ CPixelRect CFontRenderer::addQuadToMesh( CVector2<int> fontPos, const CRenderGly
 	stringData[meshOffset + 3] = topLeft;
 	stringData[meshOffset + 4] = bottomRight;
 	stringData[meshOffset + 5] = topRight;
-	return CPixelRect{ bottomLeft.X(), topRight.Y(), topRight.X(), bottomLeft.Y() };
+	// Consider empty glyphs to be 1px tall to not generate empty bound rectangles.
+	const auto glyphBoundsHeight = max( 1, glyphData.Size.Y() );
+	return CPixelRect{ CPixelVector( bottomLeft.XY() ), glyphData.Advance.X(), glyphBoundsHeight };
 }
 
 void CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, CArray<CTextMesh>& lines ) const
@@ -386,16 +388,18 @@ void CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, CArray
 	int lineStartPos = 0;
 	// Render the string word by word.
 	while( strPos < length ) {
-		if( checkLineSeparator( str, strPos ) ) {
+		const auto hAdvance = calculateWhitespaceHAdvance( str, strPos );
+		if( hAdvance == -1 ) {
 			addLineMesh( lineStartPos, strPos, lineRect, tempLineBuffer, lines );
 			tempLineBuffer.Empty();
 			lineRect = CPixelRect();
 			lineStartPos = strPos;
 			continue;
 		}
+
 		const int prevLineEnd = tempLineBuffer.Size();
 		const int wordStartPos = strPos;
-		CVector2<int> wordOffset( Round( lineRect.Right() ), 0 );
+		CVector2<int> wordOffset( Round( lineRect.Right() ) + hAdvance, 0 );
 		const auto wordRect = renderUtf16Word( str, wordOffset, lineWidth, strPos, tempLineBuffer );
 		const auto newWidth = wordRect.Right();
 		if( newWidth <= lineWidth ) {
@@ -428,7 +432,8 @@ void CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, CArray<
 	int lineStartPos = 0;
 	// Render the string word by word.
 	while( strPos < length ) {
-		if( checkLineSeparator( str, strPos ) ) {
+		const auto hAdvance = calculateWhitespaceHAdvance( str, strPos );
+		if( hAdvance == -1 ) {
 			addLineMesh( lineStartPos, strPos, lineRect, tempLineBuffer, lines );
 			tempLineBuffer.Empty();
 			lineRect = CPixelRect();
@@ -437,7 +442,7 @@ void CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, CArray<
 		}
 		const int prevLineEnd = tempLineBuffer.Size();
 		const int wordStartPos = strPos;
-		CVector2<int> wordOffset( Round( lineRect.Right() ), 0 );
+		CVector2<int> wordOffset( Round( lineRect.Right() ) + hAdvance, 0 );
 		const auto wordRect = renderUtf8Word( str, wordOffset, lineWidth, strPos, tempLineBuffer );
 		const auto newWidth = wordRect.Right();
 		if( newWidth <= lineWidth ) {
@@ -456,36 +461,44 @@ void CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, CArray<
 	addLineMesh( lineStartPos, length, lineRect, tempLineBuffer, lines );
 }
 
-bool CFontRenderer::checkLineSeparator( CUnicodePart str, int& strPos )
+int CFontRenderer::calculateWhitespaceHAdvance( CUnicodePart str, int& strPos ) const
 {
+	auto result = 0;
 	const auto length = str.Length();
-	for( int i = strPos; i < length; i++ ) {
+	for( int i = strPos; i < length; ) {
 		const auto ch = str[i];
 		if( ch == L'\n' ) {
 			strPos = i + 1;
-			return true;
+			return -1;
 		} else if( !str.IsCharWhiteSpace( ch ) ) {
-			break;
+			strPos = i;
+			return result;
 		}
+		const int glyphCode = parseUtf16Character( str, i );
+		const auto& charData = getOrCreateRenderData( glyphCode );
+		result += charData.GlyphData.Advance.X();
 	}
-
-	return false;
+	return result;
 }
 
-bool CFontRenderer::checkLineSeparator( CStringPart str, int& strPos )
+int CFontRenderer::calculateWhitespaceHAdvance( CStringPart str, int& strPos ) const
 {
+	auto result = 0;
 	const auto length = str.Length();
-	for( int i = strPos; i < length; i++ ) {
+	for( int i = strPos; i < length; ) {
 		const auto ch = str[i];
 		if( ch == '\n' ) {
 			strPos = i + 1;
-			return true;
+			return -1;
 		} else if( !str.IsCharWhiteSpace( ch ) ) {
-			break;
+			strPos = i;
+			return result;
 		}
+		const int glyphCode = parseUtf8Character( str, i );
+		const auto& charData = getOrCreateRenderData( glyphCode );
+		result += charData.GlyphData.Advance.X();
 	}
-
-	return false;
+	return result;
 }
 
 void CFontRenderer::addLineMesh( int lineStartPos, int strPos, CPixelRect lineRect, CArrayView<CVector4<float>> lineBuffer, CArray<CTextMesh>& lines ) const
@@ -503,19 +516,6 @@ CPixelRect CFontRenderer::renderUtf16Word( CUnicodePart str, CVector2<int>& symb
 {
 	CPixelRect wordRect;
 	const int length = str.Length();
-	// Render whitespace at the start.
-	while( strPos < length ) {
-		if( !str.IsCharWhiteSpace( str[strPos] ) ) {
-			break;
-		}
-		const int glyphCode = parseUtf16Character( str, strPos );
-		if( !tryAddWordCharacter( glyphCode, maxWidth, symbolPos, wordRect, wordBuffer ) ) {
-			strPos++;
-			return wordRect;
-		}
-	}
-
-	// Render the actual word.
 	while( strPos < length ) {
 		if( str.IsCharWhiteSpace( str[strPos] ) ) {
 			break;
@@ -526,7 +526,6 @@ CPixelRect CFontRenderer::renderUtf16Word( CUnicodePart str, CVector2<int>& symb
 			break;
 		}
 	}
-
 	return wordRect;
 }
 
@@ -534,19 +533,6 @@ CPixelRect CFontRenderer::renderUtf8Word( CStringPart str, CVector2<int>& symbol
 {
 	CPixelRect wordRect;
 	const int length = str.Length();
-	// Render whitespace at the start.
-	while( strPos < length ) {
-		if( !str.IsCharWhiteSpace( str[strPos] ) ) {
-			break;
-		}
-		const int glyphCode = parseUtf8Character( str, strPos );
-		if( !tryAddWordCharacter( glyphCode, maxWidth, symbolPos, wordRect, wordBuffer ) ) {
-			strPos++;
-			return wordRect;
-		}
-	}
-
-	// Render the actual word.
 	while( strPos < length ) {
 		if( str.IsCharWhiteSpace( str[strPos] ) ) {
 			break;
@@ -557,7 +543,6 @@ CPixelRect CFontRenderer::renderUtf8Word( CStringPart str, CVector2<int>& symbol
 			break;
 		}
 	}
-
 	return wordRect;
 }
 
@@ -605,7 +590,7 @@ CPixelRect CFontRenderer::startNewLine( CPixelVector lineOffset, CPixelRect word
 
 CParagraphRenderResult CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight, int startHOffset ) const
 {
-	if( str.IsEmpty() == 0 ) {
+	if( str.IsEmpty() ) {
 		return CParagraphRenderResult( CTextMesh( *this ), CVector2<int>( startHOffset, 0 ) );
 	}
 	// Create mesh data from string.
@@ -626,7 +611,7 @@ CParagraphRenderResult CFontRenderer::RenderMultipleLines( CUnicodePart str, int
 
 CParagraphRenderResult CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight, int startHOffset ) const
 {
-	if( str.IsEmpty() == 0 ) {
+	if( str.IsEmpty() ) {
 		return CParagraphRenderResult( CTextMesh( *this ), CVector2<int>( startHOffset, 0 ) );
 	}
 	// Create mesh data from string.
@@ -653,12 +638,13 @@ void CFontRenderer::renderMultipleUtf16Lines( CUnicodePart str, int lineWidth, i
 	int strPos = 0;
 	// Render the string word by word.
 	while( strPos < length ) {
-		if( checkLineSeparator( str, strPos ) ) {
+		const auto hAdvance = calculateWhitespaceHAdvance( str, strPos );
+		if( hAdvance == -1 ) {
 			lineOffset.X() = 0;
 			lineOffset.Y() -= lineHeight;
 			continue;
 		}
-
+		lineOffset.X() += hAdvance;
 		const auto prevLineEndPosX = lineOffset.X();
 		const auto wordRect = renderUtf16Word( str, lineOffset, lineWidth, strPos, tempWordBuffer );
 		copyWordToBuffer( wordRect, tempWordBuffer, lineWidth, lineHeight, prevLineEndPosX, lineOffset, boundRect, totalVertexCount, stringData );
@@ -673,13 +659,14 @@ void CFontRenderer::renderMultipleUtf8Lines( CStringPart str, int lineWidth, int
 	int strPos = 0;
 	// Render the string word by word.
 	while( strPos < length ) {
-		if( checkLineSeparator( str, strPos ) ) {
+		const auto hAdvance = calculateWhitespaceHAdvance( str, strPos );
+		if( hAdvance == -1 ) {
 			lineOffset.X() = 0;
 			lineOffset.Y() -= lineHeight;
 			continue;
 		}
-
-		const auto prevLineEndPosX = lineOffset.X();
+		lineOffset.X() += hAdvance;
+		const auto prevLineEndPosX = lineOffset.X(); 
 		const auto wordRect = renderUtf8Word( str, lineOffset, lineWidth, strPos, tempWordBuffer );
 		copyWordToBuffer( wordRect, tempWordBuffer, lineWidth, lineHeight, prevLineEndPosX, lineOffset, boundRect, totalVertexCount, stringData );
 	}
@@ -688,15 +675,15 @@ void CFontRenderer::renderMultipleUtf8Lines( CStringPart str, int lineWidth, int
 void CFontRenderer::copyWordToBuffer( CPixelRect wordRect, CArray<CVector4<float>>& tempWordBuffer, int lineWidth, int lineHeight, int prevLineEndPosX, CVector2<int>& linePos,
 	CPixelRect& boundRect, int& totalVertexCount, CArrayBuffer<CVector4<float>> stringData ) const
 {
-	const auto wordWidth = wordRect.Right();
-	if( wordWidth <= lineWidth ) {
+	const auto wordRight = Round( wordRect.Right() );
+	if( wordRight <= lineWidth ) {
 		// New word fits, continue rendering the line.
 		boundRect = GetRectUnion( boundRect, wordRect );
 	} else {
 		// New word doesn't fit, move it to a new line.
 		const auto newWordRect = startNewLine( CPixelVector( -prevLineEndPosX, -lineHeight ), wordRect, tempWordBuffer );
 		boundRect = GetRectUnion( boundRect, newWordRect );
-		linePos.X() = 0;
+		linePos.X() = Round( newWordRect.Right() );
 		linePos.Y() -= lineHeight;
 	}
 

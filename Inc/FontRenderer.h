@@ -68,7 +68,7 @@ struct CParagraphRenderResult {
 	CTextMesh Mesh;
 	CVector2<int> EndOffset;
 
-	explicit CParagraphRenderResult( CTextMesh mesh, CVector2<int> endOffset ) : Mesh( move( Mesh ) ), EndOffset( endOffset ) {}
+	explicit CParagraphRenderResult( CTextMesh mesh, CVector2<int> endOffset ) : Mesh( move( mesh ) ), EndOffset( endOffset ) {}
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -177,8 +177,8 @@ private:
 	void increaseTextureSize( CVector2<int> newSize ) const;
 	void fillTextureBuffer( CTextureOwner<TBT_Texture2, TGF_Red>& target, int textureOffset, const BYTE* bitmap, CVector2<int> bitmapSize, int maxHeight, CArray<BYTE>& zeroBuffer ) const;
 
-	static bool checkLineSeparator( CUnicodePart str, int& strPos );
-	static bool checkLineSeparator( CStringPart str, int& strPos );
+	int calculateWhitespaceHAdvance( CUnicodePart str, int& strPos ) const;
+	int calculateWhitespaceHAdvance( CStringPart str, int& strPos ) const;
 	void addLineMesh( int lineStartPos, int strPos, CPixelRect lineRect, CArrayView<CVector4<float>> lineBuffer, CArray<CTextMesh>& lines ) const;
 	CPixelRect renderUtf8Word( CStringPart str, CVector2<int>& symbolPos, int maxWidth, int& strPos, CArray<CVector4<float>>& wordBuffer ) const;
 	CPixelRect renderUtf16Word( CUnicodePart str, CVector2<int>& symbolPos, int maxWidth, int& strPos, CArray<CVector4<float>>& wordBuffer ) const;

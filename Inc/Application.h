@@ -9,6 +9,7 @@ namespace Gin {
 class CEngine;
 class CStateManager;
 class CInputSettingsController;
+class IStartupInfo;
 struct CGlWindowSettings;
 enum TWindowRendererType;
 //////////////////////////////////////////////////////////////////////////
@@ -65,12 +66,15 @@ public:
 	virtual void OnRestore() {}
 
 protected:
+	// Create an application startup info from the initial command line.
+	// Null can be returned if no startup info is necessary.
+	virtual CPtrOwner<IStartupInfo> createStrartupInfo( CUnicodeView commandLine );
 	// Additional actions on initialization. These actions must include:
 	// - Setting the Input profile for the handler.
 	// - Creating and setting the engine for updating the states.
 	// - Calling CMainFrame::Initialize() 
 	// - Returning an initial state.
-	virtual CPtrOwner<IState> onInitialize( CUnicodeView commandLine ) = 0;
+	virtual CPtrOwner<IState> onInitialize( const IStartupInfo* startupInfo ) = 0;
 	// Initialize parameters associated with the OpenGL context.
 	// This is called during main program initialization as well as any time the GL context is recreated.
 	virtual void onInitializeGlContext() {};
@@ -94,7 +98,7 @@ protected:
 	// Additional actions on application destruction.
 	virtual void onApplicationDestruction() {}
 	// Return the file path to an file with user input key binds.
-	virtual CUnicodeString getInputSettingsFileName();
+	virtual CUnicodeString getInputSettingsFileName( const IStartupInfo* startupInfo );
 
 	// Manipulation with the application engine.
 	void SetEngine( CPtrOwner<CEngine> newEngine );

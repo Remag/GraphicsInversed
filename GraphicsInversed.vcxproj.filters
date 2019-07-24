@@ -351,6 +351,9 @@
     <ClInclude Include="Inc\AdditionalWindowContainer.h">
       <Filter>Header Files\Application</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\StartupInfo.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlContextManager.cpp">

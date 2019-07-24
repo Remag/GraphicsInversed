@@ -236,6 +236,7 @@
     <ClInclude Include="Inc\ShaderInitializerInc.h" />
     <ClInclude Include="Inc\ShaderProgram.h" />
     <ClInclude Include="Inc\Sprite.h" />
+    <ClInclude Include="Inc\StartupInfo.h" />
     <ClInclude Include="Inc\State.h" />
     <ClInclude Include="Inc\StateManager.h" />
     <ClInclude Include="Inc\TextureBinder.h" />

@@ -56,6 +56,7 @@
 #include <ScreenBuffer.h>
 #include <Shader.h>
 #include <Sprite.h>
+#include <StartupInfo.h>
 #include <State.h>
 #include <StateManager.h>
 #include <Screenshots.h>

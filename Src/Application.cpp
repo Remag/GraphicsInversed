@@ -10,6 +10,7 @@
 #include <MainFrame.h>
 #include <InputSettingsController.h>
 #include <AdditionalWindowContainer.h>
+#include <StartupInfo.h>
 
 namespace Gin {
 
@@ -26,7 +27,7 @@ CApplication::~CApplication()
 	assert( postOsQueueActions.IsEmpty() );
 }
 
-CUnicodeString CApplication::getInputSettingsFileName()
+CUnicodeString CApplication::getInputSettingsFileName( const IStartupInfo* )
 {
 	return UnicodeStr( L"InputSettings.cfg" );
 }
@@ -67,6 +68,11 @@ bool CApplication::HandleWindowDestruction( const CGlWindow& targetWindow )
 	return false;
 }
 
+CPtrOwner<IStartupInfo> CApplication::createStrartupInfo( CUnicodeView )
+{
+	return nullptr;
+}
+
 void CApplication::AddAdditionalWindow( CPtrOwner<CGlWindow> window, TWindowRendererType rendererType )
 {
 	assert( window != nullptr );
@@ -88,10 +94,16 @@ void CApplication::CommitInputKeyChanges( CStringPart controlSchemeName )
 
 bool CApplication::Initialize( CUnicodeView commandLine )
 {
+	const auto startupInfo = createStrartupInfo( commandLine );
 	additionalWindows = CreateOwner<CAdditionalWindowContainer>();
 	stateManager = CreateOwner<CStateManager>();
-	inputSettingsController = CreateOwner<CInputSettingsController>( getInputSettingsFileName() );
-	auto firstState = onInitialize( commandLine );
+
+	const auto settingsFileName = getInputSettingsFileName( startupInfo );
+	if( !settingsFileName.IsEmpty() ) {
+		inputSettingsController = CreateOwner<CInputSettingsController>( settingsFileName );
+
+	}
+	auto firstState = onInitialize( startupInfo );
 	if( firstState == nullptr ) {
 		return false;
 	}

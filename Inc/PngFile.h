@@ -35,12 +35,17 @@ public:
 	// Write from a custom color data. rowStride indicates the size in bytes between image rows. Negative row stride indicates a bottom-up image.
 	void Write( CArrayView<BYTE> file, TTexelFormat format, int rowStride, CVector2<int> imageSize );
 
+	// Read directly from the provided array.
+	static void ReadRawData( CArrayView<BYTE> pngData, CArray<CColor>& result, CVector2<int>& resultSize );
+
 private:
 	CUnicodeString fileName;
 
 	unsigned findLibPngFormat( TTexelFormat format ) const;
 	void doWrite( const void* fileData, unsigned pngLibFormat, int rowStride, CVector2<int> imageSize );
 	void writeCompressedData( CArray<BYTE>& compressedData, int dataSize ) const;
+
+	static void doReadRawData( CUnicodePart fileName, CArrayView<BYTE> pngData, CArray<CColor>& result, CVector2<int>& resultSize );
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -14,6 +14,8 @@ public:
 	explicit CTextureData( CSamplerObject _sampler ) : sampler( _sampler ) {}
 	CTextureData( int id, CSamplerObject _sampler ) : textureId( id ), sampler( _sampler ) {}
 
+	bool IsLoaded() const
+		{ return textureId != 0; }
 	unsigned GetTextureId() const
 		{ return textureId; }
 	CSamplerObject GetSampler() const

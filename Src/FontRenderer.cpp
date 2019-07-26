@@ -478,6 +478,7 @@ int CFontRenderer::calculateWhitespaceHAdvance( CUnicodePart str, int& strPos ) 
 		const auto& charData = getOrCreateRenderData( glyphCode );
 		result += charData.GlyphData.Advance.X();
 	}
+	strPos = length;
 	return result;
 }
 
@@ -498,6 +499,7 @@ int CFontRenderer::calculateWhitespaceHAdvance( CStringPart str, int& strPos ) c
 		const auto& charData = getOrCreateRenderData( glyphCode );
 		result += charData.GlyphData.Advance.X();
 	}
+	strPos = length;
 	return result;
 }
 

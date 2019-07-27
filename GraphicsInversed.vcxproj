@@ -184,6 +184,7 @@
     <ClInclude Include="Inc\DdsImage.h" />
     <ClInclude Include="Inc\DdsUtils.h" />
     <ClInclude Include="Inc\DefaultSamplerContainer.h" />
+    <ClInclude Include="Inc\GifFile.h" />
     <ClInclude Include="Inc\NullWindowDispatcher.h" />
     <ClInclude Include="Inc\DrawEnums.h" />
     <ClInclude Include="Inc\DrawFunctions.h" />
@@ -259,6 +260,7 @@
     <ClInclude Include="Inc\WavUtils.h" />
     <ClInclude Include="Inc\WindowClass.h" />
     <ClInclude Include="Inc\WinGdiRenderMechanism.h" />
+    <ClInclude Include="Src\gifdec.h" />
     <ClInclude Include="Src\Screenshots.h" />
   </ItemGroup>
   <ItemGroup>
@@ -290,6 +292,8 @@
     <ClCompile Include="Src\FontRenderer.cpp" />
     <ClCompile Include="Src\ForwardRenderer.cpp" />
     <ClCompile Include="Src\Framebuffer.cpp" />
+    <ClCompile Include="Src\gifdec.cpp" />
+    <ClCompile Include="Src\GifFile.cpp" />
     <ClCompile Include="Src\GinError.cpp" />
     <ClCompile Include="Src\GinGlobalData.cpp" />
     <ClCompile Include="Src\GinGlobals.cpp" />

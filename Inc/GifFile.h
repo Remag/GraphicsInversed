@@ -5,6 +5,10 @@
 
 namespace Gin {
 
+namespace GinInternal {
+	struct CGiffDecodeData;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 // Exception that occurs while trying to extract data from a GIF file.
@@ -28,15 +32,18 @@ public:
 
 	// Read the contents of the GIF file and decompress them as a 32bit RGBA image.
 	// Image pixel dimensions are returned in resultSize.
-	void Read( CArray<CColor>& result, CVector2<int>& resultSize ) const;
+	void Read( CArray<CColor>& result, CVector2<int>& resultSize, CArray<int>& frameEndTimes ) const;
 
 	// Read directly from the provided array.
-	static void ReadRawData( CArrayView<BYTE> pngData, CArray<CColor>& result, CVector2<int>& resultSize );
+	static void ReadRawData( CArrayView<BYTE> gifData, CArray<CColor>& result, CVector2<int>& resultSize, CArray<int>& frameEndTimes );
 
 private:
 	CUnicodeString fileName;
 
-	static void doReadRawData( CUnicodePart fileName, CArrayView<BYTE> pngData, CArray<CColor>& result, CVector2<int>& resultSize );
+	static void doReadRawData( CUnicodePart fileName, CArrayView<BYTE> gifData, CArray<CColor>& result, CVector2<int>& resultSize, CArray<int>& frameEndTimes );
+	static void readGifFrames( GinInternal::CGiffDecodeData& decodeData, CArray<CColor>& result, CArray<int>& frameEndTimes );
+	static CColor findTransparentColor( CArrayView<BYTE> frameColors, int framePos, CArrayView<BYTE> transparentColors, int colorPos );
+	static CColor createColor( CArrayView<BYTE> frameColors, int framePos );
 };
 
 //////////////////////////////////////////////////////////////////////////

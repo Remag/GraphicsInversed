@@ -97,7 +97,7 @@ CGiffDecodeData gd_open_gif( CGiffBuffer fd )
 		::memset( gif.frame, gif.bgindex, gif.width * gif.height);
 	}
 	gif.anim_start = fd.Pos;
-	gif.fd = move( fd );
+	gif.fd = fd;
 
 	return gif;
 }
@@ -415,9 +415,7 @@ static void render_frame_rect( CGiffDecodeData* gif, uint8_t* buffer )
 		for( k = 0; k < gif->fw; k++ ) {
 			index = gif->frame[( gif->fy + j ) * gif->width + gif->fx + k];
 			color = &gif->palette->colors[index*3];
-			if( !gif->gce.transparency || index != gif->gce.tindex ) {
-				::memcpy( &buffer[( i + k ) * 3], color, 3 );
-			}
+			::memcpy( &buffer[( i + k ) * 3], color, 3 );
 		}
 		i += gif->width;
 	}
@@ -441,7 +439,6 @@ static void dispose( CGiffDecodeData* gif )
 		case 3: /* Restore to previous, i.e., don't update canvas.*/
 			break;
 		default:
-			/* Add frame non-transparent pixels to canvas. */
 			render_frame_rect( gif, gif->canvas );
 	}
 }

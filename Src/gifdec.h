@@ -23,7 +23,7 @@ struct CGifPalette {
 };
 
 struct CGiffGce {
-	// Frame duration in hudredths of a second.
+	// Frame duration in hundredths of a second.
 	uint16_t delay;
 	uint8_t tindex;
 	uint8_t disposal;
@@ -32,7 +32,7 @@ struct CGiffGce {
 };
 
 struct CGiffBuffer {
-	CArray<BYTE> GifData;
+	CArrayView<BYTE> GifData;
 	int Pos;
 };
 

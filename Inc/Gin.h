@@ -26,6 +26,7 @@
 #include <FontRenderer.h>
 #include <ForwardRenderer.h>
 #include <Framebuffer.h>
+#include <GifFile.h>
 #include <GinComponents.h>
 #include <GinGlobals.h>
 #include <GinTypes.h>

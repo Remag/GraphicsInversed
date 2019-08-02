@@ -13,7 +13,7 @@ CGifFile::CGifFile( CUnicodePart _fileName ) :
 {
 }
 
-void CGifFile::Read( CArray<CColor>& result, CVector2<int>& resultSize, CArray<int>& frameEndTimes ) const
+void CGifFile::Read( CArray<CImageFrameData>& result, CVector2<int>& resultSize ) const
 {
 	assert( result.IsEmpty() );
 
@@ -23,20 +23,20 @@ void CGifFile::Read( CArray<CColor>& result, CVector2<int>& resultSize, CArray<i
 	fileData.IncreaseSize( fileLength );
 	file.Read( fileData.Ptr(), fileLength );
 
-	doReadRawData( fileName, fileData, result, resultSize, frameEndTimes );
+	doReadRawData( fileName, fileData, result, resultSize );
 }
 
-void CGifFile::ReadRawData( CArrayView<BYTE> gifData, CArray<CColor>& result, CVector2<int>& resultSize, CArray<int>& frameEndTimes )
+void CGifFile::ReadRawData( CArrayView<BYTE> gifData, CArray<CImageFrameData>& result, CVector2<int>& resultSize )
 {
-	doReadRawData( CUnicodePart(), gifData, result, resultSize, frameEndTimes ); 
+	doReadRawData( CUnicodePart(), gifData, result, resultSize ); 
 }
 
-void CGifFile::doReadRawData( CUnicodePart fileName, CArrayView<BYTE> gifData, CArray<CColor>& result, CVector2<int>& resultSize, CArray<int>& frameEndTimes )
+void CGifFile::doReadRawData( CUnicodePart fileName, CArrayView<BYTE> gifData, CArray<CImageFrameData>& result, CVector2<int>& resultSize )
 {
 	try {
 		const GinInternal::CGiffBuffer buffer{ gifData, 0 };
 		auto decodeData = GinInternal::gd_open_gif( buffer );
-		readGifFrames( decodeData, result, frameEndTimes );
+		readGifFrames( decodeData, result );
 		resultSize.X() = decodeData.width;
 		resultSize.Y() = decodeData.height;
 	} catch( GinInternal::CGifInternalException& e ) {
@@ -44,55 +44,37 @@ void CGifFile::doReadRawData( CUnicodePart fileName, CArrayView<BYTE> gifData, C
 	}
 }
 
-void CGifFile::readGifFrames( GinInternal::CGiffDecodeData& decodeData, CArray<CColor>& result, CArray<int>& frameEndTimes )
+void CGifFile::readGifFrames( GinInternal::CGiffDecodeData& decodeData, CArray<CImageFrameData>& result )
 {
 	const auto width = decodeData.width;
 	const auto height = decodeData.height;
 	const auto frameArea = width * height;
-	CPersistentStorage<CStaticArray<BYTE>, 64> perFrameColorData;
-	CArray<BYTE> frameTransparentColors;
+	CStaticArray<BYTE> frameColorData;
+	CDynamicBitSet<> frameTransparencyMask;
+	frameColorData.ResetSize( frameArea * 3 );
+	frameTransparencyMask.SetSize( frameArea );
 	int currentEndTime = 0;
 	while( gd_get_frame( &decodeData ) == 1 ) {
-		auto& newFrameData = perFrameColorData.Add();
-		newFrameData.ResetSize( frameArea * 3 );
-		gd_render_frame( &decodeData, newFrameData.Ptr() );
-		currentEndTime += decodeData.gce.delay * 10;
-		frameEndTimes.Add( currentEndTime );
-		if( decodeData.gce.transparency == 1 ) {
-			const auto colorPtr = &decodeData.palette->colors[decodeData.gce.tindex * 3];
-			frameTransparentColors.Add( *colorPtr );
-			frameTransparentColors.Add( *( colorPtr + 1 ) );
-			frameTransparentColors.Add( *( colorPtr + 2 ) );
-		}
-	}
-
-	const auto frameCount = perFrameColorData.Size();
-	const auto rowStride = width * frameCount;
-	result.IncreaseSize( frameArea * frameCount );
-	for( int i = 0; i < frameCount; i++ ) {
-		for( int y = 0; y < height; y++ ) {
-			for( int x = 0; x < width; x++ ) {
-				const auto destPos = rowStride * y + i * width + x;
-				const auto srcPos = 3 * ( width * ( height - y - 1 ) + x );
-				const auto srcColor = findTransparentColor( perFrameColorData[i], srcPos, frameTransparentColors, i * 3 );
-				result[destPos] = srcColor;
-			}
-		}
+		auto& newFrameData = result.Add();
+		gd_render_frame( &decodeData, frameColorData.Ptr(), frameTransparencyMask );
+		currentEndTime += getFrameDelay( decodeData );
+		newFrameData.Colors.IncreaseSize( frameArea );
+		newFrameData.FrameEndTimeMs = currentEndTime;
+		copyColorData( frameColorData, width, height, frameTransparencyMask, newFrameData.Colors );
 	}
 }
 
-CColor CGifFile::findTransparentColor( CArrayView<BYTE> frameColors, int framePos, CArrayView<BYTE> transparentColors, int colorPos )
+void CGifFile::copyColorData( CArrayView<BYTE> frameData, int width, int height, const CDynamicBitSet<>& transparencyMask, CArray<CColor>& result )
 {
-	if( transparentColors.IsEmpty() ) {
-		return createColor( frameColors, framePos );
+	for( int y = 0; y < height; y++ ) {
+		for( int x = 0; x < width; x++ ) {
+			const auto srcPos = y * width + x;
+			const auto srcBytePos = 3 * srcPos;
+			const auto destPos = ( height - 1 - y ) * width + x;
+			const auto srcColor = transparencyMask.Has( srcPos ) ? CColor( 0, 0, 0, 0 ) : createColor( frameData, srcBytePos );
+			result[destPos] = srcColor;
+		}
 	}
-	if( frameColors[framePos] == transparentColors[colorPos]
-		&& frameColors[framePos + 1] == transparentColors[colorPos + 1]
-		&& frameColors[framePos + 2] == transparentColors[colorPos + 2] ) 
-	{
-		return CColor( 0, 0, 0, 0 );
-	}
-	return createColor( frameColors, framePos );
 }
 
 CColor CGifFile::createColor( CArrayView<BYTE> frameColors, int framePos )
@@ -100,6 +82,13 @@ CColor CGifFile::createColor( CArrayView<BYTE> frameColors, int framePos )
 	// Fill the color structure as if it was stored in an RBG format.
 	// This matches the output of the png file wrapper.
 	return CColor( frameColors[framePos + 2], frameColors[framePos + 1], frameColors[framePos] );
+}
+
+int CGifFile::getFrameDelay( GinInternal::CGiffDecodeData& decodeData )
+{
+	const auto decodeDelay = decodeData.gce.delay;
+	// Delays of 0 and 1 are commonly interpreted as a delay of 10.
+	return decodeDelay <= 1 ? 100 : decodeDelay * 10;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -18,7 +18,7 @@ public:
 
 	// Delete pressed key information.
 	void ClearPressedKeys()
-		{ pressedKeys.Empty(); }
+		{ pressedKeys.FillWithZeroes(); }
 
 	// Check if a given key is being held right now.
 	bool IsKeyPressed( int keyCode ) const;

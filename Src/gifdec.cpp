@@ -99,6 +99,9 @@ CGiffDecodeData gd_open_gif( CGiffBuffer fd )
 	gif.anim_start = fd.Pos;
 	gif.fd = fd;
 
+	gif.TransparencyMask.SetSize( width * height );
+	gif.TransparencyMask.FillWithOnes();
+
 	return gif;
 }
 
@@ -406,16 +409,22 @@ static int read_image( CGiffDecodeData* gif )
 	return read_image_data( gif, interlace );
 }
 
-static void render_frame_rect( CGiffDecodeData* gif, uint8_t* buffer )
+static void render_frame_rect( CGiffDecodeData* gif, uint8_t* buffer, CDynamicBitSet<>& transparencyMask )
 {
 	int i, j, k;
 	uint8_t index, *color;
 	i = gif->fy * gif->width + gif->fx;
 	for( j = 0; j < gif->fh; j++ ) {
 		for( k = 0; k < gif->fw; k++ ) {
-			index = gif->frame[( gif->fy + j ) * gif->width + gif->fx + k];
-			color = &gif->palette->colors[index*3];
-			::memcpy( &buffer[( i + k ) * 3], color, 3 );
+			const auto y = gif->fy + j;
+			const auto x = gif->fx + k;
+			const auto framePos = y * gif->width + x;
+			index = gif->frame[framePos];
+			if( !gif->gce.transparency || index != gif->gce.tindex ) {
+				color = &gif->palette->colors[index*3];
+				::memcpy( &buffer[( i + k ) * 3], color, 3 );
+				transparencyMask -= framePos;
+			}
 		}
 		i += gif->width;
 	}
@@ -423,23 +432,17 @@ static void render_frame_rect( CGiffDecodeData* gif, uint8_t* buffer )
 
 static void dispose( CGiffDecodeData* gif )
 {
-	int i, j, k;
-	uint8_t* bgcolor;
 	switch( gif->gce.disposal ) {
-		case 2: /* Restore to background color. */
-			bgcolor = &gif->palette->colors[gif->bgindex * 3];
-			i = gif->fy * gif->width + gif->fx;
-			for( j = 0; j < gif->fh; j++ ) {
-				for( k = 0; k < gif->fw; k++ ) {
-					::memcpy( &gif->canvas[(i + k) * 3], bgcolor, 3 );
-				}
-				i += gif->width;
-			}
+		case 1:	// Do not dispose. Render the frame on the canvas.
+			render_frame_rect( gif, gif->canvas, gif->TransparencyMask );
 			break;
-		case 3: /* Restore to previous, i.e., don't update canvas.*/
+		case 2: // Restore to background color. The background is assumed to be transparent.
+			gif->TransparencyMask.FillWithOnes();
+			break;
+		case 3: // Restore to previous. Leave the canvas as is and discard the frame.
 			break;
 		default:
-			render_frame_rect( gif, gif->canvas );
+			break;
 	}
 }
 
@@ -467,10 +470,13 @@ int gd_get_frame( CGiffDecodeData* gif )
 	return 1;
 }
 
-void gd_render_frame( CGiffDecodeData* gif, uint8_t* buffer )
+void gd_render_frame( CGiffDecodeData* gif, uint8_t* buffer, CDynamicBitSet<>& transparencyMask )
 {
+	auto& srcStorage = gif->TransparencyMask.GetStorage().GetStorage();
+	auto& destStorage = transparencyMask.GetStorage().GetStorage();
+	::memcpy( destStorage.Ptr(), srcStorage.Ptr(), destStorage.Size() );
 	::memcpy( buffer, gif->canvas, gif->width * gif->height * 3 );
-	render_frame_rect( gif, buffer );
+	render_frame_rect( gif, buffer, transparencyMask );
 }
 
 void gd_rewind( CGiffDecodeData* gif )

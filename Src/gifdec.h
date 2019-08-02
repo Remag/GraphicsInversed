@@ -52,13 +52,14 @@ struct CGiffDecodeData {
 	uint8_t bgindex;
 	uint8_t *canvas, *frame;
 	CArray<uint8_t> ColorData;
+	CDynamicBitSet<> TransparencyMask;
 };
 
 //////////////////////////////////////////////////////////////////////////
 
 CGiffDecodeData gd_open_gif( CGiffBuffer buffer );
 int gd_get_frame( CGiffDecodeData* gif );
-void gd_render_frame( CGiffDecodeData* gif, uint8_t* buffer );
+void gd_render_frame( CGiffDecodeData* gif, uint8_t* buffer, CDynamicBitSet<>& transparencyMask );
 void gd_rewind( CGiffDecodeData* gif );
 
 //////////////////////////////////////////////////////////////////////////

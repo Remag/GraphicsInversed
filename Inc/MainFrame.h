@@ -36,8 +36,8 @@ public:
 		{ return *inputHandler; }
 
 	// Create a window and an OpenGL context.
-	void InitializeOpenGL( CGlWindowSettings initialSettings, COpenGlVersion requestedGlVersion, HICON windowIcon );
-	void InitializeWinGDI( CGlWindowSettings initialSettings, HICON windowIcon );
+	void InitializeOpenGL( CGlWindowSettings initialSettings, COpenGlVersion requestedGlVersion, HCURSOR cursor, HICON windowIcon );
+	void InitializeWinGDI( CGlWindowSettings initialSettings, HCURSOR cursor, HICON windowIcon );
 	bool IsInitialized() const;
 	// Cleanup the library and the OpenGL context.
 	void Cleanup();
@@ -62,8 +62,8 @@ private:
 
 	static CUnicodeView getMainWindowClassName();
 	
-	void initializeCommon( CGlWindowSettings initialSettings, HICON windowIcon );
-	void registerWindowClass( HICON windowIcon, bool trackMouseLeave );
+	void initializeCommon( CGlWindowSettings initialSettings, HCURSOR cursor, HICON windowIcon );
+	void registerWindowClass( HCURSOR cursor, HICON windowIcon, bool trackMouseLeave );
 	void initOpenAL();
 
 	// Copying is prohibited.

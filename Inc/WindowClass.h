@@ -9,7 +9,7 @@ namespace Gin {
 template <class Dispatcher>
 class CWindowClass : public CSingleton<CWindowClass<Dispatcher>> {
 public:
-	explicit CWindowClass( CUnicodeView className, HICON windowIcon, Dispatcher dispatcher );
+	explicit CWindowClass( CUnicodeView className, HCURSOR cursor, HICON windowIcon, Dispatcher dispatcher );
 	~CWindowClass();
 
 	Dispatcher& GetDispatcher()
@@ -38,7 +38,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 
 template<class Dispatcher>
-CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HICON windowIcon, Dispatcher _dispatcher ) :
+CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HCURSOR cursor, HICON windowIcon, Dispatcher _dispatcher ) :
 	className( _className ),
 	dispatcher( move( _dispatcher ) ),
 	startLeaveTracking( dispatcher.ShouldTrackMouseLeave() )
@@ -47,7 +47,7 @@ CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HICON windowIco
 	::ZeroMemory( &wndclass, sizeof( wndclass ) );
 	wndclass.cbSize = sizeof( wndclass );
 	wndclass.hbrBackground = ( HBRUSH )::GetStockObject( BLACK_BRUSH );
-	wndclass.hCursor = ::LoadCursor( nullptr, IDC_ARROW );
+	wndclass.hCursor = cursor;
 	wndclass.hInstance = ::GetModuleHandle( 0 );
 	wndclass.lpfnWndProc = windowProcedure;
 	wndclass.hIcon =  windowIcon;

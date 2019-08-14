@@ -60,6 +60,15 @@ public:
 	float Bottom() const
 		{ return rect.Bottom(); }
 
+	int GridLeft() const
+		{ return Round( Left() ); }
+	int GridTop() const
+		{ return Round( Top() ); }
+	int GridRight() const
+		{ return Round( Right() ); }
+	int GridBottom() const
+		{ return Round( Bottom() ); }
+
 	CPixelVector TopLeft() const;
 	CPixelVector BottomLeft() const;
 	CPixelVector TopRight() const;

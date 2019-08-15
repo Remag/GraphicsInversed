@@ -26,6 +26,8 @@ private:
 	static void enableFaceCulling( bool isEnabled );
 };
 
+//////////////////////////////////////////////////////////////////////////
+
 class GINAPI CFaceCullSwitcher {
 public:
 	explicit CFaceCullSwitcher( TTriangleWindingOrder windingOrder );

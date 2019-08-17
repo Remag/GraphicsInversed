@@ -100,7 +100,7 @@ LRESULT WINAPI CWindowClass<Dispatcher>::windowProcedure( HWND wnd, UINT msg, WP
 			getDispatcher().OnMouseWheel( wnd, GET_WHEEL_DELTA_WPARAM( wParam ) );
 			break;
 		case WM_MOUSEMOVE:
-			getDispatcher().OnMouseMove( wnd, static_cast<int>( LOWORD( lParam ) ), static_cast<int>( HIWORD( lParam ) ) );
+			getDispatcher().OnMouseMove( wnd, static_cast<int>( (short)LOWORD( lParam ) ), static_cast<int>( (short)HIWORD( lParam ) ) );
 			tryStartMouseTracking();
 			break;
 		case WM_MOUSELEAVE:

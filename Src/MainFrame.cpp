@@ -36,9 +36,9 @@ CMainFrame::~CMainFrame()
 #endif
 }
 
-void CMainFrame::InitializeOpenGL( CGlWindowSettings initialSettings, COpenGlVersion requestedGlVersion, HCURSOR cursor, HICON windowIcon )
+void CMainFrame::InitializeOpenGL( CGlWindowSettings initialSettings, COpenGlVersion requestedGlVersion, HICON windowIcon )
 {
-	initializeCommon( initialSettings, cursor, windowIcon );
+	initializeCommon( initialSettings, windowIcon );
 	glContextManager = CreateOwner<CGlContextManager>( requestedGlVersion );
 	glContextManager->CreateContext( mainWindow->GetDeviceContext() );
 	renderer = CreateOwner<COpenGlRenderMechanism>( *glContextManager );
@@ -47,9 +47,9 @@ void CMainFrame::InitializeOpenGL( CGlWindowSettings initialSettings, COpenGlVer
 	mainWindow->Show( true );
 }
 
-void CMainFrame::InitializeWinGDI( CGlWindowSettings initialSettings, HCURSOR cursor, HICON windowIcon )
+void CMainFrame::InitializeWinGDI( CGlWindowSettings initialSettings, HICON windowIcon )
 {
-	initializeCommon( initialSettings, cursor, windowIcon );
+	initializeCommon( initialSettings, windowIcon );
 	renderer = CreateOwner<CWinGdiRenderMechanism>();
 	renderer->AttachNewWindow( *mainWindow );
 	mainWindow->setRenderMechanism( *renderer );
@@ -62,9 +62,9 @@ CUnicodeView CMainFrame::getMainWindowClassName()
 	return className;
 }
 
-void CMainFrame::initializeCommon( CGlWindowSettings initialSettings, HCURSOR cursor, HICON windowIcon )
+void CMainFrame::initializeCommon( CGlWindowSettings initialSettings, HICON windowIcon )
 {
-	registerWindowClass( cursor, windowIcon, initialSettings.TrackMouseLeave );
+	registerWindowClass( windowIcon, initialSettings.TrackMouseLeave );
 	mainWindow->Create( *windowClass, initialSettings );
 	initOpenAL();
 }
@@ -75,11 +75,11 @@ bool CMainFrame::IsInitialized() const
 		&& inputHandler != nullptr && inputHandler->HasMouseController();
 }
 
-void CMainFrame::registerWindowClass( HCURSOR cursor, HICON windowIcon, bool trackMouseLeave )
+void CMainFrame::registerWindowClass( HICON windowIcon, bool trackMouseLeave )
 {
 	assert( windowClass == nullptr );
 	CStandardWindowDispatcher dispatcher( trackMouseLeave );
-	windowClass = CreateOwner<CWindowClass<CStandardWindowDispatcher>>( getMainWindowClassName(), cursor, windowIcon, move( dispatcher ) );
+	windowClass = CreateOwner<CWindowClass<CStandardWindowDispatcher>>( getMainWindowClassName(), windowIcon, move( dispatcher ) );
 }
 
 void CMainFrame::initOpenAL()

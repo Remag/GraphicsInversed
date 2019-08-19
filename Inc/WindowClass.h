@@ -9,7 +9,7 @@ namespace Gin {
 template <class Dispatcher>
 class CWindowClass : public CSingleton<CWindowClass<Dispatcher>> {
 public:
-	explicit CWindowClass( CUnicodeView className, HCURSOR cursor, HICON windowIcon, Dispatcher dispatcher );
+	explicit CWindowClass( CUnicodeView className, HICON windowIcon, Dispatcher dispatcher );
 	~CWindowClass();
 
 	Dispatcher& GetDispatcher()
@@ -33,12 +33,13 @@ private:
 
 	static void tryStartMouseTracking();
 	static void startMouseTracking();
+	static LRESULT handleCursorChange( HWND wnd, WPARAM wParam, LPARAM lParam );
 };
 
 //////////////////////////////////////////////////////////////////////////
 
 template<class Dispatcher>
-CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HCURSOR cursor, HICON windowIcon, Dispatcher _dispatcher ) :
+CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HICON windowIcon, Dispatcher _dispatcher ) :
 	className( _className ),
 	dispatcher( move( _dispatcher ) ),
 	startLeaveTracking( dispatcher.ShouldTrackMouseLeave() )
@@ -47,7 +48,7 @@ CWindowClass<Dispatcher>::CWindowClass( CUnicodeView _className, HCURSOR cursor,
 	::ZeroMemory( &wndclass, sizeof( wndclass ) );
 	wndclass.cbSize = sizeof( wndclass );
 	wndclass.hbrBackground = ( HBRUSH )::GetStockObject( BLACK_BRUSH );
-	wndclass.hCursor = cursor;
+	wndclass.hCursor = ::LoadCursor( nullptr, IDC_ARROW );
 	wndclass.hInstance = ::GetModuleHandle( 0 );
 	wndclass.lpfnWndProc = windowProcedure;
 	wndclass.hIcon =  windowIcon;
@@ -100,6 +101,7 @@ LRESULT WINAPI CWindowClass<Dispatcher>::windowProcedure( HWND wnd, UINT msg, WP
 			getDispatcher().OnMouseWheel( wnd, GET_WHEEL_DELTA_WPARAM( wParam ) );
 			break;
 		case WM_MOUSEMOVE:
+			// Inlined GET_X_LPARAM and GET_Y_LPARAM to not include windowsx.h.
 			getDispatcher().OnMouseMove( wnd, static_cast<int>( (short)LOWORD( lParam ) ), static_cast<int>( (short)HIWORD( lParam ) ) );
 			tryStartMouseTracking();
 			break;
@@ -107,6 +109,8 @@ LRESULT WINAPI CWindowClass<Dispatcher>::windowProcedure( HWND wnd, UINT msg, WP
 			getDispatcher().OnMouseLeave( wnd );
 			getInstance().startLeaveTracking = true;
 			break;
+		case WM_SETCURSOR:
+			return handleCursorChange( wnd, wParam, lParam );
 		case WM_LBUTTONDOWN:
 			getDispatcher().OnMousePress( wnd, VK_LBUTTON, true );
 			break;
@@ -171,6 +175,20 @@ void CWindowClass<Dispatcher>::startMouseTracking()
 	e.dwHoverTime = 0;
 	e.hwndTrack = GetMainWindow().Handle();
 	::TrackMouseEvent( &e );
+}
+
+template<class Dispatcher>
+inline LRESULT CWindowClass<Dispatcher>::handleCursorChange( HWND wnd, WPARAM wParam, LPARAM lParam )
+{
+	const auto hitArea = LOWORD( lParam );
+	if( hitArea == HTCLIENT ) {
+		const auto cursor = getDispatcher().OnCursorChange( wnd, wParam, lParam );
+		if( cursor != nullptr ) {
+			::SetCursor( cursor );
+			return TRUE;
+		}
+	}
+	return ::DefWindowProc( wnd, WM_SETCURSOR, wParam, lParam );
 }
 
 //////////////////////////////////////////////////////////////////////////

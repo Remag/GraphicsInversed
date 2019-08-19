@@ -28,6 +28,9 @@ public:
 	void OnMouseLeave( HWND ) const;
 	void OnMousePress( HWND, int, bool ) const;
 
+	HCURSOR OnCursorChange( HWND, WPARAM, LPARAM ) const
+		{ return nullptr; }
+
 private:
 	CGlWindow* targetWindow = nullptr;
 	bool trackMouseLeave;

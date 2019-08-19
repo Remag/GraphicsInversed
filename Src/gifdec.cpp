@@ -474,7 +474,7 @@ void gd_render_frame( CGiffDecodeData* gif, uint8_t* buffer, CDynamicBitSet<>& t
 {
 	auto& srcStorage = gif->TransparencyMask.GetStorage().GetStorage();
 	auto& destStorage = transparencyMask.GetStorage().GetStorage();
-	::memcpy( destStorage.Ptr(), srcStorage.Ptr(), destStorage.Size() );
+	::memcpy( destStorage.Ptr(), srcStorage.Ptr(), destStorage.Size() * sizeof( DWORD ) );
 	::memcpy( buffer, gif->canvas, gif->width * gif->height * 3 );
 	render_frame_rect( gif, buffer, transparencyMask );
 }

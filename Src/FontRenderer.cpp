@@ -119,7 +119,7 @@ void CFontRenderer::LoadCharSet( CUnicodePart str )
 	CVector2<int> atlasNewSize = atlasOldSize;
 	for( int i = 0; i < str.Length(); i++ ) {
 		// Find the glyph's UTF32 code.
-		const int glyphCode = parseUtf16Character( str, i );
+		const auto glyphCode = parseUtf16Character( str, i );
 		if( fontData.Has( glyphCode ) ) {
 			// Skip the already loaded values.
 			continue;
@@ -141,7 +141,7 @@ void CFontRenderer::LoadCharSet( CUnicodePart str )
 	// Fill the glyph texture.
 	int textureOffset = atlasOldSize.X();
 	for( int i = 0; i < glyphs.Size(); i++ ) {
-		const int glyphCode = glyphs[i].GetCode();
+		const auto glyphCode = glyphs[i].GetCode();
 		const CGlyphData& glyphData = fontData[glyphCode].GlyphData;
 		// Negative pitch is not supported. At least until a single font with negative pitch is found.
 		assert( glyphData.Pitch >= 0 );
@@ -182,10 +182,10 @@ void CFontRenderer::fillTextureBuffer( CTextureOwner<TBT_Texture2, TGF_Red>& tar
 
 const CUnicodeView invalidStrError = L"Invalid string passed to renderer: %0.";
 // Get the UTF16 character code from str at strPos. A parsed UTF32 character is returned.
-int CFontRenderer::parseUtf16Character( CUnicodePart str, int& strPos ) const
+unsigned CFontRenderer::parseUtf16Character( CUnicodePart str, int& strPos ) const
 {
 	assert( strPos < str.Length() );
-	int result;
+	unsigned result;
 	if( !Unicode::TryConvertUtf16ToUtf32( str[strPos], result ) ) {
 		const auto nextPos = strPos + 1;
 		if( nextPos == str.Length() ) {
@@ -205,10 +205,10 @@ int CFontRenderer::parseUtf16Character( CUnicodePart str, int& strPos ) const
 	return result;
 }
 
-int CFontRenderer::parseUtf8Character( CStringPart str, int& strPos ) const
+unsigned CFontRenderer::parseUtf8Character( CStringPart str, int& strPos ) const
 {
 	assert( strPos < str.Length() );
-	int result;
+	unsigned result;
 	const auto parsedCount = Unicode::TryConvertUtf8ToUtf32( str.begin() + strPos, str.Length() - strPos, result );
 	if( parsedCount == 0 ) {
 		Log::Warning( invalidStrError.SubstParam( UnicodeStr( str ) ), this );
@@ -225,12 +225,12 @@ CShaderProgram CFontRenderer::Shader()
 	return shaderData->FontProgram;
 }
 
-const CGlyphData& CFontRenderer::GetGlyphData( int symbolUTF ) const
+const CGlyphData& CFontRenderer::GetGlyphData( unsigned symbolUTF ) const
 {
 	return getOrCreateRenderData( symbolUTF ).GlyphData;
 }
 
-const CFontRenderer::CRenderGlyphData& CFontRenderer::getOrCreateRenderData( int glyphCode ) const
+const CFontRenderer::CRenderGlyphData& CFontRenderer::getOrCreateRenderData( unsigned glyphCode ) const
 {
 	CRenderGlyphData& charData = fontData.GetOrCreate( glyphCode ).Value();
 	if( charData.GlyphOffset == NotFound ) {
@@ -292,7 +292,7 @@ void CFontRenderer::renderUtf16Line( CUnicodePart line, CVector2<int>& fontPos, 
 	int symbolIndex = dataOffset;
 	for( int i = 0; i < lineLength; ) {
 		// Find the glyph's UTF32 code.
-		const int glyphCode = parseUtf16Character( line, i );
+		const auto glyphCode = parseUtf16Character( line, i );
 		symbolIndex = addNewGlyph( glyphCode, boundRect, fontPos, symbolIndex, lineVertexCount, stringData );
 	}
 }
@@ -304,12 +304,12 @@ void CFontRenderer::renderUtf8Line( CStringPart line, CVector2<int>& fontPos, in
 	int symbolIndex = dataOffset;
 	for( int i = 0; i < lineLength; ) {
 		// Find the glyph's UTF32 code.
-		const int glyphCode = parseUtf8Character( line, i );
+		const auto glyphCode = parseUtf8Character( line, i );
 		symbolIndex = addNewGlyph( glyphCode, boundRect, fontPos, symbolIndex, lineVertexCount, stringData );
 	}
 }
 
-int CFontRenderer::addNewGlyph( int glyphCode, CPixelRect& boundRect, CVector2<int>& fontPos, int symbolIndex, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const
+int CFontRenderer::addNewGlyph( unsigned glyphCode, CPixelRect& boundRect, CVector2<int>& fontPos, int symbolIndex, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const
 {
 	const CRenderGlyphData& charData = getOrCreateRenderData( glyphCode );
 	boundRect = GetRectUnion( boundRect, addQuadToMesh( fontPos, charData, stringData, symbolIndex * verticesPerChar ) );
@@ -320,7 +320,7 @@ int CFontRenderer::addNewGlyph( int glyphCode, CPixelRect& boundRect, CVector2<i
 }
 
 // Load the given character to the texture and fill the result glyph data structure.
-void CFontRenderer::addCharToTexture( int charCode, CRenderGlyphData& result ) const
+void CFontRenderer::addCharToTexture( unsigned charCode, CRenderGlyphData& result ) const
 {
 	assert( font.IsLoaded() );
 
@@ -474,7 +474,7 @@ int CFontRenderer::calculateWhitespaceHAdvance( CUnicodePart str, int& strPos ) 
 			strPos = i;
 			return result;
 		}
-		const int glyphCode = parseUtf16Character( str, i );
+		const auto glyphCode = parseUtf16Character( str, i );
 		const auto& charData = getOrCreateRenderData( glyphCode );
 		result += charData.GlyphData.Advance.X();
 	}
@@ -495,7 +495,7 @@ int CFontRenderer::calculateWhitespaceHAdvance( CStringPart str, int& strPos ) c
 			strPos = i;
 			return result;
 		}
-		const int glyphCode = parseUtf8Character( str, i );
+		const auto glyphCode = parseUtf8Character( str, i );
 		const auto& charData = getOrCreateRenderData( glyphCode );
 		result += charData.GlyphData.Advance.X();
 	}
@@ -522,7 +522,7 @@ CPixelRect CFontRenderer::renderUtf16Word( CUnicodePart str, CVector2<int>& symb
 		if( str.IsCharWhiteSpace( str[strPos] ) ) {
 			break;
 		}
-		const int glyphCode = parseUtf16Character( str, strPos );
+		const auto glyphCode = parseUtf16Character( str, strPos );
 		if( !tryAddWordCharacter( glyphCode, maxWidth, symbolPos, wordRect, wordBuffer ) ) {
 			strPos++;
 			break;
@@ -539,7 +539,7 @@ CPixelRect CFontRenderer::renderUtf8Word( CStringPart str, CVector2<int>& symbol
 		if( str.IsCharWhiteSpace( str[strPos] ) ) {
 			break;
 		}
-		const int glyphCode = parseUtf8Character( str, strPos );
+		const auto glyphCode = parseUtf8Character( str, strPos );
 		if( !tryAddWordCharacter( glyphCode, maxWidth, symbolPos, wordRect, wordBuffer ) ) {
 			strPos++;
 			break;
@@ -548,7 +548,7 @@ CPixelRect CFontRenderer::renderUtf8Word( CStringPart str, CVector2<int>& symbol
 	return wordRect;
 }
 
-bool CFontRenderer::tryAddWordCharacter( int glyphCode, int maxWidth, CVector2<int>& symbolPos, CPixelRect& wordRect, CArray<CVector4<float>>& wordBuffer ) const
+bool CFontRenderer::tryAddWordCharacter( unsigned glyphCode, int maxWidth, CVector2<int>& symbolPos, CPixelRect& wordRect, CArray<CVector4<float>>& wordBuffer ) const
 {
 	// Find the glyph's UTF32 code.
 	const CRenderGlyphData& charData = getOrCreateRenderData( glyphCode );

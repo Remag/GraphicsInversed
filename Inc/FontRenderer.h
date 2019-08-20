@@ -102,7 +102,7 @@ public:
 	void LoadCharSet( CUnicodePart str );
 	// Access cached glyph data for a given UTF32 character.
 	// If the character has not been rendered, it is added to the texture.
-	const CGlyphData& GetGlyphData( int symbolUTF ) const;
+	const CGlyphData& GetGlyphData( unsigned symbolUTF ) const;
 
 	// Shader program used to draw the font.
 	static CShaderProgram Shader();
@@ -157,7 +157,7 @@ private:
 	int fontPixelHeight = 0;
 
 	// Map containing connections between symbol codes and their offset in the texture atlas.
-	mutable CMap<int, CRenderGlyphData> fontData;
+	mutable CMap<unsigned, CRenderGlyphData> fontData;
 	// Texture atlas with glyph bitmaps.
 	mutable CTextureOwner<TBT_Texture2, TGF_Red> fontTexture;
 	mutable CVector2<int> fontTextureSize;
@@ -172,8 +172,8 @@ private:
 	static CPtrOwner<CFontShaderData> shaderData;
 	static CUnicodeString asciiCharsStr;
 
-	int parseUtf16Character( CUnicodePart str, int& index ) const;
-	int parseUtf8Character( CStringPart str, int& index ) const;
+	unsigned parseUtf16Character( CUnicodePart str, int& index ) const;
+	unsigned parseUtf8Character( CStringPart str, int& index ) const;
 	void increaseTextureSize( CVector2<int> newSize ) const;
 	void fillTextureBuffer( CTextureOwner<TBT_Texture2, TGF_Red>& target, int textureOffset, const BYTE* bitmap, CVector2<int> bitmapSize, int maxHeight, CArray<BYTE>& zeroBuffer ) const;
 
@@ -182,7 +182,7 @@ private:
 	void addLineMesh( int lineStartPos, int strPos, CPixelRect lineRect, CArrayView<CVector4<float>> lineBuffer, CArray<CTextMesh>& lines ) const;
 	CPixelRect renderUtf8Word( CStringPart str, CVector2<int>& symbolPos, int maxWidth, int& strPos, CArray<CVector4<float>>& wordBuffer ) const;
 	CPixelRect renderUtf16Word( CUnicodePart str, CVector2<int>& symbolPos, int maxWidth, int& strPos, CArray<CVector4<float>>& wordBuffer ) const;
-	bool tryAddWordCharacter( int glyphCode, int maxWidth, CVector2<int>& symbolPos, CPixelRect& wordRect, CArray<CVector4<float>>& wordBuffer ) const;
+	bool tryAddWordCharacter( unsigned glyphCode, int maxWidth, CVector2<int>& symbolPos, CPixelRect& wordRect, CArray<CVector4<float>>& wordBuffer ) const;
 	static CPixelRect startNewLine( float lineOffset, CPixelRect wordRect, CArrayBuffer<CVector4<float>> lineWordBuffer );
 	static CPixelRect startNewLine( CPixelVector lineOffset, CPixelRect wordRect, CArrayBuffer<CVector4<float>> lineWordBuffer );
 
@@ -198,10 +198,10 @@ private:
 	void renderSingleUtf8Line( const void* strBuffer, int length, CPixelRect& boundRect, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
 	void renderUtf16Line( CUnicodePart line, CVector2<int>& pos, int dataOffset, CPixelRect& boundRect, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
 	void renderUtf8Line( CStringPart line, CVector2<int>& pos, int dataOffset, CPixelRect& boundRect, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
-	int addNewGlyph( int glyphCode, CPixelRect& boundRect, CVector2<int>& fontPos, int symbolIndex, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
+	int addNewGlyph( unsigned glyphCode, CPixelRect& boundRect, CVector2<int>& fontPos, int symbolIndex, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
 	CPixelRect addQuadToMesh( CVector2<int> pos, const CRenderGlyphData& charData, CArrayBuffer<CVector4<float>> stringData, int meshOffset ) const;
-	void addCharToTexture( int charCode, CRenderGlyphData& result ) const;
-	const CRenderGlyphData& getOrCreateRenderData( int glyphCode ) const;
+	void addCharToTexture( unsigned charCode, CRenderGlyphData& result ) const;
+	const CRenderGlyphData& getOrCreateRenderData( unsigned glyphCode ) const;
 	CVector2<int> getIntegerAtlasSize() const;
 	void setAtlasDimensions( CVector2<int> newSize ) const;
 

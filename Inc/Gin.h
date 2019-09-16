@@ -53,7 +53,6 @@
 #include <PngFile.h>
 #include <Quad.h>
 #include <SamplerObject.h>
-#include <ScalableFontRenderer.h>
 #include <ScreenBuffer.h>
 #include <Shader.h>
 #include <Sprite.h>

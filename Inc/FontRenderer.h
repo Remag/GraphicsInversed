@@ -77,7 +77,7 @@ struct CParagraphRenderResult {
 class GINAPI CFontRenderer {
 public:
 	CFontRenderer();
-	explicit CFontRenderer( CFontView font, int fontPxHeight );
+	explicit CFontRenderer( CPtrOwner<IGlyphProvider> glyphProvider );
 
 	// Initialize the font shader. Called automatically during application initialization.
 	static void InitializeShaderData();
@@ -85,16 +85,10 @@ public:
 	static void ClearShaderData();
 
 	bool IsFontLoaded() const
-		{ return font.IsLoaded(); }
-	// Load an external font. Ownership is not taken.
-	// All existing text meshes are invalidated.
-	void LoadFont( CFontView font, int fontPxHeight );
+		{ return glyphProvider != nullptr; }
+	void SetGlyphProvider( CPtrOwner<IGlyphProvider> newValue );
 	// Unload all characters, delete the texture and invalidate all rendered text meshes.
 	void UnloadFont();
-	CFontView GetFont() const
-		{ return font; }
-	int GetPixelHeight() const
-		{ return fontPixelHeight; }
 
 	// Populate the texture with basic ASCII symbols.
 	void LoadBasicCharSet();
@@ -102,7 +96,7 @@ public:
 	void LoadCharSet( CUnicodePart str );
 	// Access cached glyph data for a given UTF32 character.
 	// If the character has not been rendered, it is added to the texture.
-	const CGlyphData& GetGlyphData( unsigned symbolUTF ) const;
+	CGlyphSizeData GetGlyphData( unsigned symbolUTF ) const;
 
 	// Shader program used to draw the font.
 	static CShaderProgram Shader();
@@ -123,12 +117,12 @@ private:
 	// Data that is necessary for rendering from the atlas.
 	struct CRenderGlyphData {
 		// Glyph metrics.
-		CGlyphData GlyphData;
+		CGlyphSizeData GlyphData;
 		// Offset in the atlas in pixels.
 		int GlyphOffset;
 
 		CRenderGlyphData() : GlyphOffset( NotFound ) {}
-		CRenderGlyphData( const CGlyphData& data, int offset ) : GlyphData( data ), GlyphOffset( offset ) {}
+		CRenderGlyphData( CGlyphSizeData data, int offset ) : GlyphData( data ), GlyphOffset( offset ) {}
 	};
 
 	struct CFontShaderData {
@@ -152,9 +146,7 @@ private:
 	};
 
 	// Font used by the renderer.
-	CFontView font;
-	CFontSizeOwner fontSize;
-	int fontPixelHeight = 0;
+	CPtrOwner<IGlyphProvider> glyphProvider;
 
 	// Map containing connections between symbol codes and their offset in the texture atlas.
 	mutable CMap<unsigned, CRenderGlyphData> fontData;
@@ -199,9 +191,9 @@ private:
 	void renderUtf16Line( CUnicodePart line, CVector2<int>& pos, int dataOffset, CPixelRect& boundRect, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
 	void renderUtf8Line( CStringPart line, CVector2<int>& pos, int dataOffset, CPixelRect& boundRect, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
 	int addNewGlyph( unsigned glyphCode, CPixelRect& boundRect, CVector2<int>& fontPos, int symbolIndex, int& lineVertexCount, CArrayBuffer<CVector4<float>> stringData ) const;
-	CPixelRect addQuadToMesh( CVector2<int> pos, const CRenderGlyphData& charData, CArrayBuffer<CVector4<float>> stringData, int meshOffset ) const;
+	CPixelRect addQuadToMesh( CVector2<int> pos, CRenderGlyphData charData, CArrayBuffer<CVector4<float>> stringData, int meshOffset ) const;
 	void addCharToTexture( unsigned charCode, CRenderGlyphData& result ) const;
-	const CRenderGlyphData& getOrCreateRenderData( unsigned glyphCode ) const;
+	CRenderGlyphData getOrCreateRenderData( unsigned glyphCode ) const;
 	CVector2<int> getIntegerAtlasSize() const;
 	void setAtlasDimensions( CVector2<int> newSize ) const;
 

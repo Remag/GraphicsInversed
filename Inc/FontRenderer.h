@@ -114,15 +114,22 @@ public:
 	void DisplayText( const CTextMesh& textMesh, const CMatrix3<float>& modelToClip, CColor color ) const;
 
 private:
+	// Position and size information of the atlas with glyphs.
+	struct CGlyphAtlasState {
+		CVector2<int> Size;
+		CVector2<int> Offset;
+		int LineHeight = 0;
+	};
+
 	// Data that is necessary for rendering from the atlas.
 	struct CRenderGlyphData {
 		// Glyph metrics.
 		CGlyphSizeData GlyphData;
 		// Offset in the atlas in pixels.
-		int GlyphOffset;
+		CVector2<int> GlyphOffset;
 
-		CRenderGlyphData() : GlyphOffset( NotFound ) {}
-		CRenderGlyphData( CGlyphSizeData data, int offset ) : GlyphData( data ), GlyphOffset( offset ) {}
+		CRenderGlyphData() : GlyphOffset( NotFound, NotFound ) {}
+		CRenderGlyphData( CGlyphSizeData data, CVector2<int> offset ) : GlyphData( data ), GlyphOffset( offset ) {}
 	};
 
 	struct CFontShaderData {
@@ -152,9 +159,7 @@ private:
 	mutable CMap<unsigned, CRenderGlyphData> fontData;
 	// Texture atlas with glyph bitmaps.
 	mutable CTextureOwner<TBT_Texture2, TGF_Red> fontTexture;
-	mutable CVector2<int> fontTextureSize;
-	// Atlas metrics in pixels.
-	mutable CVector2<float> atlasSize;
+	mutable CGlyphAtlasState fontTextureState;
 
 	// Offset of the first printable character.
 	static const int asciiSymbolOffset = 32;
@@ -166,8 +171,10 @@ private:
 
 	unsigned parseUtf16Character( CUnicodePart str, int& index ) const;
 	unsigned parseUtf8Character( CStringPart str, int& index ) const;
-	void increaseTextureSize( CVector2<int> newSize ) const;
-	void fillTextureBuffer( CTextureOwner<TBT_Texture2, TGF_Red>& target, int textureOffset, const BYTE* bitmap, CVector2<int> bitmapSize, int maxHeight, CArray<BYTE>& zeroBuffer ) const;
+	void fillTextureBuffer( CTextureOwner<TBT_Texture2, TGF_Red>& target, CVector2<int> textureOffset, const BYTE* bitmap, CVector2<int> bitmapSize ) const;
+	CGlyphAtlasState fitGlyphIntoAtlas( CGlyphAtlasState state, CVector2<int> glyphSize ) const;
+	void setGlyphAtlasState( CGlyphAtlasState newState ) const;
+	void padGlyphAtlas( CVector2<int> oldSize, CVector2<int> newSize ) const;
 
 	int calculateWhitespaceHAdvance( CUnicodePart str, int& strPos ) const;
 	int calculateWhitespaceHAdvance( CStringPart str, int& strPos ) const;
@@ -194,9 +201,6 @@ private:
 	CPixelRect addQuadToMesh( CVector2<int> pos, CRenderGlyphData charData, CArrayBuffer<CVector4<float>> stringData, int meshOffset ) const;
 	void addCharToTexture( unsigned charCode, CRenderGlyphData& result ) const;
 	CRenderGlyphData getOrCreateRenderData( unsigned glyphCode ) const;
-	CVector2<int> getIntegerAtlasSize() const;
-	void setAtlasDimensions( CVector2<int> newSize ) const;
-
 	static void initAsciiCharString( CUnicodeString& str );
 };
 

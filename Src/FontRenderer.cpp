@@ -91,7 +91,8 @@ void CFontRenderer::SetGlyphProvider( CPtrOwner<IGlyphProvider> newValue )
 
 void CFontRenderer::UnloadFont()
 {
-	setAtlasDimensions( CVector2<int>{} );
+	fontTextureState = CGlyphAtlasState{};
+	fontTexture = CTextureOwner<TBT_Texture2, TGF_Red>();
 	glyphProvider = nullptr;
 	fontData.FreeBuffer();
 }
@@ -102,18 +103,19 @@ void CFontRenderer::LoadBasicCharSet()
 }
 
 // Distance between glyphs in the texture.
-static const int glyphPadding = 1;
 void CFontRenderer::LoadCharSet( CUnicodePart str )
 {
 	assert( IsFontLoaded() );
-	fontData.ReserveBuffer( fontData.Size() + str.Length() );
+	const auto strLength = str.Length();
+	fontData.ReserveBuffer( fontData.Size() + strLength );
 	// Fill the glyph data.
 	CArray<CPtrOwner<IGlyph>> glyphs;
-	glyphs.ReserveBuffer( str.Length() );
+	CArray<CVector2<int>> glyphOffsets;
+	glyphs.ReserveBuffer( strLength );
+	glyphOffsets.ReserveBuffer( strLength );
 
-	const auto atlasOldSize = getIntegerAtlasSize();
-	CVector2<int> atlasNewSize = atlasOldSize;
-	for( int i = 0; i < str.Length(); i++ ) {
+	auto currentState = fontTextureState;
+	for( int i = 0; i < strLength; i++ ) {
 		// Find the glyph's UTF32 code.
 		const auto glyphCode = parseUtf16Character( str, i );
 		if( fontData.Has( glyphCode ) ) {
@@ -124,54 +126,97 @@ void CFontRenderer::LoadCharSet( CUnicodePart str )
 		// Get the glyph and send the fondData.
 		glyphs.Add( glyphProvider->GetGlyph( glyphCode ) );
 		const CGlyphData glyphData = glyphs.Last()->GetGlyphData();
-		fontData.Set( glyphCode, CRenderGlyphData( glyphData.SizeData, atlasNewSize.X() ) );
-
-		// Remember offsets.
-		atlasNewSize.X() += glyphData.SizeData.Size.X() + glyphPadding;
-		atlasNewSize.Y() = max( atlasNewSize.Y(), glyphData.SizeData.Size.Y() );
+		const CRenderGlyphData renderData( glyphData.SizeData, currentState.Offset );
+		currentState = fitGlyphIntoAtlas( currentState, glyphData.SizeData.Size );
+		fontData.Set( glyphCode, renderData );
+		glyphOffsets.Add( renderData.GlyphOffset );
 	}
-	CTextureBinder binder( fontTexture );
-	increaseTextureSize( atlasNewSize );
+	if( glyphs.IsEmpty() ) {
+		return;
+	}
 
-	CArray<BYTE> zeroBuffer;
+	CTextureBinder binder( fontTexture );
+	setGlyphAtlasState( currentState );
+
 	// Fill the glyph texture.
-	int textureOffset = atlasOldSize.X();
 	for( int i = 0; i < glyphs.Size(); i++ ) {
 		const auto glyphData = glyphs[i]->GetGlyphData();
 		// Negative pitch is not supported. At least until a single font with negative pitch is found.
 		assert( glyphData.SizeData.Pitch >= 0 );
 		assert( glyphData.SizeData.Size.X() == glyphData.SizeData.Pitch );
-		fillTextureBuffer( fontTexture, textureOffset, glyphData.BitmapData, glyphData.SizeData.Size, atlasNewSize.Y(), zeroBuffer );
-		textureOffset += glyphData.SizeData.Size.X() + glyphPadding;
+		fillTextureBuffer( fontTexture, glyphOffsets[i], glyphData.BitmapData, glyphData.SizeData.Size );
 	}
-	setAtlasDimensions( atlasNewSize );
 }
 
-void CFontRenderer::increaseTextureSize( CVector2<int> newSize ) const
+void CFontRenderer::fillTextureBuffer( CTextureOwner<TBT_Texture2, TGF_Red>& target,
+	CVector2<int> textureOffset, const BYTE* bitmap, CVector2<int> bitmapSize ) const
 {
-	if( newSize.X() <= fontTextureSize.X() && newSize.Y() <= fontTextureSize.Y() ) {
+	target.SetSubData( textureOffset, bitmap, bitmapSize, 0, TF_Red, TDT_UnsignedByte );
+}
+
+const int glyphPadding = 1;
+const int maxAtlasWidth = 1024;
+CFontRenderer::CGlyphAtlasState CFontRenderer::fitGlyphIntoAtlas( CGlyphAtlasState state, CVector2<int> glyphSize ) const
+{
+	const CVector2<int> glyphRealSize{ glyphSize.X() + glyphPadding, glyphSize.Y() + glyphPadding };
+	const auto newHOffset = state.Offset.X() + glyphRealSize.X();
+	if( newHOffset <= maxAtlasWidth ) {
+		const auto lineHeightDelta = max( 0, glyphRealSize.Y() - state.LineHeight );
+		const auto newLineHeight = state.LineHeight + lineHeightDelta;
+		const auto newWidth = max( state.Size.X(), newHOffset );
+		const auto newHeight = state.Size.Y() + lineHeightDelta;
+		const CVector2<int> newSize{ newWidth, newHeight };
+		const CVector2<int> newOffset{ newHOffset, state.Offset.Y() };
+		return CGlyphAtlasState{ newSize, newOffset, newLineHeight };
+	}
+
+	const auto newVOffset = state.Offset.Y() + state.LineHeight;
+	const auto newLineHeight = glyphRealSize.Y();
+	const auto newWidth = max( state.Size.X(), glyphRealSize.X() );
+	const auto newHeight = state.Size.Y() + newLineHeight;
+	const CVector2<int> newSize{ newWidth, newHeight };
+	const CVector2<int> newOffset{ 0, newVOffset };
+	return CGlyphAtlasState{ newSize, newOffset, newLineHeight };
+}
+
+void CFontRenderer::setGlyphAtlasState( CGlyphAtlasState newState ) const
+{
+	const auto oldSize = fontTextureState.Size;
+	const auto newSize = newState.Size;
+	if( newSize.X() > oldSize.X() || newSize.Y() > oldSize.Y() ) {
+		fontTexture.GrowBuffer( oldSize, newSize, TF_Red, TDT_UnsignedByte );
+		padGlyphAtlas( oldSize, newSize );
+	}
+	fontTextureState = newState;
+}
+
+void CFontRenderer::padGlyphAtlas( CVector2<int> oldSize, CVector2<int> newSize ) const
+{
+	assert( oldSize.X() <= newSize.X() );
+	assert( oldSize.Y() <= newSize.Y() );
+	CArray<BYTE> zeroBuffer;
+	if( oldSize.IsNull() ) {
+		zeroBuffer.IncreaseSize( newSize.X() * newSize.Y() );
+		fontTexture.SetData( zeroBuffer.Ptr(), newSize, 0, TF_Red, TDT_UnsignedByte );
 		return;
-	} else {
-		fontTexture.GrowBuffer( fontTextureSize, newSize, TF_Red, TDT_UnsignedByte );
-		fontTextureSize = newSize;
-	}
-}
-
-void CFontRenderer::fillTextureBuffer( CTextureOwner<TBT_Texture2, TGF_Red>& target, int textureOffset, const BYTE* bitmap, CVector2<int> bitmapSize, int maxHeight, CArray<BYTE>& zeroBuffer ) const
-{
-	const CVector2<int> rightPaddingSize{ glyphPadding, maxHeight };
-	const auto rightPaddingArea = rightPaddingSize.X() * rightPaddingSize.Y();
-	const CVector2<int> topPaddingSize{ bitmapSize.X(), maxHeight - bitmapSize.Y() };
-	const auto topPaddingArea = topPaddingSize.X() * topPaddingSize.Y();
-	const auto maxPaddingArea = max( topPaddingArea, rightPaddingArea );
-	if( zeroBuffer.Size() < maxPaddingArea ) {
-		zeroBuffer.IncreaseSize( maxPaddingArea );
 	}
 
-	target.SetSubData( { textureOffset, 0 }, bitmap, bitmapSize, 0, TF_Red, TDT_UnsignedByte );
-	target.SetSubData( { textureOffset + bitmapSize.X(), 0 }, zeroBuffer.Ptr(), rightPaddingSize, 0, TF_Red, TDT_UnsignedByte );
-	if( topPaddingArea > 0 ) {
-		target.SetSubData( { textureOffset, bitmapSize.Y() }, zeroBuffer.Ptr(), topPaddingSize, 0, TF_Red, TDT_UnsignedByte );
+	const CVector2<int> rightPaddingSize{ newSize.X() - oldSize.X(), newSize.Y() };
+	if( rightPaddingSize.X() > 0 ) {
+		const auto rightPaddingArea = rightPaddingSize.X() * rightPaddingSize.Y();
+		zeroBuffer.IncreaseSize( rightPaddingArea );
+		const CVector2<int> rightOffset{ oldSize.X(), 0 };
+		fontTexture.SetSubData( rightOffset, zeroBuffer.Ptr(), rightPaddingSize, 0, TF_Red, TDT_UnsignedByte );
+	}
+
+	const CVector2<int> topPaddingSize{ oldSize.X(), newSize.Y() - oldSize.Y() };
+	if( topPaddingSize.Y() > 0 ) {
+		const auto topPaddingArea = topPaddingSize.X() * topPaddingSize.Y();
+		if( zeroBuffer.Size() < topPaddingArea ) {
+			zeroBuffer.IncreaseSize( topPaddingArea );
+		}
+		const CVector2<int> topOffset{ 0, oldSize.Y() };
+		fontTexture.SetSubData( topOffset, zeroBuffer.Ptr(), topPaddingSize, 0, TF_Red, TDT_UnsignedByte );
 	}
 }
 
@@ -228,7 +273,7 @@ CGlyphSizeData CFontRenderer::GetGlyphData( unsigned symbolUTF ) const
 CFontRenderer::CRenderGlyphData CFontRenderer::getOrCreateRenderData( unsigned glyphCode ) const
 {
 	auto& charData = fontData.GetOrCreate( glyphCode ).Value();
-	if( charData.GlyphOffset == NotFound ) {
+	if( charData.GlyphOffset.X() == NotFound ) {
 		addCharToTexture( glyphCode, charData );
 	}
 	return charData;
@@ -318,26 +363,15 @@ int CFontRenderer::addNewGlyph( unsigned glyphCode, CPixelRect& boundRect, CVect
 void CFontRenderer::addCharToTexture( unsigned charCode, CRenderGlyphData& result ) const
 {
 	assert( IsFontLoaded() );
-
 	const auto charGlyph = glyphProvider->GetGlyph( charCode );
 	const auto glyphData = charGlyph->GetGlyphData();
-	result.GlyphData = glyphData.SizeData;
-	const auto atlasIntegerSize = getIntegerAtlasSize();
-	result.GlyphOffset = atlasIntegerSize.X();
 	
-	const int newWidth = atlasIntegerSize.X() + glyphData.SizeData.Size.X() + glyphPadding;
-	const int newHeight = max( atlasIntegerSize.Y(), glyphData.SizeData.Size.Y() );
-	const CVector2<int> newSize( newWidth, newHeight );
-
-	if( fontTextureSize.X() < newWidth ||
-		fontTextureSize.Y() < newHeight )
-	{
-		increaseTextureSize( newSize );
-	}
-	CArray<BYTE> zeroBuffer;
-	fillTextureBuffer( fontTexture, atlasIntegerSize.X(), glyphData.BitmapData, glyphData.SizeData.Size, newHeight, zeroBuffer );
-	setAtlasDimensions( newSize );
-	CheckGlError();
+	const auto textureOffset = fontTextureState.Offset;
+	const auto newAtlasState = fitGlyphIntoAtlas( fontTextureState, glyphData.SizeData.Size );
+	setGlyphAtlasState( newAtlasState );
+	result.GlyphData = glyphData.SizeData;
+	result.GlyphOffset = textureOffset;
+	fillTextureBuffer( fontTexture, textureOffset, glyphData.BitmapData, glyphData.SizeData.Size );
 }
 
 // Construct a quad from given data and add it to the mesh. Return the bounding rectangle of the quad.
@@ -345,18 +379,18 @@ CPixelRect CFontRenderer::addQuadToMesh( CVector2<int> fontPos, CRenderGlyphData
 	CArrayBuffer<CVector4<float>> stringData, int meshOffset ) const
 {
 	const auto glyphData = charRenderData.GlyphData;
-	const float charTextureOffset = charRenderData.GlyphOffset * 1.f;
 	const float charTextureWidth = glyphData.Size.X() * 1.f;
 	const float charTextureHeight = glyphData.Size.Y() * 1.f;
 	
-	const CVector2<float> charFontSize = static_cast<CVector2<float>>( glyphData.Size );
-	const CVector2<float> charFontPos = static_cast<CVector2<float>>( fontPos + glyphData.Offset );
+	const auto charTextureOffset = static_cast<CVector2<float>>( charRenderData.GlyphOffset );
+	const auto charFontSize = static_cast<CVector2<float>>( glyphData.Size );
+	const auto charFontPos = static_cast<CVector2<float>>( fontPos + glyphData.Offset );
 
 	// Create 4 vertices for the quad.
-	const CVector4<float> topLeft{ charFontPos.X(), charFontPos.Y(), charTextureOffset, 0.f };
-	const CVector4<float> bottomLeft{ charFontPos.X(), charFontPos.Y() - charFontSize.Y(), charTextureOffset, charTextureHeight };
-	const CVector4<float> bottomRight{ charFontPos.X() + charFontSize.X(), charFontPos.Y() - charFontSize.Y(), charTextureOffset + charTextureWidth, charTextureHeight };
-	const CVector4<float> topRight{ charFontPos.X() + charFontSize.X(), charFontPos.Y(), charTextureOffset + charTextureWidth, 0.f };
+	const CVector4<float> topLeft{ charFontPos.X(), charFontPos.Y(), charTextureOffset };
+	const CVector4<float> bottomLeft{ charFontPos.X(), charFontPos.Y() - charFontSize.Y(), charTextureOffset.X(), charTextureOffset.Y() + charTextureHeight };
+	const CVector4<float> bottomRight{ charFontPos.X() + charFontSize.X(), charFontPos.Y() - charFontSize.Y(), charTextureOffset.X() + charTextureWidth, charTextureOffset.Y() + charTextureHeight };
+	const CVector4<float> topRight{ charFontPos.X() + charFontSize.X(), charFontPos.Y(), charTextureOffset.X() + charTextureWidth, charTextureOffset.Y() };
 
 	stringData[meshOffset] = topLeft;
 	stringData[meshOffset + 1] = bottomLeft;
@@ -706,23 +740,14 @@ void CFontRenderer::DisplayText( const CTextMesh& textMesh, const CMatrix3<float
 	// Enable alpha blending.
 	CBlendModeSwitcher blendSwt( BF_SrcAlpha, BF_OneMinusSrcAlpha );
 	
-	shaderData->AtlasSizeUniform.Set( atlasSize );
+	const auto fltSize = static_cast<CVector2<float>>( fontTextureState.Size );
+	shaderData->AtlasSizeUniform.Set( fltSize );
 	shaderData->FontColorUniform.Set( color );
 	shaderData->FontUniform.Set( fontTexture );
 	shaderData->ModelToClipUniform.Set( modelToClip );
 	shaderData->ZOrderUniform.Set( textMesh.zOrder );
 	// Draw the mesh.
 	textMesh.mesh.Draw( shaderData->FontProgram, textMesh.vertexCount );
-}
-
-CVector2<int> CFontRenderer::getIntegerAtlasSize() const
-{
-	return CVector2<int>{ Round( atlasSize.X() ), Round( atlasSize.Y() ) };
-}
-
-void CFontRenderer::setAtlasDimensions( CVector2<int> newSize ) const
-{
-	atlasSize = CVector2<float>{ 1.0f * newSize.X(), 1.0f * newSize.Y() };
 }
 
 void CFontRenderer::initAsciiCharString( CUnicodeString& str )

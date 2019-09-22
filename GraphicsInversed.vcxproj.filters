@@ -246,9 +246,6 @@
     <ClInclude Include="Inc\SamplerObject.h">
       <Filter>Header Files\Drawing</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ScalableFontRenderer.h">
-      <Filter>Header Files\Drawing</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\ScreenBuffer.h">
       <Filter>Header Files\Drawing\Textures</Filter>
     </ClInclude>
@@ -501,9 +498,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\SamplerObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\ScalableFontRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Screenshots.cpp">

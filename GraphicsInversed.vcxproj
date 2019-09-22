@@ -230,7 +230,6 @@
     <ClInclude Include="Inc\Quad.h" />
     <ClInclude Include="Inc\RenderMechanism.h" />
     <ClInclude Include="Inc\SamplerObject.h" />
-    <ClInclude Include="Inc\ScalableFontRenderer.h" />
     <ClInclude Include="Inc\ScreenBuffer.h" />
     <ClInclude Include="Inc\Screenshots.h" />
     <ClInclude Include="Inc\Shader.h" />
@@ -322,7 +321,6 @@
     <ClCompile Include="Src\PngFile.cpp" />
     <ClCompile Include="Src\Quad.cpp" />
     <ClCompile Include="Src\SamplerObject.cpp" />
-    <ClCompile Include="Src\ScalableFontRenderer.cpp" />
     <ClCompile Include="Src\Screenshots.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\ShaderProgram.cpp" />

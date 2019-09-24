@@ -51,7 +51,6 @@ public:
 
 	CClipVector CenterPoint() const;
 
-	void OffsetRect( CClipVector offset );
 	bool Has( CClipVector pos ) const;
 
 private:
@@ -96,11 +95,6 @@ inline CClipVector CClipRect::BottomRight() const
 inline CClipVector CClipRect::CenterPoint() const
 {
 	return CClipVector( rect.CenterPoint() );
-}
-
-inline void CClipRect::OffsetRect( CClipVector offset )
-{
-	rect.OffsetRect( offset.GetClipPos() );
 }
 
 inline bool CClipRect::Has( CClipVector pos ) const

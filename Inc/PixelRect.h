@@ -83,9 +83,9 @@ public:
 		{ return rect.Area(); }
 	CPixelVector CenterPoint() const;
 
+	CPixelRect GetOffsetRect( CPixelVector offset );
 	CPixelRect GetOffsetRect( int leftDelta, int topDelta, int rightDelta, int bottomDelta ) const;
 	CPixelRect GetOffsetRect( float leftDelta, float topDelta, float rightDelta, float bottomDelta ) const;
-	void OffsetRect( CPixelVector offset );
 	bool Has( CPixelVector pos ) const;
 	bool Has( const CPixelRect& other ) const;
 	bool StrictHas( CPixelVector pos ) const;
@@ -147,19 +147,19 @@ inline CPixelVector CPixelRect::CenterPoint() const
 	return CPixelVector( rect.CenterPoint() );
 }
 
+inline CPixelRect CPixelRect::GetOffsetRect( CPixelVector offset )
+{
+	return CPixelRect( rect.GetOffsetRect( offset.GetPixelPos() ) );
+}
+
 inline CPixelRect CPixelRect::GetOffsetRect( int leftDelta, int topDelta, int rightDelta, int bottomDelta ) const
 {
-	return rect.GetOffsetRect( static_cast<float>( leftDelta ), static_cast<float>( topDelta ), static_cast<float>( rightDelta ), static_cast<float>( bottomDelta ) );
+	return CPixelRect{ rect.GetOffsetRect( static_cast<float>( leftDelta ), static_cast<float>( topDelta ), static_cast<float>( rightDelta ), static_cast<float>( bottomDelta ) ) };
 }
 
 inline CPixelRect CPixelRect::GetOffsetRect( float leftDelta, float topDelta, float rightDelta, float bottomDelta ) const
 {
-	return rect.GetOffsetRect( leftDelta, topDelta, rightDelta, bottomDelta );
-}
-
-inline void CPixelRect::OffsetRect( CPixelVector offset )
-{
-	rect.OffsetRect( offset.GetPixelPos() );
+	return CPixelRect{ rect.GetOffsetRect( leftDelta, topDelta, rightDelta, bottomDelta ) };
 }
 
 inline bool CPixelRect::Has( CPixelVector pos ) const

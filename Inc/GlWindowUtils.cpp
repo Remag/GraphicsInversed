@@ -99,9 +99,7 @@ CAARect<int> CScissorsSwitcher::getWindowRect( CClipRect clipRect, const CMatrix
 CAARect<int> CScissorsSwitcher::getWindowRect( CPixelRect pixelRect )
 {
 	const auto blOffset = currentViewportOffset;
-	auto result = pixelRect.GetGridRect();
-	result.OffsetRect( blOffset );
-	return result;
+	return pixelRect.GetGridRect().GetOffsetRect( blOffset );
 }
 
 CScissorsSwitcher::~CScissorsSwitcher()

@@ -613,12 +613,12 @@ CPixelRect CFontRenderer::startNewLine( float lineOffset, CPixelRect wordRect, C
 
 CPixelRect CFontRenderer::startNewLine( CPixelVector lineOffset, CPixelRect wordRect, CArrayBuffer<CVector4<float>> lineWordBuffer )
 {
-	wordRect.OffsetRect( lineOffset );
+	const auto newLineRect = wordRect.GetOffsetRect( lineOffset );
 	for( auto& pos : lineWordBuffer ) {
 		pos.X() += lineOffset.X();
 		pos.Y() += lineOffset.Y();
 	}
-	return wordRect;
+	return newLineRect;
 }
 
 CParagraphRenderResult CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight, int startHOffset ) const

@@ -31,8 +31,8 @@ private:
 		{ return getInstance().dispatcher; }
 	static LRESULT WINAPI windowProcedure( HWND window, UINT message, WPARAM wParam, LPARAM lParam );
 
-	static void tryStartMouseTracking();
-	static void startMouseTracking();
+	static void tryStartMouseTracking( HWND window );
+	static void startMouseTracking( HWND window );
 	static LRESULT handleCursorChange( HWND wnd, WPARAM wParam, LPARAM lParam );
 };
 
@@ -103,7 +103,7 @@ LRESULT WINAPI CWindowClass<Dispatcher>::windowProcedure( HWND wnd, UINT msg, WP
 		case WM_MOUSEMOVE:
 			// Inlined GET_X_LPARAM and GET_Y_LPARAM to not include windowsx.h.
 			getDispatcher().OnMouseMove( wnd, static_cast<int>( (short)LOWORD( lParam ) ), static_cast<int>( (short)HIWORD( lParam ) ) );
-			tryStartMouseTracking();
+			tryStartMouseTracking( wnd );
 			break;
 		case WM_MOUSELEAVE:
 			getDispatcher().OnMouseLeave( wnd );
@@ -157,15 +157,15 @@ LRESULT WINAPI CWindowClass<Dispatcher>::windowProcedure( HWND wnd, UINT msg, WP
 }
 
 template<class Dispatcher>
-void CWindowClass<Dispatcher>::tryStartMouseTracking()
+void CWindowClass<Dispatcher>::tryStartMouseTracking( HWND wnd )
 {
 	if( getInstance().startLeaveTracking ) {
-		startMouseTracking();
+		startMouseTracking( wnd );
 	}
 }
 
 template<class Dispatcher>
-void CWindowClass<Dispatcher>::startMouseTracking()
+void CWindowClass<Dispatcher>::startMouseTracking( HWND wnd )
 {
 	getInstance().startLeaveTracking = false;
 
@@ -173,7 +173,7 @@ void CWindowClass<Dispatcher>::startMouseTracking()
 	e.cbSize = sizeof( e );
 	e.dwFlags = TME_LEAVE;
 	e.dwHoverTime = 0;
-	e.hwndTrack = GetMainWindow().Handle();
+	e.hwndTrack = wnd;
 	::TrackMouseEvent( &e );
 }
 

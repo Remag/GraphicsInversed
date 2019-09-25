@@ -28,7 +28,7 @@ void CAdditionalWindowContainer::AddAdditionalWindow( CMainFrame& mainFrame, CPt
 
 	renderer->AttachNewWindow( *window );
 	window->setRenderMechanism( *renderer );
-	auto& result = additionalWindows.Add( move( window ), move( renderer ) );
+	additionalWindows.Add( move( window ), move( renderer ) );
 }
 
 CGlWindow* CAdditionalWindowContainer::FindWindowByClass( CUnicodePart windowClassName )

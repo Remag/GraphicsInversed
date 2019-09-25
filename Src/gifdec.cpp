@@ -308,7 +308,7 @@ static int read_image_data( CGiffDecodeData* gif, int interlace )
 	uint8_t sub_len, shift, byte;
 	int init_key_size, key_size;
 	int	table_is_full = 0;
-	int str_len = 0;
+	uint16_t str_len = 0;
 	int frm_off, p, x, y;
 	uint16_t key, clear, stop;
 	int ret;

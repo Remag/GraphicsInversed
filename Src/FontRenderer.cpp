@@ -97,13 +97,13 @@ void CFontRenderer::UnloadFont()
 	fontData.FreeBuffer();
 }
 
-void CFontRenderer::LoadBasicCharSet()
+void CFontRenderer::LoadBasicCharSet() const
 {
 	LoadCharSet( asciiCharsStr );
 }
 
 // Distance between glyphs in the texture.
-void CFontRenderer::LoadCharSet( CUnicodePart str )
+void CFontRenderer::LoadCharSet( CUnicodePart str ) const
 {
 	assert( IsFontLoaded() );
 	const auto strLength = str.Length();
@@ -126,8 +126,9 @@ void CFontRenderer::LoadCharSet( CUnicodePart str )
 		// Get the glyph and send the fondData.
 		glyphs.Add( glyphProvider->GetGlyph( glyphCode ) );
 		const CGlyphData glyphData = glyphs.Last()->GetGlyphData();
-		const CRenderGlyphData renderData( glyphData.SizeData, currentState.Offset );
 		currentState = fitGlyphIntoAtlas( currentState, glyphData.SizeData.Size );
+		const CVector2<int> symbolOffset{ currentState.Offset.X() - glyphData.SizeData.Size.X(), currentState.Offset.Y() };
+		const CRenderGlyphData renderData( glyphData.SizeData, symbolOffset );
 		fontData.Set( glyphCode, renderData );
 		glyphOffsets.Add( renderData.GlyphOffset );
 	}
@@ -169,13 +170,12 @@ CFontRenderer::CGlyphAtlasState CFontRenderer::fitGlyphIntoAtlas( CGlyphAtlasSta
 		const CVector2<int> newOffset{ newHOffset, state.Offset.Y() };
 		return CGlyphAtlasState{ newSize, newOffset, newLineHeight };
 	}
-
 	const auto newVOffset = state.Offset.Y() + state.LineHeight;
 	const auto newLineHeight = glyphRealSize.Y();
 	const auto newWidth = max( state.Size.X(), glyphRealSize.X() );
 	const auto newHeight = state.Size.Y() + newLineHeight;
 	const CVector2<int> newSize{ newWidth, newHeight };
-	const CVector2<int> newOffset{ 0, newVOffset };
+	const CVector2<int> newOffset{ newWidth, newVOffset };
 	return CGlyphAtlasState{ newSize, newOffset, newLineHeight };
 }
 
@@ -366,8 +366,8 @@ void CFontRenderer::addCharToTexture( unsigned charCode, CRenderGlyphData& resul
 	const auto charGlyph = glyphProvider->GetGlyph( charCode );
 	const auto glyphData = charGlyph->GetGlyphData();
 	
-	const auto textureOffset = fontTextureState.Offset;
 	const auto newAtlasState = fitGlyphIntoAtlas( fontTextureState, glyphData.SizeData.Size );
+	const CVector2<int> textureOffset{ newAtlasState.Offset.X() - glyphData.SizeData.Size.X(), newAtlasState.Offset.Y() };
 	setGlyphAtlasState( newAtlasState );
 	result.GlyphData = glyphData.SizeData;
 	result.GlyphOffset = textureOffset;

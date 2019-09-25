@@ -91,9 +91,9 @@ public:
 	void UnloadFont();
 
 	// Populate the texture with basic ASCII symbols.
-	void LoadBasicCharSet();
+	void LoadBasicCharSet() const;
 	// Populate the texture with symbols from the given set or string.
-	void LoadCharSet( CUnicodePart str );
+	void LoadCharSet( CUnicodePart str ) const;
 	// Access cached glyph data for a given UTF32 character.
 	// If the character has not been rendered, it is added to the texture.
 	CGlyphSizeData GetGlyphData( unsigned symbolUTF ) const;

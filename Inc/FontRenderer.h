@@ -29,17 +29,11 @@ public:
 	CPixelRect BoundRect() const
 		{ return boundRect; }
 
-	// Change Z order.
-	float GetZOrder() const
-		{ return zOrder; }
-	void SetZOrder( float newValue )
-		{ zOrder = newValue; }
-
 	// Draw the text mesh using the font renderer that created it.
-	void DrawExact( const CMatrix3<float>& modelToClip, CColor textColor = CColor( 255, 255, 255, 255 ) ) const;
+	void DrawExact( const CMatrix3<float>& modelToClip, float zOrder, CColor textColor = CColor( 255, 255, 255, 255 ) ) const;
 	// Draw the text mesh using the font renderer that created it.
 	// The mesh is aligned to pixel boundaries if possible.
-	void DrawAligned( const CMatrix3<float>& modelToPixel, const CMatrix3<float>& pixelToClip, CColor textColor = CColor( 255, 255, 255, 255 ) ) const;
+	void DrawAligned( const CMatrix3<float>& modelToPixel, const CMatrix3<float>& pixelToClip, float zOrder, CColor textColor = CColor( 255, 255, 255, 255 ) ) const;
 
 	// Only the renderer can create and use text meshes.
 	friend class CFontRenderer;
@@ -49,8 +43,6 @@ private:
 	CGlBufferOwner<BT_Array, CVector4<float>> meshData;
 	// Mesh bounding rectangle.
 	CPixelRect boundRect;
-	// Z order of the text.
-	float zOrder = 0.0f;
 	CMeshOwner<CArrayMesh> mesh;
 	// Font renderer that created the mesh.
 	const CFontRenderer* owner = nullptr;
@@ -111,7 +103,7 @@ public:
 	void RenderMultipleLines( CStringPart str, int lineWidth, CArray<CTextMesh>& lines ) const;
 	CParagraphRenderResult RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight, int startHOffset ) const;
 	// Draw the rendered string with the given pixel space position.
-	void DisplayText( const CTextMesh& textMesh, const CMatrix3<float>& modelToClip, CColor color ) const;
+	void DisplayText( const CTextMesh& textMesh, const CMatrix3<float>& modelToClip, float zOrder, CColor color ) const;
 
 private:
 	// Position and size information of the atlas with glyphs.

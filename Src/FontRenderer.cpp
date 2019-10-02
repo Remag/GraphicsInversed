@@ -39,18 +39,18 @@ CTextMesh::CTextMesh( CGlBufferOwner<BT_Array, CVector4<float>>&& dataSource, CM
 {
 }
 
-void CTextMesh::DrawExact( const CMatrix3<float>& modelToClip, CColor textColor /*= CColor( 255, 255, 255, 255 ) */ ) const
+void CTextMesh::DrawExact( const CMatrix3<float>& modelToClip, float zOrder, CColor textColor /*= CColor( 255, 255, 255, 255 ) */ ) const
 {
 	assert( owner != nullptr );
-	owner->DisplayText( *this, modelToClip, textColor );
+	owner->DisplayText( *this, modelToClip, zOrder, textColor );
 }
 
-void CTextMesh::DrawAligned( const CMatrix3<float>& modelToPixel, const CMatrix3<float>& pixelToClip, CColor textColor /*= CColor( 255, 255, 255, 255 ) */ ) const
+void CTextMesh::DrawAligned( const CMatrix3<float>& modelToPixel, const CMatrix3<float>& pixelToClip, float zOrder, CColor textColor /*= CColor( 255, 255, 255, 255 ) */ ) const
 {
 	auto gridAlignedTransform = modelToPixel;
 	gridAlignedTransform( 2, 0 ) = Round( modelToPixel( 2, 0 ) ) * 1.0f;
 	gridAlignedTransform( 2, 1 ) = Round( modelToPixel( 2, 1 ) ) * 1.0f;
-	DrawExact( pixelToClip * gridAlignedTransform, textColor );
+	DrawExact( pixelToClip * gridAlignedTransform, zOrder, textColor );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -727,7 +727,7 @@ void CFontRenderer::copyWordToBuffer( CPixelRect wordRect, CArray<CVector4<float
 	tempWordBuffer.Empty();
 }
 
-void CFontRenderer::DisplayText( const CTextMesh& textMesh, const CMatrix3<float>& modelToClip, CColor color ) const
+void CFontRenderer::DisplayText( const CTextMesh& textMesh, const CMatrix3<float>& modelToClip, float zOrder, CColor color ) const
 {
 	assert( textMesh.owner == this );
 	assert( CShaderProgramSwitcher::GetCurrentShaderProgram().GetId() == shaderData->FontProgram.GetId() );
@@ -745,7 +745,7 @@ void CFontRenderer::DisplayText( const CTextMesh& textMesh, const CMatrix3<float
 	shaderData->FontColorUniform.Set( color );
 	shaderData->FontUniform.Set( fontTexture );
 	shaderData->ModelToClipUniform.Set( modelToClip );
-	shaderData->ZOrderUniform.Set( textMesh.zOrder );
+	shaderData->ZOrderUniform.Set( zOrder );
 	// Draw the mesh.
 	textMesh.mesh.Draw( shaderData->FontProgram, textMesh.vertexCount );
 }

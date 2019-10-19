@@ -98,9 +98,9 @@ public:
 	// Render a single UTF8 line and return a text mesh containing necessary rendering information..
 	CTextMesh RenderLine( CStringPart str ) const;
 	// Separate the given string into lines with a maximum width and render each line separately.
-	void RenderMultipleLines( CUnicodePart str, int lineWidth, CArray<CTextMesh>& lines ) const;
+	void RenderMultipleLines( CUnicodePart str, int lineWidth, int startHOffset, CArray<CTextMesh>& lines ) const;
 	CParagraphRenderResult RenderMultipleLines( CUnicodePart str, int lineWidth, int lineHeight, int startHOffset ) const;
-	void RenderMultipleLines( CStringPart str, int lineWidth, CArray<CTextMesh>& lines ) const;
+	void RenderMultipleLines( CStringPart str, int lineWidth, int startHOffset, CArray<CTextMesh>& lines ) const;
 	CParagraphRenderResult RenderMultipleLines( CStringPart str, int lineWidth, int lineHeight, int startHOffset ) const;
 	// Draw the rendered string with the given pixel space position.
 	void DisplayText( const CTextMesh& textMesh, const CMatrix3<float>& modelToClip, float zOrder, CColor color ) const;

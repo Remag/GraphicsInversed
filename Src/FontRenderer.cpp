@@ -403,7 +403,7 @@ CPixelRect CFontRenderer::addQuadToMesh( CVector2<int> fontPos, CRenderGlyphData
 	return CPixelRect{ CPixelVector( bottomLeft.XY() ), glyphData.Advance.X(), glyphBoundsHeight };
 }
 
-void CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, CArray<CTextMesh>& lines ) const
+void CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, int startHOffset, CArray<CTextMesh>& lines ) const
 {
 	if( str.IsEmpty() ) {
 		return;
@@ -414,6 +414,7 @@ void CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, CArray
 	const int length = str.Length();
 	int strPos = 0;
 	CPixelRect lineRect;
+	int currentHOffset = startHOffset;
 	int lineStartPos = 0;
 	// Render the string word by word.
 	while( strPos < length ) {
@@ -422,23 +423,28 @@ void CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, CArray
 			addLineMesh( lineStartPos, strPos, lineRect, tempLineBuffer, lines );
 			tempLineBuffer.Empty();
 			lineRect = CPixelRect();
+			currentHOffset = 0;
 			lineStartPos = strPos;
 			continue;
 		}
 
 		const int prevLineEnd = tempLineBuffer.Size();
 		const int wordStartPos = strPos;
-		CVector2<int> wordOffset( Round( lineRect.Right() ) + hAdvance, 0 );
+		CVector2<int> wordOffset( currentHOffset + hAdvance, 0 );
 		const auto wordRect = renderUtf16Word( str, wordOffset, lineWidth, strPos, tempLineBuffer );
 		const auto newWidth = wordRect.Right();
 		if( newWidth <= lineWidth ) {
 			// New word fits, continue rendering the line.
 			lineRect = GetRectUnion( lineRect, wordRect );
+			currentHOffset = lineRect.GridRight();
 		} else {
 			// New word doesn't fit, add the existing line and start a new one with the rendered word.
 			addLineMesh( lineStartPos, strPos, lineRect, tempLineBuffer.Left( prevLineEnd ), lines );
-			tempLineBuffer.DeleteAt( 0, prevLineEnd );
-			lineRect = startNewLine( lineRect.Right(), wordRect, tempLineBuffer );
+			if( prevLineEnd > 0 ) {
+				tempLineBuffer.DeleteAt( 0, prevLineEnd );
+			}
+			lineRect = startNewLine( static_cast<float>( currentHOffset ), wordRect, tempLineBuffer );
+			currentHOffset = lineRect.GridRight();
 			lineStartPos = wordStartPos;
 		}
 	}
@@ -447,7 +453,7 @@ void CFontRenderer::RenderMultipleLines( CUnicodePart str, int lineWidth, CArray
 	addLineMesh( lineStartPos, length, lineRect, tempLineBuffer, lines );
 }
 
-void CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, CArray<CTextMesh>& lines ) const
+void CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, int startHOffset, CArray<CTextMesh>& lines ) const
 {
 	if( str.IsEmpty() ) {
 		return;
@@ -458,6 +464,7 @@ void CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, CArray<
 	const int length = str.Length();
 	int strPos = 0;
 	CPixelRect lineRect;
+	int currentHOffset = startHOffset;
 	int lineStartPos = 0;
 	// Render the string word by word.
 	while( strPos < length ) {
@@ -466,22 +473,27 @@ void CFontRenderer::RenderMultipleLines( CStringPart str, int lineWidth, CArray<
 			addLineMesh( lineStartPos, strPos, lineRect, tempLineBuffer, lines );
 			tempLineBuffer.Empty();
 			lineRect = CPixelRect();
+			currentHOffset = 0;
 			lineStartPos = strPos;
 			continue;
 		}
 		const int prevLineEnd = tempLineBuffer.Size();
 		const int wordStartPos = strPos;
-		CVector2<int> wordOffset( Round( lineRect.Right() ) + hAdvance, 0 );
+		CVector2<int> wordOffset( currentHOffset + hAdvance, 0 );
 		const auto wordRect = renderUtf8Word( str, wordOffset, lineWidth, strPos, tempLineBuffer );
 		const auto newWidth = wordRect.Right();
 		if( newWidth <= lineWidth ) {
 			// New word fits, continue rendering the line.
 			lineRect = GetRectUnion( lineRect, wordRect );
+			currentHOffset = lineRect.GridRight();
 		} else {
 			// New word doesn't fit, add the existing line and start a new one with the rendered word.
 			addLineMesh( lineStartPos, strPos, lineRect, tempLineBuffer.Left( prevLineEnd ), lines );
-			tempLineBuffer.DeleteAt( 0, prevLineEnd );
-			lineRect = startNewLine( lineRect.Right(), wordRect, tempLineBuffer );
+			if( prevLineEnd > 0 ) {
+				tempLineBuffer.DeleteAt( 0, prevLineEnd );
+			}
+			lineRect = startNewLine( static_cast<float>( currentHOffset ), wordRect, tempLineBuffer );
+			currentHOffset = lineRect.GridRight();
 			lineStartPos = wordStartPos;
 		}
 	}

@@ -83,7 +83,7 @@ public:
 		{ return rect.Area(); }
 	CPixelVector CenterPoint() const;
 
-	CPixelRect GetOffsetRect( CPixelVector offset );
+	CPixelRect GetOffsetRect( CPixelVector offset ) const;
 	CPixelRect GetOffsetRect( int leftDelta, int topDelta, int rightDelta, int bottomDelta ) const;
 	CPixelRect GetOffsetRect( float leftDelta, float topDelta, float rightDelta, float bottomDelta ) const;
 	bool Has( CPixelVector pos ) const;
@@ -147,7 +147,7 @@ inline CPixelVector CPixelRect::CenterPoint() const
 	return CPixelVector( rect.CenterPoint() );
 }
 
-inline CPixelRect CPixelRect::GetOffsetRect( CPixelVector offset )
+inline CPixelRect CPixelRect::GetOffsetRect( CPixelVector offset ) const
 {
 	return CPixelRect( rect.GetOffsetRect( offset.GetPixelPos() ) );
 }

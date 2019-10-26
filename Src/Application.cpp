@@ -94,7 +94,7 @@ void CApplication::CommitInputKeyChanges( CStringPart controlSchemeName )
 
 bool CApplication::Initialize( CUnicodeView commandLine )
 {
-	const auto startupInfo = createStrartupInfo( commandLine );
+	auto startupInfo = createStrartupInfo( commandLine );
 	additionalWindows = CreateOwner<CAdditionalWindowContainer>();
 	stateManager = CreateOwner<CStateManager>();
 
@@ -103,7 +103,7 @@ bool CApplication::Initialize( CUnicodeView commandLine )
 		inputSettingsController = CreateOwner<CInputSettingsController>( settingsFileName );
 
 	}
-	auto firstState = onInitialize( startupInfo );
+	auto firstState = onInitialize( move( startupInfo ) );
 	if( firstState == nullptr ) {
 		return false;
 	}

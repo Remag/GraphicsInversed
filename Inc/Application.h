@@ -74,7 +74,7 @@ protected:
 	// - Creating and setting the engine for updating the states.
 	// - Calling CMainFrame::Initialize() 
 	// - Returning an initial state.
-	virtual CPtrOwner<IState> onInitialize( const IStartupInfo* startupInfo ) = 0;
+	virtual CPtrOwner<IState> onInitialize( CPtrOwner<IStartupInfo> startupInfo ) = 0;
 	// Initialize parameters associated with the OpenGL context.
 	// This is called during main program initialization as well as any time the GL context is recreated.
 	virtual void onInitializeGlContext() {};

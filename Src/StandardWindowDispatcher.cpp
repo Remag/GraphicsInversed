@@ -117,6 +117,11 @@ void CStandardWindowDispatcher::OnInput( HWND, LPARAM lParam ) const
 
 	const bool isKeyDown = !HasFlag( resultInput.data.keyboard.Flags, RI_KEY_BREAK );
 	GinInternal::GetInputHandler().OnKeyboardPress( processedInput, isKeyDown );
+	// For keys that are often doubled on a keyboard also send their generic virtual key.
+	const auto vKey = resultInput.data.keyboard.VKey;
+	if( vKey == VK_SHIFT || vKey == VK_CONTROL ) {
+		GinInternal::GetInputHandler().OnKeyboardPress( vKey, isKeyDown );
+	}
 }
 
 int CStandardWindowDispatcher::processRawKeyboard( RAWKEYBOARD input ) const

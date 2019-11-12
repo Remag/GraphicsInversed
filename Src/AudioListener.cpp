@@ -1,13 +1,13 @@
 #include <common.h>
 #pragma hdrstop
 
+#ifndef GIN_NO_AUDIO
+
 #include <AudioListener.h>
 #include <AlContextManager.h>
 #include <AlGlobals.h>
 
 namespace Gin {
-
-#ifndef GIN_NO_AUDIO
 
 namespace Audio {
 
@@ -56,7 +56,7 @@ void CAudioListener::SetVelocity( const CVector3<float>& newValue )
 
 } // namespace Audio.
 
-#endif
-
 }	// namespace Gin.
+
+#endif
 

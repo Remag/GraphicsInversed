@@ -1,10 +1,11 @@
 #pragma once
+
+#ifndef GIN_NO_AUDIO
+
 #include <GinDefs.h>
 // WAV file support classes and functions.
 
 namespace Gin {
-
-#ifndef GIN_NO_AUDIO
 
 namespace WAV {
 
@@ -52,6 +53,6 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
-#endif
-
 }	// namespace Gin.
+
+#endif

@@ -1,12 +1,12 @@
 #include <common.h>
 #pragma hdrstop
 
+#ifndef GIN_NO_AUDIO
+
 #include <OggFile.h>
 #include <AudioSequence.h>
 
 namespace Gin {
-
-#ifndef GIN_NO_AUDIO
 
 namespace Audio {
 
@@ -214,7 +214,7 @@ void COggFile::checkVorbisError( int errorCode ) const
 
 } // namespace Audio.
 
-#endif
-
 }	// namespace Gin.
+
+#endif
 

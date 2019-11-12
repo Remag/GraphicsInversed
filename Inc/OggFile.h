@@ -1,9 +1,10 @@
 #pragma once
+
+#ifndef GIN_NO_AUDIO
+
 #include <Gindefs.h>
 
 namespace Gin {
-
-#ifndef GIN_NO_AUDIO
 
 namespace Audio {
 
@@ -72,6 +73,6 @@ private:
 
 } // namespace Audio.
 
-#endif
-
 }	// namespace Gin.
+
+#endif

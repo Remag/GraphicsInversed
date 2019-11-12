@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef GIN_NO_AUDIO
+
 namespace Gin {
 
 namespace Audio {
@@ -24,4 +26,6 @@ enum TSourcePriority {
 }	// namespace Audio.
 
 }	// namespace Gin.
+
+#endif
 

@@ -1,13 +1,13 @@
 #include <common.h>
 #pragma hdrstop
 
+#ifndef GIN_NO_AUDIO
+
 #include <OpenAl\alc.h>
 #include <AlContextManager.h>
 #include <AudioSequence.h>
 
 namespace Gin {
-
-#ifndef GIN_NO_AUDIO
 
 namespace Audio {
 
@@ -133,7 +133,7 @@ void CAlContextManager::StopAllRecords()
 
 }	// namespace Audio.
 
-#endif
-
 }	// namespace Gin.
+
+#endif
 

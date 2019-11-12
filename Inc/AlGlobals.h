@@ -1,10 +1,11 @@
 #pragma once
+
+#ifndef GIN_NO_AUDIO
+
 #include <GinDefs.h>
 #include <AudioUtils.h>
 
 namespace Gin {
-
-#ifndef GIN_NO_AUDIO
 
 namespace Audio {
 
@@ -26,7 +27,7 @@ GINAPI CAudioRecord PlaySound( CSoundView seq, CVector3<float> pos,
 
 }	// namespace Audio.
 
-#endif
-
 }	// namespace Gin.
+
+#endif
 

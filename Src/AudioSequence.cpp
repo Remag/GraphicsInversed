@@ -1,13 +1,13 @@
 #include <common.h>
 #pragma hdrstop
 
+#ifndef GIN_NO_AUDIO
+
 #include <AudioSequence.h>
 #include <AlGlobals.h>
 #include <AlContextManager.h>
 
 namespace Gin {
-
-#ifndef GIN_NO_AUDIO
 
 namespace Audio {
 
@@ -45,6 +45,6 @@ void CSoundOwner::checkAudioError()
 
 }	// namespace Audio.
 
-#endif
-
 }	// namespace Gin.
+
+#endif

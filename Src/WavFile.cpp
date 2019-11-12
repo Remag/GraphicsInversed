@@ -1,13 +1,13 @@
 #include <common.h>
 #pragma hdrstop
 
+#ifndef GIN_NO_AUDIO
+
 #include <WavUtils.h>
 #include <WavFile.h>
 #include <AudioSequence.h>
 
 namespace Gin {
-
-#ifndef GIN_NO_AUDIO
 
 const CUnicodeView CWavException::generalWavError = L"WAV parsing error: %1.\nFile name: %0.";
 
@@ -181,6 +181,6 @@ void CWavFile::checkWavError( bool condition, CUnicodePart errorStr ) const
 
 } // namespace Audio.
 
-#endif
-
 }	// namespace Gin.
+
+#endif

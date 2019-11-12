@@ -16,9 +16,11 @@
 #define GINAPI __declspec( dllimport )
 #endif
 
-#if !defined( GINBUILD )
+#ifndef GINBUILD
 #pragma comment( lib, "GraphicsInversed" GIN_SUFFIX ".lib" )
-#else
+#endif
+
+#if defined( GINBUILD ) || defined( USE_STATIC_GIN )
 #pragma comment( lib, "OpenGL32.lib" )
 #pragma comment( lib, "glload.lib" )
 #pragma comment( lib, "libpng16.lib" )

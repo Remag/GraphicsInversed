@@ -55,46 +55,21 @@ void CStateManager::AbortStates()
 void CStateManager::PopState()
 {
 	assert( !stateStack.IsEmpty() );
-	auto popAction = [this]() { 
-		ImmediatePopState();
-	};
-
-	ExecutePostUpdate( move( popAction ) );
-}
-
-void CStateManager::PushState( CPtrOwner<IState> newState )
-{
-	auto pushAction = [state = move( newState ), this]() mutable { 
-		ImmediatePushState( move( state ) );
-	};
-
-	ExecutePostUpdate( move( pushAction ) );
-}
-
-void CStateManager::ClearStates()
-{
-	ExecutePostUpdate( [this]() { 
-		ImmediateClearStates();
-	} );
-}
-
-void CStateManager::ImmediatePopState()
-{
 	stateStack.DeleteLast();
 	if( !stateStack.IsEmpty() ) {
 		stateStack.Last()->OnWakeup();
 	}
 }
 
-void CStateManager::ImmediatePushState( CPtrOwner<IState> state )
+void CStateManager::PushState( CPtrOwner<IState> newState )
 {
 	if( !stateStack.IsEmpty() ) {
 		stateStack.Last()->OnSleep();
 	}
-	addState( move( state ) );
+	addState( move( newState ) );
 }
 
-void CStateManager::ImmediateClearStates()
+void CStateManager::ClearStates()
 {
 	for( int i = stateStack.Size() - 1; i >= 0; i-- ) {
 		stateStack.DeleteLast();

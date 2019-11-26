@@ -113,7 +113,7 @@ bool CApplication::Initialize( CUnicodeView commandLine )
 	// Mainframe must be initialized.
 	assert( mainFrame.IsInitialized() );
 
-	stateManager->ImmediatePushState( move( firstState ) );
+	stateManager->PushState( move( firstState ) );
 	return true;
 }
 

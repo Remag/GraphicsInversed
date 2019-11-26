@@ -55,10 +55,15 @@ void CStateManager::AbortStates()
 void CStateManager::PopState()
 {
 	assert( !stateStack.IsEmpty() );
+	stateStack.Last()->OnFinish();
+	auto lastState = move( stateStack.Last() );
 	stateStack.DeleteLast();
 	if( !stateStack.IsEmpty() ) {
 		stateStack.Last()->OnWakeup();
 	}
+
+	auto destroyStateAction = [state = move( lastState )]() {};
+	ExecutePostUpdate( move( destroyStateAction ) );
 }
 
 void CStateManager::PushState( CPtrOwner<IState> newState )

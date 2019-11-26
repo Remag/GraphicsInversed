@@ -13,6 +13,8 @@ public:
 
 	// Action taken right after the state is added to the state stack.
 	virtual void OnStart() = 0;
+	// Action taken immediately before the state is popped from the stack.
+	virtual void OnFinish() = 0;
 
 	// Actions on every update.
 	virtual void Update( TTime secondsPassed ) = 0;

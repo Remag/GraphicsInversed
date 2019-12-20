@@ -1,6 +1,9 @@
 #pragma once
 #include <UniformBlockUtils.h>
 
+// TODO: fix direct OpenGL references.
+#ifdef COMPILE_UNIFORM_BLOCKS
+
 namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
@@ -471,3 +474,4 @@ bool CUniformBlock<BL_Std140, Types...>::checkStd140Offset( int*, Relib::Types::
 
 }	// namespace Gin.
 
+#endif

@@ -76,7 +76,7 @@ public:
 	virtual ~ITextTranslator() {}
 
 	// Actions on a symbol input.
-	virtual void OnSymbolInput( wchar_t symbolCode ) = 0;
+	virtual void OnSymbolInput( int utf32 ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////

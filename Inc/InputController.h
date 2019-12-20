@@ -49,6 +49,8 @@ public:
 	explicit CInputControllerSwitcher( IInputController& newValue );
 	~CInputControllerSwitcher();
 
+	static IInputController& GetDefaultController();
+
 private:
 	IInputController& prevController;
 };

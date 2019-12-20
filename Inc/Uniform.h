@@ -1,6 +1,7 @@
 #pragma once
 #include <UniformLocation.h>
 #include <UniformUtils.h>
+#include <ShaderProgram.h>
 
 namespace Gin {
 

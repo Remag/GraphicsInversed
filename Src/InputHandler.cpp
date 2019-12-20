@@ -73,7 +73,7 @@ void CInputHandler::OnMousePress( int keyCode, bool isDown )
 void CInputHandler::OnSymbolMessage( int symbolCode )
 {
 	if( currentTextTranslator != nullptr && !shouldIgnoreSymbol( symbolCode ) ) {
-		currentTextTranslator->OnSymbolInput( static_cast<wchar_t>( symbolCode ) );
+		currentTextTranslator->OnSymbolInput( symbolCode );
 	}
 }
 
@@ -108,6 +108,11 @@ void CInputHandler::OnMouseLeave()
 	assert( HasMouseController() );
 	resetMousePosition();
 	currentMouseController->OnMouseLeave();
+}
+
+IInputController& CInputHandler::getDefaultInputController()
+{
+	return *defaultController;
 }
 
 void CInputHandler::resetMousePosition()

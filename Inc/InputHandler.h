@@ -95,6 +95,7 @@ private:
 	void setMouseController( IMouseMoveController* controller )
 		{ currentMouseController = controller; }
 
+	IInputController& getDefaultInputController();
 	IInputController& getInputController()
 		{ assert( currentInputController != nullptr ); return *currentInputController; }
 	void setInputController( IInputController& newValue )

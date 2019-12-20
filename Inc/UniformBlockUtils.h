@@ -2,6 +2,9 @@
 
 #pragma once
 #include <DrawEnums.h>
+#include <Gindefs.h>
+#include <GinError.h>
+#include <GinTypes.h>
 
 namespace Gin {
 
@@ -151,9 +154,26 @@ enum TUniformBlockGlConstants {
 	UBGC_IsUniformRowMajor = 0x8A3E,	// gl::UNIFORM_IS_ROW_MAJOR
 };
 
+// OpenGL operations with uniform blocks.
+class GINAPI CUniformBlockOperations {
+protected:
+	int getMaxUniformBlocks();
+	// Bind the buffer to the binding point.
+	void bindBuffer( CGlBuffer<BT_Uniform, BYTE> uniformBuffer, int bindingPointIndex, int blockIndex );
+	// Check if the real block's uniform count in the shader matches the count, given by the user.
+	bool checkUniformCount( CShaderProgram program, int blockIndex, int uniformCount );
+	// Bind a shader program to the binding index.
+	// Index of the block is returned.
+	int bindShaderProgram( CShaderProgram program, CStringView name, int bindingPointIndex );
+
+	void fillUniformInformation( CShaderProgram program, unsigned* activeIndices, int* uniformTypes, int* layouts, int blockIndex, int uniformCount ) const;
+};
+
+//////////////////////////////////////////////////////////////////////////
+
 // Base class for the uniform block. Contains common functionality for the blocks with different layouts.
 template <class... Types>
-class CUniformBlockBase {
+class CUniformBlockBase : public CUniformBlockOperations {
 public:
 	staticAssert( sizeof...( Types ) > 0 );
 	
@@ -171,11 +191,6 @@ protected:
 		{ return uniformBuffer.GetBufferSize() == 0; }
 	// Reserve the given size of memory for the buffer.
 	void reserveBuffer( int bufferSize );
-	// Bind the buffer to the binding point.
-	void bindBuffer( int blockIndex );
-	// Bind a shader program to the binding index.
-	// Index of the block is returned.
-	int bindShaderProgram( CShaderProgram program );
 
 	template<class Elem>
 	void getElemFromBuffer( Elem& result, int offset ) const;
@@ -196,8 +211,6 @@ protected:
 	template<int dimX, int dimY>
 	void setMatrixIntoBuffer( const CMatrix<float, dimX, dimY, MO_RowMajor>& newValue, int stride, int offset );
 
-	// Compare the real contents of the buffer with the compile-time types.
-	static bool checkUniformCount( CShaderProgram program, int blockIndex );
 	static bool checkUniformBlockContents( CShaderProgram program, int blockIndex );
 	
 private:
@@ -209,7 +222,6 @@ private:
 	int bindingPointIndex = NotFound;
 
 	int createUniqueBindingPoint();
-	static int getMaxUniformBlocks();
 
 	template<class Type0, class... RestTypes>
 	static bool checkUniformType( int* realTypes, Relib::Types::FalseType finishMarker );
@@ -247,36 +259,9 @@ int CUniformBlockBase<Types...>::createUniqueBindingPoint()
 }
 
 template <class... Types>
-int CUniformBlockBase<Types...>::getMaxUniformBlocks()
-{
-	int result;
-	gl::GetIntegerv( UBGC_MaxUniformBufferBindings, &result );
-	return result;
-}
-
-template <class... Types>
 void CUniformBlockBase<Types...>::reserveBuffer( int bufferSize )
 {
 	uniformBuffer.SetBufferSize( bufferSize, BUH_StreamDraw );
-}
-
-template <class... Types>
-void CUniformBlockBase<Types...>::bindBuffer( int blockIndex )
-{
-	gl::BindBufferRange( BT_Uniform, bindingPointIndex, uniformBuffer.GetId(), 0, uniformBuffer.BufferSize() );
-}
-
-template <class... Types>
-int CUniformBlockBase<Types...>::bindShaderProgram( CShaderProgram program )
-{
-	assert( program.IsLinked() );
-
-	const int blockIndex = gl::GetUniformBlockIndex( program.GetId(), name );
-	assert( blockIndex != UBGC_InvalidUniformIndex && bindingPointIndex != NotFound );
-
-	gl::UniformBlockBinding( program.GetId(), blockIndex, bindingPointIndex );
-	CheckGlError();
-	return blockIndex;
 }
 
 // Basic getElem version for elements which size is equal in C and GLSL.
@@ -382,26 +367,15 @@ void CUniformBlockBase<Types...>::setMatrixIntoBuffer( const CMatrix<float, dimX
 	}
 }
 
-// Check if the real block's uniform count in the shader matches the count, given by the user.
-template <class... Types>
-bool CUniformBlockBase<Types...>::checkUniformCount( CShaderProgram program, int blockIndex )
-{
-	int realUniformCount;
-	gl::GetActiveUniformBlockiv( program.GetId(), blockIndex, UBGC_ActiveBlockUniforms, &realUniformCount );
-	return realUniformCount == uniformCount;
-}
-
 // Check if the block in the program has the same size as the created buffer.
 template <class... Types>
 bool CUniformBlockBase<Types...>::checkUniformBlockContents( CShaderProgram program, int blockIndex ) 
 {
-	unsigned activeIndexes[uniformCount];
-	gl::GetActiveUniformBlockiv( program.GetId(), blockIndex, UBGC_ActiveUniformIndices, reinterpret_cast<int*>( activeIndexes ) );
+	unsigned activeIndices[uniformCount];
 	int uniformTypes[uniformCount];
-	gl::GetActiveUniformsiv( program.GetId(), uniformCount, activeIndexes, UBGC_UniformType, uniformTypes );
 	int layouts[uniformCount];
-	gl::GetActiveUniformsiv( program.GetId(), uniformCount, activeIndexes, UBGC_IsUniformRowMajor, layouts );
 
+	fillUniformInformation( program, activeIndices, uniformTypes, layouts, blockIndex, uniformCount );
 	return checkUniformType<Types...>( uniformTypes, Types::FalseType() ) && checkMatricesLayout<Types...>( layouts, Types::FalseType() );
 }
 

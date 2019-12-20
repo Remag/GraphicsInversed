@@ -34,6 +34,7 @@ private:
 	static void tryStartMouseTracking( HWND window );
 	static void startMouseTracking( HWND window );
 	static LRESULT handleCursorChange( HWND wnd, WPARAM wParam, LPARAM lParam );
+	static LRESULT handleCharInput( HWND wnd, WPARAM wParam );
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -90,9 +91,8 @@ LRESULT WINAPI CWindowClass<Dispatcher>::windowProcedure( HWND wnd, UINT msg, WP
 			break;
 		case WM_PAINT:
 			return getDispatcher().OnPaint( wnd, wParam, lParam );
-		case WM_CHAR:
-			getDispatcher().OnChar( wnd, wParam );
-			break;
+		case WM_UNICHAR:
+			return handleCharInput( wnd, wParam );
 		case WM_INPUT:
 			getDispatcher().OnInput( wnd, lParam );
 			// The application must call DefWindowProc so the system can perform cleanup.
@@ -189,6 +189,16 @@ inline LRESULT CWindowClass<Dispatcher>::handleCursorChange( HWND wnd, WPARAM wP
 		}
 	}
 	return ::DefWindowProc( wnd, WM_SETCURSOR, wParam, lParam );
+}
+
+template<class Dispatcher>
+inline LRESULT CWindowClass<Dispatcher>::handleCharInput( HWND wnd, WPARAM wParam )
+{
+	if( wParam == UNICODE_NOCHAR ) {
+		return TRUE;
+	}
+	getDispatcher().OnChar( wnd, wParam );
+	return FALSE;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -42,6 +42,11 @@ CInputControllerSwitcher::~CInputControllerSwitcher()
 	GinInternal::GetInputHandler().setInputController( prevController );
 }
 
+IInputController& CInputControllerSwitcher::GetDefaultController()
+{
+	return GinInternal::GetInputHandler().getDefaultInputController();
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 }	// namespace Gin.

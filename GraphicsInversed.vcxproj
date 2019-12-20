@@ -414,6 +414,7 @@
     <ClCompile Include="Src\TextureData.cpp" />
     <ClCompile Include="Src\TextureUtils.cpp" />
     <ClCompile Include="Src\TypelessTextureOperations.cpp" />
+    <ClCompile Include="Src\UniformBlockUtils.cpp" />
     <ClCompile Include="Src\UniformUtils.cpp" />
     <ClCompile Include="Src\UtilityUserInputActions.cpp" />
     <ClCompile Include="Src\WavFile.cpp" />

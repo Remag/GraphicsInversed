@@ -67,6 +67,7 @@ namespace Gin {
 	class CVertexShader;
 	class CFragmentShader;
 	class CShader;
+	class CShaderProgram;
 	class CShaderProgramOwner;
 	class CMesh;
 	class CModel;

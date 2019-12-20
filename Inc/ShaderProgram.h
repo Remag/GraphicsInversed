@@ -2,6 +2,7 @@
 #include <GinDefs.h>
 #include <UniformLocation.h>
 #include <UniformUtils.h>
+#include <GinTypes.h>
 #include <GinError.h>
 
 namespace Gin {

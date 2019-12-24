@@ -89,6 +89,11 @@ public:
 	bool Has( CPixelVector pos ) const;
 	bool Has( const CPixelRect& other ) const;
 	bool StrictHas( CPixelVector pos ) const;
+
+	bool operator==( CPixelRect other ) const
+		{ return rect == other.rect; }
+	bool operator!=( CPixelRect other ) const
+		{ return rect != other.rect; }
 	
 private:
 	CAARect<float> rect;

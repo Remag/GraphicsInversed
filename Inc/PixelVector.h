@@ -39,9 +39,9 @@ public:
 	// Find the closest pixel grid position.
 	CVector2<int> GetGridPos() const;
 	// Position in clip space.
-	CClipVector FindClipPos( const CMatrix3<float>& pixelToClip ) const;
+	CClipVector FindClipPos( CMatrix3<float> pixelToClip ) const;
 	// Size in clip space.
-	CClipVector FindClipSize( const CMatrix3<float>& pixelToClip ) const;
+	CClipVector FindClipSize( CMatrix3<float> pixelToClip ) const;
 
 	float SquareLength() const
 		{ return pos.SquareLength(); }
@@ -50,9 +50,9 @@ public:
 
 	// Vector operations. 
 	// Addition and subtraction.
-	CPixelVector& operator+=( const CPixelVector& other )
+	CPixelVector& operator+=( CPixelVector other )
 		{ pos += other.pos; return *this; }
-	CPixelVector& operator-=( const CPixelVector& other )
+	CPixelVector& operator-=( CPixelVector other )
 		{ pos -= other.pos; return *this; }
 
 	// Scalar multiplication and division.
@@ -63,10 +63,15 @@ public:
 	CPixelVector& operator/=( float mul )
 		{ pos /= mul; return *this; }
 
-
 	// Unary minus.
 	CPixelVector operator-() const
 		{ return CPixelVector( -pos ); }
+
+	// Comparison.
+	bool operator==( CPixelVector other ) const
+		{ return pos == other.pos; }
+	bool operator!=( CPixelVector other ) const
+		{ return pos != other.pos; }
 
 private:
 	// Pixel position can represent positions misaligned to the pixel grid. That's why it's stored in a floating point vector.

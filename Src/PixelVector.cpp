@@ -8,12 +8,12 @@ namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
 
-CClipVector CPixelVector::FindClipPos( const CMatrix3<float>& pixelToClip ) const
+CClipVector CPixelVector::FindClipPos( CMatrix3<float> pixelToClip ) const
 {
 	return CClipVector( PointTransform( pixelToClip, pos ) );
 }
 
-CClipVector CPixelVector::FindClipSize( const CMatrix3<float>& pixelToClip ) const
+CClipVector CPixelVector::FindClipSize( CMatrix3<float> pixelToClip ) const
 {
 	return CClipVector( VecTransform( pixelToClip, pos ) );
 }

@@ -97,7 +97,6 @@ bool CAlContextManager::isActive( const CPlayingSource& src ) const
 	return result != CAudioRecord::RS_Initial && result != CAudioRecord::RS_Stopped;	
 }
 
-const CVector3<float> defaultUpVector{ 0.0f, 1.0f, 0.0f };
 void CAlContextManager::playSource( int srcId, CSoundView seq, CVector3<float> pos, CVector3<float> velocity, bool isLooping ) const
 {
 	assert( srcId >= 0 );

@@ -15,18 +15,18 @@ class GINAPI CAudioListener : public CSingleton<CAudioListener> {
 public:
 	CAudioListener();
 
-	const CVector3<float>& GetPos() const
+	CVector3<float> GetPos() const
 		{ return position; }
-	const CVector3<float>& GetDir() const
+	CVector3<float> GetDir() const
 		{ return direction; }
-	const CVector3<float>& GetUpVector() const
+	CVector3<float> GetUpVector() const
 		{ return upVector; }
-	const CVector3<float>& GetVelocity() const
+	CVector3<float> GetVelocity() const
 		{ return velocity; }
 
-	void SetPos( const CVector3<float>& newValue );
-	void SetDir( const CVector3<float>& newDir, const CVector3<float>& newUpVecotr );
-	void SetVelocity( const CVector3<float>& newValue );
+	void SetPos( CVector3<float> newValue );
+	void SetDir( CVector3<float> newDir, CVector3<float> newUpVecotr );
+	void SetVelocity( CVector3<float> newValue );
 
 private:
 	CVector3<float> position;

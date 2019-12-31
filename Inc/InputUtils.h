@@ -286,6 +286,11 @@ struct CKeyCombination {
 	CKeyCombination() = default;
 	CKeyCombination( TGinVirtualKey mainKey, TKeyModifierType keyModifier = KMT_Press, TGinVirtualKey additionalKey = GVK_Null ) : 
 		MainKey( mainKey ), AdditionalKey( additionalKey ), KeyModifier( keyModifier ) {}
+
+	int HashKey() const
+		{ return CombineHashKey( CombineHashKey( MainKey, AdditionalKey ), KeyModifier ); }
+	bool operator==( CKeyCombination other ) const
+		{ return MainKey == other.MainKey && AdditionalKey == other.AdditionalKey && KeyModifier == other.KeyModifier; }
 };
 
 //////////////////////////////////////////////////////////////////////////

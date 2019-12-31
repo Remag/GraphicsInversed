@@ -21,7 +21,7 @@ CAudioListener::CAudioListener() :
 
 }
 
-void CAudioListener::SetPos( const CVector3<float>& newValue )
+void CAudioListener::SetPos( CVector3<float> newValue )
 {
 	assert( GetAudioContextManager().HasContext() );
 	alListenerfv( AEP_Position, newValue.Ptr() );
@@ -34,7 +34,7 @@ void CAudioListener::checkLastAudioError() const
 	assert( alGetError() == AL_NO_ERROR );
 }
 
-void CAudioListener::SetDir( const CVector3<float>& newDir, const CVector3<float>& newUpVecotr )
+void CAudioListener::SetDir( CVector3<float> newDir, CVector3<float> newUpVecotr )
 {
 	assert( GetAudioContextManager().HasContext() );
 	CVector<float, 6> orientation( newDir, newUpVecotr );
@@ -44,7 +44,7 @@ void CAudioListener::SetDir( const CVector3<float>& newDir, const CVector3<float
 	upVector = newUpVecotr;
 }
 
-void CAudioListener::SetVelocity( const CVector3<float>& newValue )
+void CAudioListener::SetVelocity( CVector3<float> newValue )
 {
 	assert( GetAudioContextManager().HasContext() );
 	alListenerfv( AEP_Velocity, newValue.Ptr() );

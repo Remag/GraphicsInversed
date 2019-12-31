@@ -40,6 +40,7 @@ private:
 // A sequence of audio buffers representing a single audio sample.
 class GINAPI CSoundOwner {
 public:
+	CSoundOwner() = default;
 	explicit CSoundOwner( int bufferCount );
 	CSoundOwner( CSoundOwner&& ) = default;
 	CSoundOwner& operator=( CSoundOwner&& ) = default;
@@ -47,6 +48,9 @@ public:
 
 	operator CSoundView() const
 		{ return CSoundView( bufferIds ); }
+
+	bool IsEmpty() const
+		{ return bufferIds.IsEmpty(); }
 
 	// Identifiers of the underlying audio buffers.
 	CArrayView<unsigned> Buffers() const

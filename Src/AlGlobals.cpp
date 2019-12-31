@@ -20,6 +20,11 @@ CAudioListener& GetAudioListener()
 	return *CAudioListener::GetInstance();
 }
 
+GINAPI CVector3<float> GetListenerPos()
+{
+	return GetAudioListener().GetPos();
+}
+
 CAlContextManager& GetAudioContextManager()
 {
 	return GinInternal::GetMainFrame().AlContextManager();

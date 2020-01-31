@@ -789,11 +789,15 @@ texCoord = vertexData.zw / atlasSize;	\
 }";
 
 static const CStringView defaultFragmentShaderText = "#version 110\n \
-varying vec2 texCoord;	\
-uniform sampler2D fontAtlas;	\
-uniform vec4 color;	\
-void main() {	\
-gl_FragColor = vec4( 1, 1, 1, texture2D( fontAtlas, texCoord ).r ) * color;	\
+varying vec2 texCoord;\
+uniform sampler2D fontAtlas;\
+uniform vec4 color;\
+void main() {\
+vec4 result = vec4( 1, 1, 1, texture2D( fontAtlas, texCoord ).r ) * color;\
+if( result.a <= 0.0 ) {\
+	discard;\
+}\
+gl_FragColor = result;\
 }";
 
 CShaderProgramOwner CFontRenderer::CFontShaderData::createDefaultProgram()

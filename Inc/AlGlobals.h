@@ -22,6 +22,7 @@ GINAPI CAudioListener& GetAudioListener();
 // Listener position.
 GINAPI CVector3<float> GetListenerPos();
 
+GINAPI void StopAllSounds();
 GINAPI CAudioRecord PlaySound( CSoundView seq, CVector3<float> pos = CVector3<float>{}, 
 	CVector3<float> velocity = CVector3<float>{}, bool isLooping = false, TSourcePriority priority = SP_LowPriority );
 

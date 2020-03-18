@@ -40,7 +40,7 @@ public:
 
 	// Is the context created.
 	bool HasContext() const
-		{ return context != 0; }
+		{ return context != nullptr; }
 	// Create the context.
 	void Initialize();
 	// Delete the context.

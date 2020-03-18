@@ -68,6 +68,8 @@ CFontRenderer::CFontRenderer()
 CFontRenderer::CFontRenderer( CPtrOwner<IGlyphProvider> provider ) :
 	glyphProvider( move( provider ) )
 {
+	assert( shaderData != nullptr );
+	fontTexture.SetSamplerObject( GetLinearSampler() );
 }
 
 void CFontRenderer::InitializeShaderData()
@@ -93,6 +95,7 @@ void CFontRenderer::UnloadFont()
 {
 	fontTextureState = CGlyphAtlasState{};
 	fontTexture = CTextureOwner<TBT_Texture2, TGF_Red>();
+	fontTexture.SetSamplerObject( GetLinearSampler() );
 	glyphProvider = nullptr;
 	fontData.FreeBuffer();
 }

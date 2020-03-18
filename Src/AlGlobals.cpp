@@ -30,6 +30,11 @@ CAlContextManager& GetAudioContextManager()
 	return GinInternal::GetMainFrame().AlContextManager();
 }
 
+void StopAllSounds()
+{
+	GetAudioContextManager().StopAllRecords();
+}
+
 CAudioRecord PlaySound( CSoundView seq, CVector3<float> pos, CVector3<float> velocity, bool isLooping, TSourcePriority priority )
 {
 	return GetAudioContextManager().CreateRecord( seq, priority, pos, velocity, isLooping );

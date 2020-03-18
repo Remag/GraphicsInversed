@@ -50,7 +50,7 @@ void CAlContextManager::Cleanup()
 {
 	alcMakeContextCurrent( 0 );
 	alcDestroyContext( context );
-	context = 0;
+	context = nullptr;
 	alcCloseDevice( device );
 	device = 0;
 }

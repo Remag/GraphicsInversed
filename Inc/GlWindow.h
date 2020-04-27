@@ -120,7 +120,7 @@ private:
 	void setRenderMechanism( IRenderMechanism& newValue );
 	void doCreate( CUnicodeView className, CGlWindowSettings initialSettings );
 
-	static CVector2<int> findDefaultResolution();
+	CVector2<int> findDefaultResolution() const;
 	static bool compareDisplaySettings( const DEVMODE& left, const DEVMODE& right );
 	static CVector2<int> getResolution( const DEVMODE& settings );
 	static void setScreenResolution( CVector2<int> resolution );

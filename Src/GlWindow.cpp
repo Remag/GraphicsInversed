@@ -59,18 +59,23 @@ void CGlWindow::doCreate( CUnicodeView className, CGlWindowSettings initialSetti
 	}
 }
 
-CVector2<int> CGlWindow::findDefaultResolution()
+CVector2<int> CGlWindow::findDefaultResolution() const
 {
 	// Find screen resolution.
 	DEVMODE currentSettings;
+	::ZeroMemory( &currentSettings, sizeof( currentSettings ) );
 	currentSettings.dmSize = sizeof( currentSettings );
 	currentSettings.dmDriverExtra = 0;
 
 	if( ::EnumDisplaySettings( nullptr, ENUM_REGISTRY_SETTINGS, &currentSettings ) == 0 ) {
-		// Apparently, the previous call can fail on some devices for an unknown reason. Use ENUM_CURRENT_SETTINGS as a fall back and revert to a hard coded resolution if that fails as well.
+		// Apparently, the previous call can fail on some devices for an unknown reason.
+		// Use ENUM_CURRENT_SETTINGS as a fall back and revert to a hard coded resolution if that fails as well.
+		Log::Warning( L"Failed to fetch registry display settings", this );
+		::ZeroMemory( &currentSettings, sizeof( currentSettings ) );
 		currentSettings.dmSize = sizeof( currentSettings );
 		currentSettings.dmDriverExtra = 0;
 		if( ::EnumDisplaySettings( nullptr, ENUM_CURRENT_SETTINGS, &currentSettings ) == 0 ) {
+			Log::Warning( L"Failed to fetch current display settings", this );
 			return CVector2<int>( 1920, 1080 );
 		}
 	}
@@ -112,6 +117,7 @@ CVector2<int> CGlWindow::GetScreenResolution() const
 int CGlWindow::GetSupportedResolutions( CVector2<int> minResolution, CArray<CVector2<int>>& result ) const
 {
 	DEVMODE currentSettings;
+	::ZeroMemory( &currentSettings, sizeof( currentSettings ) );
 	currentSettings.dmSize = sizeof( currentSettings );
 	currentSettings.dmDriverExtra = 0;
 	const bool enumSuccess = ::EnumDisplaySettings( 0, ENUM_CURRENT_SETTINGS, &currentSettings ) != 0 ;
@@ -119,6 +125,7 @@ int CGlWindow::GetSupportedResolutions( CVector2<int> minResolution, CArray<CVec
 	const CVector2<int> currentResolution = getResolution( currentSettings );
 
 	DEVMODE settings;
+	::ZeroMemory( &settings, sizeof( settings ) );
 	settings.dmSize = sizeof( settings );
 	settings.dmDriverExtra = 0;
 	int currentResPos = NotFound;
@@ -150,6 +157,7 @@ int CGlWindow::GetSupportedResolutions( CVector2<int> minResolution, CArray<CVec
 
 CVector2<int> CGlWindow::getResolution( const DEVMODE& settings )
 {
+	assert( settings.dmPelsWidth > 0 && settings.dmPelsHeight > 0 );
 	return CVector2<int>( numeric_cast<int>( settings.dmPelsWidth ), numeric_cast<int>( settings.dmPelsHeight ) );
 }
 
@@ -188,7 +196,7 @@ void CGlWindow::SetFullscreenResolution( CVector2<int> newValue )
 void CGlWindow::setScreenResolution( CVector2<int> resolution )
 {
 	DEVMODE newSettings;
-	ZeroMemory( &newSettings, sizeof( newSettings ) );
+	::ZeroMemory( &newSettings, sizeof( newSettings ) );
 	newSettings.dmSize = sizeof( newSettings );
 	SetFlags( newSettings.dmFields, DM_PELSWIDTH | DM_PELSHEIGHT );
 	newSettings.dmPelsWidth = numeric_cast<DWORD>( resolution.X() );

@@ -360,6 +360,9 @@
     <ClInclude Include="Src\gifdec.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\ImageFileUtils.h">
+      <Filter>Header Files\Drawing\Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlContextManager.cpp">

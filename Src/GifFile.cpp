@@ -13,9 +13,9 @@ CGifFile::CGifFile( CUnicodePart _fileName ) :
 {
 }
 
-void CGifFile::Read( CArray<CImageFrameData>& result, CVector2<int>& resultSize ) const
+void CGifFile::Read( CAnimatedImageData& result ) const
 {
-	assert( result.IsEmpty() );
+	assert( result.Frames.IsEmpty() );
 
 	CFileReader file( fileName, FCM_OpenExisting );
 	CArray<BYTE> fileData;
@@ -23,22 +23,22 @@ void CGifFile::Read( CArray<CImageFrameData>& result, CVector2<int>& resultSize 
 	fileData.IncreaseSize( fileLength );
 	file.Read( fileData.Ptr(), fileLength );
 
-	doReadRawData( fileName, fileData, result, resultSize );
+	doReadRawData( fileName, fileData, result );
 }
 
-void CGifFile::ReadRawData( CArrayView<BYTE> gifData, CArray<CImageFrameData>& result, CVector2<int>& resultSize )
+void CGifFile::ReadRawData( CArrayView<BYTE> gifData, CAnimatedImageData& result )
 {
-	doReadRawData( CUnicodePart(), gifData, result, resultSize ); 
+	doReadRawData( CUnicodePart(), gifData, result ); 
 }
 
-void CGifFile::doReadRawData( CUnicodePart fileName, CArrayView<BYTE> gifData, CArray<CImageFrameData>& result, CVector2<int>& resultSize )
+void CGifFile::doReadRawData( CUnicodePart fileName, CArrayView<BYTE> gifData, CAnimatedImageData& result )
 {
 	try {
 		const GinInternal::CGiffBuffer buffer{ gifData, 0 };
 		auto decodeData = GinInternal::gd_open_gif( buffer );
-		readGifFrames( decodeData, result );
-		resultSize.X() = decodeData.width;
-		resultSize.Y() = decodeData.height;
+		readGifFrames( decodeData, result.Frames );
+		result.ImageSize.X() = decodeData.width;
+		result.ImageSize.Y() = decodeData.height;
 	} catch( GinInternal::CGifInternalException& e ) {
 		throw CGifException( fileName, e.GetMessageText() );
 	}

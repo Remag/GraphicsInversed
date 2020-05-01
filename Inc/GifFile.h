@@ -1,5 +1,6 @@
 #pragma once
 #include <Gindefs.h>
+#include <ImageFileUtils.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -23,11 +24,6 @@ private:
 	static const CUnicodeView generalGifFileError;
 };
 
-struct CImageFrameData {
-	CArray<CColor> Colors;
-	int FrameEndTimeMs;
-};
-
 // Convert 1 and 0 delay to 10 delay.
 
 //////////////////////////////////////////////////////////////////////////
@@ -39,15 +35,15 @@ public:
 
 	// Read the contents of the GIF file and decompress them as a 32bit RGBA image.
 	// Image pixel dimensions are returned in resultSize.
-	void Read( CArray<CImageFrameData>& result, CVector2<int>& resultSize ) const;
+	void Read( CAnimatedImageData& result ) const;
 
 	// Read directly from the provided array.
-	static void ReadRawData( CArrayView<BYTE> gifData, CArray<CImageFrameData>& result, CVector2<int>& resultSize );
+	static void ReadRawData( CArrayView<BYTE> gifData, CAnimatedImageData& result );
 
 private:
 	CUnicodeString fileName;
 
-	static void doReadRawData( CUnicodePart fileName, CArrayView<BYTE> gifData, CArray<CImageFrameData>& result, CVector2<int>& resultSize );
+	static void doReadRawData( CUnicodePart fileName, CArrayView<BYTE> gifData, CAnimatedImageData& result );
 	static void readGifFrames( GinInternal::CGiffDecodeData& decodeData, CArray<CImageFrameData>& result );
 	static void copyColorData( CArrayView<BYTE> frameData, int width, int height, const CDynamicBitSet<>& transparencyMask, CArray<CColor>& result );
 	static CColor createColor( CArrayView<BYTE> frameColors, int framePos );

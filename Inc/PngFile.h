@@ -1,5 +1,6 @@
 #pragma once
 #include <Gindefs.h>
+#include <ImageFileUtils.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +29,7 @@ public:
 
 	// Read the contents of the PNG file and decompress them as a 32bit RGBA image.
 	// Image pixel dimensions are returned in resultSize.
-	void Read( CArray<CColor>& result, CVector2<int>& resultSize ) const;
+	void Read( CStaticImageData& result ) const;
 	// Compress the given result into a 32bit RGBA PNG file.
 	// imageSize specifies the size of the given file data in pixels.
 	void Write( CArrayView<CColor> file, CVector2<int> imageSize );
@@ -36,7 +37,7 @@ public:
 	void Write( CArrayView<BYTE> file, TTexelFormat format, int rowStride, CVector2<int> imageSize );
 
 	// Read directly from the provided array.
-	static void ReadRawData( CArrayView<BYTE> pngData, CArray<CColor>& result, CVector2<int>& resultSize );
+	static void ReadRawData( CArrayView<BYTE> pngData, CStaticImageData& result );
 
 private:
 	CUnicodeString fileName;
@@ -45,7 +46,7 @@ private:
 	void doWrite( const void* fileData, unsigned pngLibFormat, int rowStride, CVector2<int> imageSize );
 	void writeCompressedData( CArray<BYTE>& compressedData, int dataSize ) const;
 
-	static void doReadRawData( CUnicodePart fileName, CArrayView<BYTE> pngData, CArray<CColor>& result, CVector2<int>& resultSize );
+	static void doReadRawData( CUnicodePart fileName, CArrayView<BYTE> pngData, CStaticImageData& result );
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -72,9 +72,9 @@ CPngFile::CPngFile( CUnicodePart _fileName ) :
 {
 }
 
-void CPngFile::Read( CArray<CColor>& result, CVector2<int>& resultSize ) const
+void CPngFile::Read( CStaticImageData& result ) const
 {
-	assert( result.IsEmpty() );
+	assert( result.Colors.IsEmpty() );
 
 	CFileReader file( fileName, FCM_OpenExisting );
 	CArray<BYTE> fileData;
@@ -82,15 +82,15 @@ void CPngFile::Read( CArray<CColor>& result, CVector2<int>& resultSize ) const
 	fileData.IncreaseSize( fileLength );
 	file.Read( fileData.Ptr(), fileLength );
 
-	doReadRawData( fileName, fileData, result, resultSize );
+	doReadRawData( fileName, fileData, result );
 }
 
-void CPngFile::ReadRawData( CArrayView<BYTE> pngData, CArray<CColor>& result, CVector2<int>& resultSize )
+void CPngFile::ReadRawData( CArrayView<BYTE> pngData, CStaticImageData& result )
 {
-	doReadRawData( CUnicodePart(), pngData, result, resultSize ); 
+	doReadRawData( CUnicodePart(), pngData, result ); 
 }
 
-void CPngFile::doReadRawData( CUnicodePart fileName, CArrayView<BYTE> pngData, CArray<CColor>& result, CVector2<int>& resultSize )
+void CPngFile::doReadRawData( CUnicodePart fileName, CArrayView<BYTE> pngData, CStaticImageData& result )
 {
 	png_image pngImage;
 	::memset( &pngImage,0, sizeof( pngImage ) );
@@ -98,11 +98,11 @@ void CPngFile::doReadRawData( CUnicodePart fileName, CArrayView<BYTE> pngData, C
 
 	CPngLibFileReader reader( fileName, pngData, pngImage );
 	pngImage.format = PNG_FORMAT_RGBA;
-	result.IncreaseSize( pngImage.height * pngImage.width );
+	result.Colors.IncreaseSize( pngImage.height * pngImage.width );
 	const auto rowStride = PNG_IMAGE_ROW_STRIDE( pngImage );
-	reader.FinalizeReading( result, rowStride );
-	resultSize.X() = pngImage.width;
-	resultSize.Y() = pngImage.height;
+	reader.FinalizeReading( result.Colors, rowStride );
+	result.ImageSize.X() = pngImage.width;
+	result.ImageSize.Y() = pngImage.height;
 }
 
 void CPngFile::Write( CArrayView<CColor> file, CVector2<int> imageSize )

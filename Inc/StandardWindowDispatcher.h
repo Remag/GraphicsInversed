@@ -13,6 +13,11 @@ public:
 	bool ShouldTrackMouseLeave() const
 		{ return trackMouseLeave; }
 
+	HCURSOR GetCurrentCursor() const
+		{ return currentCursor; }
+	void SetCurrentCursor( HCURSOR newValue )
+		{ currentCursor = newValue; }
+
 	LRESULT OnEraseBackground( HWND window, WPARAM wParam, LPARAM lParam ) const;
 	LRESULT OnPaint( HWND, WPARAM, LPARAM ) const;
 	void OnWindowDestroy( HWND ) const;
@@ -29,10 +34,11 @@ public:
 	void OnMousePress( HWND, int, bool ) const;
 
 	HCURSOR OnCursorChange( HWND, WPARAM, LPARAM ) const
-		{ return nullptr; }
+		{ return currentCursor; }
 
 private:
 	CGlWindow* targetWindow = nullptr;
+	HCURSOR currentCursor = nullptr;
 	bool trackMouseLeave;
 
 	int processRawKeyboard( RAWKEYBOARD input ) const;

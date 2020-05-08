@@ -7,6 +7,7 @@
 #include <GlWindow.h>
 #include <RenderMechanism.h>
 #include <InputSettingsController.h>
+#include <WindowClass.h>
 
 namespace Gin {
 
@@ -18,6 +19,11 @@ CStateManager& GetStateManager()
 CGlWindow& GetMainWindow()
 {
 	return GinInternal::GetMainFrame().GetMainGlWindow();
+}
+
+CStandardWindowDispatcher& GetMainWindowDispatcher()
+{
+	return GinInternal::GetMainFrame().GetWindowClass().GetDispatcher();
 }
 
 CGlContextManager& GetGlContextManager()

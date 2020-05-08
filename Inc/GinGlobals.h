@@ -14,6 +14,7 @@ class CMainFrame;
 class CStateManager;
 class CGlWindow;
 class CGlContextManager;
+class CStandardWindowDispatcher;
 class CEngine;
 struct CGlWindowSettings;
 
@@ -21,6 +22,8 @@ struct CGlWindowSettings;
 GINAPI CStateManager& GetStateManager();
 // Main window. Can be used to manage window size/resolution.
 GINAPI CGlWindow& GetMainWindow();
+// Dispatcher of the main window class.
+GINAPI CStandardWindowDispatcher& GetMainWindowDispatcher();
 // OpenGL rendering context manager.
 GINAPI CGlContextManager& GetGlContextManager();
 // Update engine.

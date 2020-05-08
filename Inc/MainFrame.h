@@ -31,6 +31,8 @@ public:
 		{ return *alContextManager; }
 	CGlContextManager& GetGlContextManager()
 		{ return *glContextManager; }
+	CWindowClass<CStandardWindowDispatcher>& GetWindowClass()
+		{ return *windowClass; }
 
 	CInputHandler& InputHandler()
 		{ return *inputHandler; }

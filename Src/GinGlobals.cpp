@@ -7,6 +7,7 @@
 #include <GlWindow.h>
 #include <RenderMechanism.h>
 #include <InputSettingsController.h>
+#include <StandardWindowDispatcher.h>
 #include <WindowClass.h>
 
 namespace Gin {

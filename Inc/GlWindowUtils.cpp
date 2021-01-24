@@ -109,12 +109,12 @@ CScissorsSwitcher::~CScissorsSwitcher()
 
 //////////////////////////////////////////////////////////////////////////
 
-const CMatrix3<float>& Gin::Coordinates::ClipToPixel()
+CMatrix3<float> Gin::Coordinates::ClipToPixel()
 {
 	return clipToPixelTransformation;
 }
 
-const CMatrix3<float>& Gin::Coordinates::PixelToClip()
+CMatrix3<float> Gin::Coordinates::PixelToClip()
 {
 	return pixelToClipTransformation;
 }

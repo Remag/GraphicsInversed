@@ -51,8 +51,8 @@ namespace Coordinates {
 //////////////////////////////////////////////////////////////////////////
 
 // Clip and pixel space transformations.
-GINAPI const CMatrix3<float>& ClipToPixel();
-GINAPI const CMatrix3<float>& PixelToClip();
+GINAPI CMatrix3<float> ClipToPixel();
+GINAPI CMatrix3<float> PixelToClip();
 
 CMatrix4<float> GINAPI FindPerspectiveMatrix( float zNear, float zFar, float frustumScale );
 

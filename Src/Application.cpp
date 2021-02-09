@@ -130,7 +130,7 @@ void CApplication::Run( CUnicodeView commandLine )
 		finalizeApplication();
 
 	} catch( const CException& e ) {
-		Log::Exception( e );
+		Log::CriticalException( e );
 		stateManager->AbortStates();
 		postDrawActions.Empty();
 		postUpdateActions.Empty();

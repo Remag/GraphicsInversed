@@ -31,6 +31,9 @@ public:
 	CArrayView<unsigned> Buffers() const
 		{ return bufferIds; }
 
+	bool operator==( CSoundView other ) const
+		{ return bufferIds.Ptr() == other.bufferIds.Ptr(); }
+
 private:
 	CArrayView<unsigned> bufferIds;
 };

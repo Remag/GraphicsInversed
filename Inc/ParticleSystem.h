@@ -5,6 +5,7 @@
 
 namespace Gin {
 
+class CParticleSystem;
 class CParticleShaderOwner;
 class IParticleEmitter;
 struct CParticleVariableData;

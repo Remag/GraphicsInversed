@@ -430,6 +430,18 @@ static void render_frame_rect( CGiffDecodeData* gif, uint8_t* buffer, CDynamicBi
 	}
 }
 
+static void makeFrameTransparent( CGiffDecodeData* gif )
+{
+	for( int yDelta = 0; yDelta < gif->fh; yDelta++ ) {
+		for( int xDelta = 0; xDelta < gif->fw; xDelta++ ) {
+			const auto y = gif->fy + yDelta;
+			const auto x = gif->fx + xDelta;
+			const auto framePos = y * gif->width + x;
+			gif->TransparencyMask |= framePos;
+		}
+	}
+}
+
 static void dispose( CGiffDecodeData* gif )
 {
 	switch( gif->gce.disposal ) {
@@ -437,7 +449,7 @@ static void dispose( CGiffDecodeData* gif )
 			render_frame_rect( gif, gif->canvas, gif->TransparencyMask );
 			break;
 		case 2: // Restore to background color. The background is assumed to be transparent.
-			gif->TransparencyMask.FillWithOnes();
+			makeFrameTransparent( gif );
 			break;
 		case 3: // Restore to previous. Leave the canvas as is and discard the frame.
 			break;

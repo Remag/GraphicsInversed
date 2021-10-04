@@ -43,7 +43,7 @@ void MakeScreenshot()
 	// Write buffer to file.
 	CPngFile pngFile( CreateUniqueImageName() );
 	const int scanLineWidth = -CeilTo( screenSize.X() * 3, sizeof( DWORD ) );
-	pngFile.Write( data, TF_RGB, scanLineWidth, screenSize );
+	pngFile.Write( data, PCF_RGB, scanLineWidth, screenSize );
 }
 
 //////////////////////////////////////////////////////////////////////////

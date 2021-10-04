@@ -267,8 +267,6 @@
     <ClInclude Include="Inc\DdsImage.h" />
     <ClInclude Include="Inc\DdsUtils.h" />
     <ClInclude Include="Inc\DefaultSamplerContainer.h" />
-    <ClInclude Include="Inc\GifFile.h" />
-    <ClInclude Include="Inc\ImageFileUtils.h" />
     <ClInclude Include="Inc\NullWindowDispatcher.h" />
     <ClInclude Include="Inc\DrawEnums.h" />
     <ClInclude Include="Inc\DrawFunctions.h" />
@@ -310,7 +308,6 @@
     <ClInclude Include="Inc\ParticleSystem.h" />
     <ClInclude Include="Inc\PixelRect.h" />
     <ClInclude Include="Inc\PixelVector.h" />
-    <ClInclude Include="Inc\PngFile.h" />
     <ClInclude Include="Inc\Quad.h" />
     <ClInclude Include="Inc\RenderMechanism.h" />
     <ClInclude Include="Inc\SamplerObject.h" />
@@ -377,7 +374,6 @@
     <ClCompile Include="Src\ForwardRenderer.cpp" />
     <ClCompile Include="Src\Framebuffer.cpp" />
     <ClCompile Include="Src\gifdec.cpp" />
-    <ClCompile Include="Src\GifFile.cpp" />
     <ClCompile Include="Src\GinError.cpp" />
     <ClCompile Include="Src\GinGlobalData.cpp" />
     <ClCompile Include="Src\GinGlobals.cpp" />
@@ -403,7 +399,6 @@
     <ClCompile Include="Src\ParticleSystem.cpp" />
     <ClCompile Include="Src\PixelRect.cpp" />
     <ClCompile Include="Src\PixelVector.cpp" />
-    <ClCompile Include="Src\PngFile.cpp" />
     <ClCompile Include="Src\Quad.cpp" />
     <ClCompile Include="Src\SamplerObject.cpp" />
     <ClCompile Include="Src\Screenshots.cpp" />

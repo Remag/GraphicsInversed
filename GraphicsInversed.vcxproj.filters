@@ -55,9 +55,6 @@
     <Filter Include="Header Files\Drawing\Particles">
       <UniqueIdentifier>{f50fd203-76d6-4a23-8dc1-78d6850cf8e7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Drawing\Files">
-      <UniqueIdentifier>{c481005a-790e-431d-86ad-f0e3a63a8302}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Screenshots.h">
@@ -351,17 +348,8 @@
     <ClInclude Include="Inc\StartupInfo.h">
       <Filter>Header Files\Application</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\PngFile.h">
-      <Filter>Header Files\Drawing\Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\GifFile.h">
-      <Filter>Header Files\Drawing\Files</Filter>
-    </ClInclude>
     <ClInclude Include="Src\gifdec.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\ImageFileUtils.h">
-      <Filter>Header Files\Drawing\Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -494,9 +482,6 @@
     <ClCompile Include="Src\PixelVector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\PngFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Quad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -561,9 +546,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\AdditionalWindowContainer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\GifFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\gifdec.cpp">

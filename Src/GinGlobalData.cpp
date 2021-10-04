@@ -6,8 +6,6 @@
 #include <BoundUserInputAction.h>
 #include <ConsoleSystem.h>
 #include <DdsImage.h>
-#include <PngFile.h>
-#include <GifFile.h>
 
 #pragma warning( disable : 4074 )
 // Global data should be initialized as fast as possible. Next directive sets the highest priority to the current translation unit.
@@ -21,8 +19,6 @@ CMap<CStringView, TGinVirtualKey, CCaselessStringHash> CInputSettings::keyNameTo
 
 extern const CError Err_GeneralGlError{ L"General OpenGL error! Error code: %0." };
 const CUnicodeView CDdsException::generalDdsFileError = L"DDS parsing error: %1.\nFile name: %0";
-const CUnicodeView CPngException::generalPngFileError = L"PNG parsing error: %1.\nFile name: %0";
-const CUnicodeView CGifException::generalGifFileError = L"GIF parsing error: %1.\nFile name: %0";
 
 namespace GinInternal {
 
@@ -73,5 +69,6 @@ namespace Vertex {
 
 // Export a hint variable to force the use of a high performance video card over the integrated graphics.
 extern "C" {
-	_declspec( dllexport ) DWORD NvOptimusEnablement = 0x00000001;
+	__declspec( dllexport ) DWORD NvOptimusEnablement = 0x00000001;	// NVIDIA
+	__declspec( dllexport ) int AmdPowerXpressRequestHighPerformance = 1;	// AMD
 }

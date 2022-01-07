@@ -24,6 +24,10 @@
 #include <Engine.h>
 #include <FaceCullSwitcher.h>
 #include <FontRenderer.h>
+#include <Font.h>
+#include <FontListGlyphProvider.h>
+#include <FontSize.h>
+#include <FreeTypeGlyphProvider.h>
 #include <ForwardRenderer.h>
 #include <Framebuffer.h>
 #include <GifFile.h>
@@ -33,6 +37,7 @@
 #include <GlContextManager.h>
 #include <GlWindow.h>
 #include <GlWindowUtils.h>
+#include <Glyph.h>
 #include <ImageData.h>
 #include <InputBinding.h>
 #include <InputController.h>

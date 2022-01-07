@@ -7,6 +7,9 @@
 #include <ConsoleSystem.h>
 #include <DdsImage.h>
 
+#include <FreeType\ft2build.h>
+#include FT_FREETYPE_H
+
 #pragma warning( disable : 4074 )
 // Global data should be initialized as fast as possible. Next directive sets the highest priority to the current translation unit.
 #pragma init_seg( compiler )
@@ -19,6 +22,10 @@ CMap<CStringView, TGinVirtualKey, CCaselessStringHash> CInputSettings::keyNameTo
 
 extern const CError Err_GeneralGlError{ L"General OpenGL error! Error code: %0." };
 const CUnicodeView CDdsException::generalDdsFileError = L"DDS parsing error: %1.\nFile name: %0";
+extern const CUnicodeView GeneralFreeTypeError = L"FreeType error. Error code: %0.\nFreeType module name: %1.";
+
+// FreeType library structure.
+FT_Library CFontOwner::freeTypeLib = 0;
 
 namespace GinInternal {
 

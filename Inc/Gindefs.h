@@ -23,8 +23,7 @@
 #if defined( GINBUILD ) || defined( USE_STATIC_GIN )
 #pragma comment( lib, "OpenGL32.lib" )
 #pragma comment( lib, "glload.lib" )
-#pragma comment( lib, "libpng16.lib" )
-#pragma comment( lib, "zlib.lib" )
+#pragma comment( lib, "FreeType.lib" )
 
 #ifndef GIN_NO_AUDIO
 #pragma comment( lib, "libOpenAL" GIN_SUFFIX ".dll.a" )
@@ -76,6 +75,13 @@ namespace Gin {
 	class CUniformLocation;
 	class CFramebuffer; 
 	class CDefaultSamplerContainer;
+
+	class CFontView;
+	class CFontEdit;
+	class CFontOwner;
+	class CFontSizeView;
+	class CFontSizeOwner;
+	class CGlyph;
 
 	template <class Dispatcher>
 	class CWindowClass;

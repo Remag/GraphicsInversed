@@ -118,7 +118,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;.\Ext\Inc\FreeType;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;GINBUILD;GINBUILD_DYNAMIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -161,7 +161,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;.\Ext\Inc\FreeType;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;GINBUILD;GINBUILD_DYNAMIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -195,7 +195,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;.\Ext\Inc\FreeType;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;GINBUILD;GINBUILD_STATIC;USE_STATIC_RELIB;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -267,6 +267,15 @@
     <ClInclude Include="Inc\DdsImage.h" />
     <ClInclude Include="Inc\DdsUtils.h" />
     <ClInclude Include="Inc\DefaultSamplerContainer.h" />
+    <ClInclude Include="Inc\Font.h" />
+    <ClInclude Include="Inc\FontListGlyphProvider.h" />
+    <ClInclude Include="Inc\FontSize.h" />
+    <ClInclude Include="Inc\FreeTypeException.h" />
+    <ClInclude Include="Inc\FreeTypeGlyphProvider.h" />
+    <ClInclude Include="Inc\FreeTypeInitializer.h" />
+    <ClInclude Include="Inc\Glyph.h" />
+    <ClInclude Include="Inc\GlyphInc.h" />
+    <ClInclude Include="Inc\GlyphProvider.h" />
     <ClInclude Include="Inc\NullWindowDispatcher.h" />
     <ClInclude Include="Inc\DrawEnums.h" />
     <ClInclude Include="Inc\DrawFunctions.h" />
@@ -370,9 +379,15 @@
     <ClCompile Include="Src\DrawMaskSwitchers.cpp" />
     <ClCompile Include="Src\Engine.cpp" />
     <ClCompile Include="Src\FaceCullSwitcher.cpp" />
+    <ClCompile Include="Src\Font.cpp" />
+    <ClCompile Include="Src\FontListGlyphProvider.cpp" />
     <ClCompile Include="Src\FontRenderer.cpp" />
+    <ClCompile Include="Src\FontSize.cpp" />
     <ClCompile Include="Src\ForwardRenderer.cpp" />
     <ClCompile Include="Src\Framebuffer.cpp" />
+    <ClCompile Include="Src\FreeTypeException.cpp" />
+    <ClCompile Include="Src\FreeTypeGlyphProvider.cpp" />
+    <ClCompile Include="Src\FreeTypeInitializer.cpp" />
     <ClCompile Include="Src\gifdec.cpp" />
     <ClCompile Include="Src\GinError.cpp" />
     <ClCompile Include="Src\GinGlobalData.cpp" />
@@ -381,6 +396,7 @@
     <ClCompile Include="Src\GlBuffer.cpp" />
     <ClCompile Include="Src\GlContextManager.cpp" />
     <ClCompile Include="Src\GlWindow.cpp" />
+    <ClCompile Include="Src\Glyph.cpp" />
     <ClCompile Include="Src\ImageData.cpp" />
     <ClCompile Include="Src\InputController.cpp" />
     <ClCompile Include="Src\InputHandler.cpp" />

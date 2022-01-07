@@ -1,5 +1,6 @@
 #pragma once
 #include <Gindefs.h>
+#include <FreeTypeInitializer.h>
 #include <MainFrame.h>
 #include <RenderMechanism.h>
 #include <InputHandler.h>
@@ -113,6 +114,7 @@ protected:
 private:
 	// Library initializer.
 	CRelibInitializer relibInitializer;
+	CFreeTypeInitializer freeTypeInitializer;
 	// Main application window. Created with the application.
 	CMainFrame mainFrame;
 	CPtrOwner<CStateManager> stateManager;

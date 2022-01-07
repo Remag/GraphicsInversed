@@ -55,6 +55,9 @@
     <Filter Include="Header Files\Drawing\Particles">
       <UniqueIdentifier>{f50fd203-76d6-4a23-8dc1-78d6850cf8e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Drawing\Font">
+      <UniqueIdentifier>{644560a0-7184-4d58-89a7-0ed38a967e8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Screenshots.h">
@@ -136,9 +139,6 @@
       <Filter>Header Files\Application</Filter>
     </ClInclude>
     <ClInclude Include="Inc\FaceCullSwitcher.h">
-      <Filter>Header Files\Drawing</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\FontRenderer.h">
       <Filter>Header Files\Drawing</Filter>
     </ClInclude>
     <ClInclude Include="Inc\ForwardRenderer.h">
@@ -351,6 +351,36 @@
     <ClInclude Include="Src\gifdec.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Font.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\FontListGlyphProvider.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\FontSize.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\FreeTypeException.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\FreeTypeGlyphProvider.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Glyph.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GlyphInc.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GlyphProvider.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\FontRenderer.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\FreeTypeInitializer.h">
+      <Filter>Header Files\Drawing\Font</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlContextManager.cpp">
@@ -552,6 +582,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\UniformBlockUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FontListGlyphProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FontSize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FreeTypeException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FreeTypeGlyphProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Glyph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FreeTypeInitializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

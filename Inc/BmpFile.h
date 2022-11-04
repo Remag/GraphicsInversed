@@ -17,13 +17,13 @@ enum TBmpPixelFormat {
 class GINAPI CBmpFile {
 public:
 	CBmpFile() = default;
-	explicit CBmpFile( CUnicodeView fileName );
+	explicit CBmpFile( CStringView fileName );
 
 	// Check if the file has been opened.
 	bool IsOpen() const
 	{ return fileData.IsOpen(); }
 	// Open a given file for writing.
-	void Open( CUnicodeView fileName );
+	void Open( CStringView fileName );
 
 	// Write image in an uncompressed BMP format.
 	// size is given in pixels. 4-byte row alignment is assumed.

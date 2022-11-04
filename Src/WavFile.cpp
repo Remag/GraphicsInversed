@@ -9,18 +9,18 @@
 
 namespace Gin {
 
-const CUnicodeView CWavException::generalWavError = L"WAV parsing error: %1.\nFile name: %0.";
+const CStringView CWavException::generalWavError = "WAV parsing error: %1.\nFile name: %0.";
 
 namespace Audio {
 
 //////////////////////////////////////////////////////////////////////////
 
-CWavFile::CWavFile( CUnicodeView fileName )
+CWavFile::CWavFile( CStringPart fileName )
 {
 	Open( fileName );
 }
 
-void CWavFile::Open( CUnicodeView fileName )
+void CWavFile::Open( CStringPart fileName )
 {
 	assert( !IsOpen() );
 	wavFile.Open( fileName, FRWM_Read, FCM_OpenExisting, FSM_DenyNone );
@@ -61,8 +61,8 @@ CArray<BYTE> CWavFile::readHeaderDataFromFile()
 	return move( buffer );
 }
 
-static const CUnicodeView wavFileTooSmallError = L"WAV file too small";
-static const CUnicodeView invalidWavFileError = L"Invalid WAV file";
+static const CStringPart wavFileTooSmallError = "WAV file too small";
+static const CStringPart invalidWavFileError = "Invalid WAV file";
 static const int riffFileId = 0x46464952;	// "RIFF".
 static const int wavFileFormat = 0x45564157;	// "WAVE".
 void CWavFile::parseRiffHeader( const CArray<BYTE>& data, WAV::CRiffHeader& result, int& pos ) const
@@ -77,7 +77,7 @@ void CWavFile::parseRiffHeader( const CArray<BYTE>& data, WAV::CRiffHeader& resu
 	pos = newPos;
 }
 
-static const CUnicodeView compressionNotSupportedError = L"Compressed WAV files are not supported";
+static const CStringPart compressionNotSupportedError = "Compressed WAV files are not supported";
 static const int wavFormatId = 0x20746d66;	// "fmt ".
 void CWavFile::parseFirstWavSubheader( const CArray<BYTE>& data, WAV::CWavSubheader1& result, int& pos ) const
 {
@@ -133,7 +133,7 @@ CSoundOwner CWavFile::parseAudioData( int chunkSize )
 	return result;
 }
 
-static const CUnicodeView unsupportedFeatureError = L"WAV feature unsupported";
+static const CStringView unsupportedFeatureError = "WAV feature unsupported";
 TAudioDataFormat CWavFile::getDataFormat( const WAV::CWavSubheader1& header ) const
 {
 	if( header.NumChannels == 1 ) {
@@ -170,7 +170,7 @@ TAudioDataFormat CWavFile::getStereoDataFormat( const WAV::CWavSubheader1& heade
 	}
 }
 
-void CWavFile::checkWavError( bool condition, CUnicodePart errorStr ) const
+void CWavFile::checkWavError( bool condition, CStringPart errorStr ) const
 {
 	if( !condition ) {
 		throw CWavException( wavFile.GetFileName(), errorStr );

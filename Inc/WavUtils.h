@@ -42,13 +42,13 @@ struct CWavSubheader2 {
 // Exception thrown by the WAV file.
 class GINAPI CWavException : public CFileWrapperException {
 public:
-	CWavException( CUnicodePart fileName, CUnicodePart additionalInfo ) : CFileWrapperException( fileName, additionalInfo ) {}
+	CWavException( CStringPart fileName, CStringPart additionalInfo ) : CFileWrapperException( fileName, additionalInfo ) {}
 	
-	virtual CUnicodeString GetMessageTemplate() const override
-		{ return UnicodeStr( generalWavError ); }
+	virtual CString GetMessageTemplate() const override
+		{ return Str( generalWavError ); }
 	
 private:
-	static const CUnicodeView generalWavError;
+	static const CStringView generalWavError;
 };
 
 //////////////////////////////////////////////////////////////////////////

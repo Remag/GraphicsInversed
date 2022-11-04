@@ -6,7 +6,7 @@
 
 namespace Gin {
 
-const CUnicodeView CMtlFileException::generalMtlFileError = L"MTL error while parsing string %1.\r\nFile name: %0.";
+const CStringView CMtlFileException::generalMtlFileError = "MTL error while parsing string %1.\r\nFile name: %0.";
 //////////////////////////////////////////////////////////////////////////
 
 CMaterialDatabase::~CMaterialDatabase()
@@ -20,7 +20,7 @@ void CMaterialDatabase::Reset()
 	loadedMaterials.Empty();
 }
 
-void CMaterialDatabase::LoadFile( CUnicodeString fileName )
+void CMaterialDatabase::LoadFile( CString fileName )
 {
 	if( loadedFiles.HasValue( fileName ) ) {
 		return;
@@ -41,7 +41,7 @@ static const char colorLetter = 'K';
 static const char expLetter = 'N';
 static const char dissolveLetter = 'd';
 static const char illumModelLetter = 'i';
-void CMaterialDatabase::createMaterialData( CUnicodeView fileName )
+void CMaterialDatabase::createMaterialData( CStringView fileName )
 {
 	CString fileContents = File::ReadText( fileName );
 
@@ -74,7 +74,7 @@ void CMaterialDatabase::createMaterialData( CUnicodeView fileName )
 	addNewMaterial( currentMat, currentMtlName, fileName );
 }
 
-void CMaterialDatabase::parseNewMaterial( TMaterialOwner& currentMtl, CString& currentName, CStringPart mtlStr, CUnicodeView fileName )
+void CMaterialDatabase::parseNewMaterial( TMaterialOwner& currentMtl, CString& currentName, CStringPart mtlStr, CStringView fileName )
 {
 	checkMtl( mtlStr.HasPrefix( newMtlName ), mtlStr, fileName );
 	if( !currentMtl.IsNull() ) {
@@ -87,7 +87,7 @@ void CMaterialDatabase::parseNewMaterial( TMaterialOwner& currentMtl, CString& c
 	currentMtl = CreateInlineEntity<Material::ComponentClass>();
 }
 
-void CMaterialDatabase::addNewMaterial( TMaterialOwner& currentMtl, CString& currentName, CUnicodeView fileName )
+void CMaterialDatabase::addNewMaterial( TMaterialOwner& currentMtl, CString& currentName, CStringView fileName )
 {
 	assert( !currentName.IsEmpty() );
 	checkMtl( !loadedMaterials.Has( currentName ), currentName, fileName );
@@ -97,7 +97,7 @@ void CMaterialDatabase::addNewMaterial( TMaterialOwner& currentMtl, CString& cur
 static const char diffuseColorLetter = 'd';
 static const char specularColorLetter = 's';
 static const char ambientColorLetter = 'a';
-void CMaterialDatabase::parseMtlColor( TMaterialOwner& currentMtl, CStringPart mtlStr, CUnicodeView fileName )
+void CMaterialDatabase::parseMtlColor( TMaterialOwner& currentMtl, CStringPart mtlStr, CStringView fileName )
 {
 	const Material::CMaterialComponent<CVector3<float>>* targetComponent = nullptr;
 	switch( mtlStr[1] ) {
@@ -122,7 +122,7 @@ void CMaterialDatabase::parseMtlColor( TMaterialOwner& currentMtl, CStringPart m
 	currentMtl.SetValue( *targetComponent, SRGBToLinear( *colorValue ) );
 }
 
-void CMaterialDatabase::parseMtlExponent( TMaterialOwner& currentMtl, CStringPart mtlStr, CUnicodeView fileName )
+void CMaterialDatabase::parseMtlExponent( TMaterialOwner& currentMtl, CStringPart mtlStr, CStringView fileName )
 {
 	const auto expStr = mtlStr.Mid( specularExpName.Length() );
 	const auto expValue = Value<float>( expStr );
@@ -131,7 +131,7 @@ void CMaterialDatabase::parseMtlExponent( TMaterialOwner& currentMtl, CStringPar
 	currentMtl.SetValue( Material::SpecularExponent, *expValue );
 }
 
-void CMaterialDatabase::parseMtlDissolve( TMaterialOwner& currentMtl, CStringPart mtlStr, CUnicodeView fileName )
+void CMaterialDatabase::parseMtlDissolve( TMaterialOwner& currentMtl, CStringPart mtlStr, CStringView fileName )
 {
 	const auto dissolveStr = mtlStr.Mid( 2 );
 	const auto dissolveValue = Value<float>( dissolveStr );
@@ -140,7 +140,7 @@ void CMaterialDatabase::parseMtlDissolve( TMaterialOwner& currentMtl, CStringPar
 	currentMtl.SetValue( Material::DissolveValue, *dissolveValue );
 }
 
-void CMaterialDatabase::parseMtlIlluminationModel( TMaterialOwner& currentMtl, CStringPart mtlStr, CUnicodeView fileName )
+void CMaterialDatabase::parseMtlIlluminationModel( TMaterialOwner& currentMtl, CStringPart mtlStr, CStringView fileName )
 {
 	const auto modelStr = mtlStr.Mid( illumModelName.Length() );
 	const auto modelIntValue = Value<int>( modelStr );
@@ -150,10 +150,10 @@ void CMaterialDatabase::parseMtlIlluminationModel( TMaterialOwner& currentMtl, C
 	currentMtl.SetValue( Material::IlluminationModel, modelValue );
 }
 
-void CMaterialDatabase::checkMtl( bool condition, CStringPart mtlStr, CUnicodeView fileName )
+void CMaterialDatabase::checkMtl( bool condition, CStringPart mtlStr, CStringView fileName )
 {
 	if( !condition ) {
-		throw CMtlFileException( fileName, UnicodeStr( mtlStr ) );
+		throw CMtlFileException( fileName, mtlStr );
 	}
 }
 

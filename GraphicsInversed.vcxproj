@@ -36,40 +36,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -98,15 +98,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Platform)$(Configuration)\</OutDir>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Platform)$(Configuration)\</OutDir>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">
-    <OutDir>$(SolutionDir)Lib\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Lib\$(Platform)$(Configuration)\</OutDir>
     <TargetExt>.lib</TargetExt>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
@@ -120,14 +120,15 @@
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;.\Ext\Inc\FreeType;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;GINBUILD;GINBUILD_DYNAMIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>.\Ext\Lib\$(Configuration);..\ReversedLibrary\Ext\Lib\$(Configuration);$(SolutionDir)Lib\$(Configuration)</AdditionalLibraryDirectories>
-      <ImportLibrary>$(SolutionDir)Lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>.\Ext\Lib\$(Platform)$(Configuration);..\ReversedLibrary\Ext\Lib\$(Platform)$(Configuration);$(SolutionDir)Lib\$(Platform)$(Configuration)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(SolutionDir)Lib\$(Platform)$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Ext\Bin\$(Configuration)\*.dll" "$(TargetDir)" /D /K /Y</Command>
+      <Command>xcopy "$(ProjectDir)Ext\Bin\$(Platform)$(Configuration)\*.dll" "$(TargetDir)" /D /K /Y</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying dll files...</Message>
@@ -163,16 +164,17 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;.\Ext\Inc\FreeType;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;GINBUILD;GINBUILD_DYNAMIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>.\Ext\Lib\$(Configuration);..\ReversedLibrary\Ext\Lib\$(Configuration);$(SolutionDir)Lib\$(Configuration)</AdditionalLibraryDirectories>
-      <ImportLibrary>$(SolutionDir)Lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>.\Ext\Lib\$(Platform)$(Configuration);..\ReversedLibrary\Ext\Lib\$(Platform)$(Configuration);$(SolutionDir)Lib\$(Platform)$(Configuration)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(SolutionDir)Lib\$(Platform)$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Ext\Bin\$(Configuration)\*.dll" "$(TargetDir)" /D /K /Y</Command>
+      <Command>xcopy "$(ProjectDir)Ext\Bin\$(Platform)$(Configuration)\*.dll" "$(TargetDir)" /D /K /Y</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying dll files...</Message>
@@ -198,6 +200,7 @@
       <AdditionalIncludeDirectories>.;.\Inc;.\Src;.\Ext\Inc;.\Ext\Inc\FreeType;..\ReversedLibrary\Inc;..\ReversedLibrary\Ext\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;GINBUILD;GINBUILD_STATIC;USE_STATIC_RELIB;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -350,7 +353,6 @@
     <ClInclude Include="Inc\WindowClass.h" />
     <ClInclude Include="Inc\WinGdiRenderMechanism.h" />
     <ClInclude Include="Src\gifdec.h" />
-    <ClInclude Include="Src\Screenshots.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp">

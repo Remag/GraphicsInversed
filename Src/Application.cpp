@@ -27,9 +27,9 @@ CApplication::~CApplication()
 	assert( postOsQueueActions.IsEmpty() );
 }
 
-CUnicodeString CApplication::getInputSettingsFileName( const IStartupInfo* )
+CString CApplication::getInputSettingsFileName( const IStartupInfo* )
 {
-	return UnicodeStr( L"InputSettings.cfg" );
+	return Str( "InputSettings.cfg" );
 }
 
 void CApplication::SetEngine( CPtrOwner<CEngine> newEngine )

@@ -14,8 +14,8 @@ namespace Gin {
 //////////////////////////////////////////////////////////////////////////
 
 static int screenshotIndex = 0;
-static CUnicodeView screenshotFolder = L"Screenshots";
-void SetScreenshotFolder( CUnicodeString newFolder )
+static CString screenshotFolder( "Screenshots" );
+void SetScreenshotFolder( CString newFolder )
 {
 	assert( FileSystem::IsNameValid( newFolder ) );
 	screenshotFolder = move( newFolder );
@@ -23,9 +23,9 @@ void SetScreenshotFolder( CUnicodeString newFolder )
 }
 
 
-static const CUnicodeView screenshotNamePrefix = L"Screenshot";
-static const CUnicodeView screenshotExt = L".png";
-CUnicodeString CreateUniqueImageName()
+static const CStringView screenshotNamePrefix = "Screenshot";
+static const CStringView screenshotExt = ".png";
+CString CreateUniqueImageName()
 {
 	if( !FileSystem::DirAccessible( screenshotFolder ) ) {
 		FileSystem::CreateDir( screenshotFolder );

@@ -11,13 +11,13 @@ class CImageData;
 // Exception that occurs while trying to extract data from a DDS file.
 class GINAPI CDdsException : public CFileWrapperException {
 public:
-	CDdsException( CUnicodePart fileName, CUnicodePart additionalInfo ) : CFileWrapperException( fileName, additionalInfo ) {}
+	CDdsException( CStringPart fileName, CStringPart additionalInfo ) : CFileWrapperException( fileName, additionalInfo ) {}
 
-	virtual CUnicodeString GetMessageTemplate() const override
-		{ return UnicodeStr( generalDdsFileError ); }
+	virtual CString GetMessageTemplate() const override
+		{ return Str( generalDdsFileError ); }
 	
 private:
-	static const CUnicodeView generalDdsFileError;
+	static const CStringView generalDdsFileError;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -25,9 +25,9 @@ private:
 // Image in a DDS format.
 class GINAPI CDdsImage {
 public:
-	explicit CDdsImage( CUnicodePart fileName );
+	explicit CDdsImage( CStringPart fileName );
 
-	CUnicodeView Name() const
+	CStringView GetName() const
 		{ return textureFileName; }
 
 	// Get all the data associated with the texture.
@@ -38,7 +38,7 @@ public:
 	
 private:
 	// Name of the file with the texture data.
-	CUnicodeString textureFileName;
+	CString textureFileName;
 
 	CArray<BYTE> readFileBuffer();
 	void parseMagicNumber( CArray<BYTE>& data );
@@ -49,7 +49,6 @@ private:
 
 	CImageData parseTextureData( CArray<BYTE>& data, int pos, const DDS::CDdsHeader& header, const DDS::CDxt10Header& dxtHeader, bool shouldFlip );
 	void getTextureParameters( const DDS::CDdsHeader& header, const DDS::CDxt10Header& dxtHeader, TTextureType& type, int& width, int& height, int& depth ) const;
-	TTextureType getTextureType( const DDS::CDdsHeader& header, const DDS::CDxt10Header& dxtHeader ) const;
 	void getTexelParameters( const DDS::CDdsHeader& header, const DDS::CDxt10Header& dxtHeader, TTextureCompressionType& compressionType, TTexelFormat& format, TTexelDataType& dataType ) const;
 	DDS::TDXGIFormat findDxgiFormat( const DDS::CDdsHeader& header ) const;
 	void getDxtTexelParameters( DDS::TDXGIFormat dxgiFormat, TTextureCompressionType& compressionType, TTexelFormat& format, TTexelDataType& dataType ) const;
@@ -59,7 +58,7 @@ private:
 	CImageData createTextureData( TTextureType type, int width, int height, int depth, TTextureCompressionType compressionType,
 		TTexelFormat _imageFormat, TTexelDataType _pixelFormat, int mipmapCount, int arrayCount ) const;
 
-	void throwDdsException( CUnicodeView reason ) const;
+	void throwDdsException( CStringView reason ) const;
 
 	DDS::CDdsHeader createDdsHeader( const CImageData& data ) const;
 	DDS::CDdsPixelFormat createPixelFormat() const;

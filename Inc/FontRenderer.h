@@ -7,6 +7,7 @@
 #include <Mesh.h>
 #include <SamplerObject.h>
 #include <PixelRect.h>
+#include <GlyphInc.h>
 
 namespace Gin {
 
@@ -70,6 +71,7 @@ class GINAPI CFontRenderer {
 public:
 	CFontRenderer();
 	explicit CFontRenderer( CPtrOwner<IGlyphProvider> glyphProvider );
+	~CFontRenderer();
 
 	// Initialize the font shader. Called automatically during application initialization.
 	static void InitializeShaderData();
@@ -92,6 +94,8 @@ public:
 
 	// Shader program used to draw the font.
 	static CShaderProgram Shader();
+	// Source name for log messages.
+	static CStringView GetMessageSource();
 
 	// Render a single unicode line and return a text mesh containing necessary rendering information.
 	CTextMesh RenderLine( CUnicodePart str ) const;
@@ -194,6 +198,10 @@ private:
 	void addCharToTexture( unsigned charCode, CRenderGlyphData& result ) const;
 	CRenderGlyphData getOrCreateRenderData( unsigned glyphCode ) const;
 	static void initAsciiCharString( CUnicodeString& str );
+
+	// Copying and movement is prohibited.
+	CFontRenderer( const CFontRenderer& ) = delete;
+	void operator=( const CFontRenderer& ) = delete;
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -50,7 +50,7 @@ static DDS::TDXGIFormat findDxgiFormatFromTable( DWORD flags, DWORD bitsPerPixel
 
 //////////////////////////////////////////////////////////////////////////
 
-CDdsImage::CDdsImage( CUnicodePart fileName ) :
+CDdsImage::CDdsImage( CStringPart fileName ) :
 	textureFileName( fileName )
 {
 }
@@ -68,13 +68,12 @@ CImageData CDdsImage::CreateImageData( bool topLeftOrigin )
 	return parseTextureData( data, filePos, header, dxtHeader, topLeftOrigin );
 }
 
-static const wchar_t* ddsFileTooSmallMsg = L"File size is too small to support DDS format";
 CArray<BYTE> CDdsImage::readFileBuffer()
 {
 	CFileReader textureFile( textureFileName, FCM_OpenExisting );
 	const int length = textureFile.GetLength32();
 	if( length < minDdsFileSize ) {
-		throwDdsException( ddsFileTooSmallMsg );
+		throwDdsException( "File size is too small to support DDS format" );
 	}
 
 	CArray<BYTE> buffer;
@@ -90,13 +89,13 @@ void CDdsImage::parseMagicNumber( CArray<BYTE>& data )
 	DWORD fileStart;
 	memcpy( &fileStart, data.Ptr(), sizeof( fileStart ) );
 	if( ddsMagicNumber != fileStart ) {
-		throwDdsException( L"Specified file is not DDS" );
+		throwDdsException( "Specified file is not DDS" );
 	}
 }
 
-void CDdsImage::throwDdsException( CUnicodeView reason ) const
+void CDdsImage::throwDdsException( CStringView reason ) const
 {
-	throw CDdsException( Name(), reason );
+	throw CDdsException( GetName(), reason );
 }
 
 // Fill the CDdsHeader structure.
@@ -117,7 +116,7 @@ void CDdsImage::getOrCreateDxtHeader( CArray<BYTE>& data, int& pos, const DDS::C
 	if( hasDxtHeader( header ) ) {
 		// Read an existing DX10 header.
 		if( data.Size() < minDdsFileSize + sizeof( result ) ) {
-			throwDdsException( ddsFileTooSmallMsg );
+			throwDdsException( "File size is too small to support DDS format" );
 		}
 		memcpy( &result, data.Ptr() + pos, sizeof( result ) );
 		pos += sizeof( result );
@@ -141,7 +140,7 @@ void CDdsImage::createDxtHeader( const DDS::CDdsHeader& header, DDS::CDxt10Heade
 	// Set the cubemap property.
 	if( HasFlag( header.Caps2, DDS::DC2F_Cubemap ) ) {
 		if( header.Caps2 != ( DDS::DC2F_Cubemap | DDS::DC2F_Cubemap_AllFaces ) ) {
-			throwDdsException( L"Cubemap is missing faces" );
+			throwDdsException( "Cubemap is missing faces" );
 		}
 		result.MiscFlag = DDS::DMF_TextureCube;
 	} else {
@@ -189,7 +188,7 @@ CImageData CDdsImage::parseTextureData( CArray<BYTE>& data, int pos, const DDS::
 		}
 	} catch( CCheckException& e ) {
 		// Fill the file name information.
-		e.SetFirstParam( Name() );
+		e.SetFirstParam( GetName() );
 		throw;
 	}
 	return result;
@@ -217,7 +216,7 @@ void CDdsImage::getTextureParameters( const DDS::CDdsHeader& header, const DDS::
 		type = TT_Texture3D;
 		break;
 	default:
-		throwDdsException( L"Unknown texture type" );
+		throwDdsException( "Unknown texture type" );
 		break;
 	}
 }
@@ -240,12 +239,11 @@ DDS::TDXGIFormat CDdsImage::findDxgiFormat( const DDS::CDdsHeader& header ) cons
 		format.GBitMask, format.BBitMask, format.ABitMask, format.FourCC, bitMaskToDXGIConversionTable );
 	
 	if( result == DDS::DXGIF_Unknown ) {
-		throwDdsException( L"Unknown pixel format" );
+		throwDdsException( "Unknown pixel format" );
 	}
 	return result;
 }
 
-const CUnicodeView unsupportedDXGIFormat = L"Unsupported DXGI format.";
 // Get texture pixel parameters from the DX10 header.
 void CDdsImage::getDxtTexelParameters( DDS::TDXGIFormat dxgiFormat, TTextureCompressionType& compressionType, TTexelFormat& format, TTexelDataType& dataType ) const
 {
@@ -289,7 +287,7 @@ void CDdsImage::getDxtTexelParameters( DDS::TDXGIFormat dxgiFormat, TTextureComp
 		setTexelParameters( compressionType, format, dataType, TCT_Dxt5_sRGBA, TF_Compressed, TDT_Compressed );
 		break;
 	default:
-		throwDdsException( unsupportedDXGIFormat );
+		throwDdsException( "Unsupported DXGI format." );
 		break;
 	}
 }
@@ -446,7 +444,7 @@ DDS::TDXGIFormat CDdsImage::getDxgiFormatFromTexelFormat( TTexelFormat format, T
 		}
 	}
 	
-	throwDdsException( unsupportedDXGIFormat );
+	throwDdsException( "Unsupported DXGI format." );
 	return DDS::TDXGIFormat();
 }
 

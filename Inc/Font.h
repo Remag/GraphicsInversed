@@ -58,7 +58,7 @@ public:
 class GINAPI CFontOwner {
 public:
 	CFontOwner() = default;
-	explicit CFontOwner( CUnicodeView fileName );
+	explicit CFontOwner( CStringView fileName );
 	CFontOwner( CFontOwner&& other );
 	CFontOwner& operator=( CFontOwner&& other );
 	~CFontOwner();
@@ -72,7 +72,7 @@ public:
 
 	bool IsLoaded() const
 		{ return view.IsLoaded(); }
-	void Load( CUnicodeView fileName );
+	void Load( CStringView fileName );
 	void Unload();
 
 	// Create an object with size information.

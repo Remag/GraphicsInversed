@@ -8,7 +8,7 @@ namespace Gin {
 // Mechanism for initializing the given file with globally defined input keys.
 class CInputSettingsController {
 public:
-	explicit CInputSettingsController( CUnicodeView settingsFileName );
+	explicit CInputSettingsController( CStringPart settingsFileName );
 
 	const CInputTranslator& GetInputTranslator( CStringPart translatorName ) const;
 

@@ -8,7 +8,7 @@
 
 namespace Gin {
 
-extern const CUnicodeView GeneralFreeTypeError;
+extern const CStringView GeneralFreeTypeError;
 //////////////////////////////////////////////////////////////////////////
 
 CFreeTypeException::CFreeTypeException( int code ) :
@@ -26,64 +26,64 @@ void CFreeTypeException::setInfoFromCode( int code )
 	moduleName = getModuleName( moduleCode );
 }
 
-CUnicodeView CFreeTypeException::getModuleName( int moduleCode )
+CStringView CFreeTypeException::getModuleName( int moduleCode )
 {
 #ifdef FT_CONFIG_OPTION_USE_MODULE_ERRORS
 	switch( moduleCode ) {
 	case FT_Mod_Err_Base:
-		return L"Base";
+		return "Base";
 	case FT_Mod_Err_Autofit:
-		return L"Autofit";
+		return "Autofit";
 	case FT_Mod_Err_BDF:
-		return L"BDF";
+		return "BDF";
 	case FT_Mod_Err_Bzip2:
-		return L"Bzip2";
+		return "Bzip2";
 	case FT_Mod_Err_Cache:
-		return L"Cache";
+		return "Cache";
 	case FT_Mod_Err_CFF:
-		return L"CFF";
+		return "CFF";
 	case FT_Mod_Err_CID:
-		return L"CID";
+		return "CID";
 	case FT_Mod_Err_LZW:
-		return L"LZW";
+		return "LZW";
 	case FT_Mod_Err_OTvalid:
-		return L"OTvalid";
+		return "OTvalid";
 	case FT_Mod_Err_PCF:
-		return L"PCF";
+		return "PCF";
 	case FT_Mod_Err_PFR:
-		return L"PFR";
+		return "PFR";
 	case FT_Mod_Err_PSaux:
-		return L"PSaux";
+		return "PSaux";
 	case FT_Mod_Err_PShinter:
-		return L"PShinter";
+		return "PShinter";
 	case FT_Mod_Err_PSnames:
-		return L"PSnames";
+		return "PSnames";
 	case FT_Mod_Err_Raster:
-		return L"Raster";
+		return "Raster";
 	case FT_Mod_Err_SFNT:
-		return L"SFNT";
+		return "SFNT";
 	case FT_Mod_Err_Smooth:
-		return L"Smooth";
+		return "Smooth";
 	case FT_Mod_Err_TrueType:
-		return L"TrueType";
+		return "TrueType";
 	case FT_Mod_Err_Type1:
-		return L"Type1";
+		return "Type1";
 	case FT_Mod_Err_Type42:
-		return L"Type42";
+		return "Type42";
 	case FT_Mod_Err_Winfonts:
-		return L"Winfonts";
+		return "Winfonts";
 	case FT_Mod_Err_GXvalid:
-		return L"GXvalid";
+		return "GXvalid";
 	default:
-		return L"Unknown";
+		return "Unknown";
 	}
 #else
 	moduleCode;
-	return L"Unknown";
+	return "Unknown";
 #endif
 }
 
-CUnicodeString CFreeTypeException::GetMessageText() const
+CString CFreeTypeException::GetMessageText() const
 {
 	return errorBase.SubstParam( UnicodeStr( errorCode ), moduleName );
 }

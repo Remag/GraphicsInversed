@@ -168,7 +168,7 @@ void CImageData::SetImageData( int mipmapLevel, int arrayIndex, int cubeFace, co
 	SetImageData( mipmapLevel, arrayIndex, cubeFace, reinterpret_cast<const BYTE*>( data ), shouldFlip );
 }
 
-static const CError Err_InvalidDxtImageHeight{ L"Compressed DXT texture height must be a multiple of 4.\nFile name: %0" };
+extern const CError Err_InvalidDxtImageHeight;
 void CImageData::copyDataFlipped( BYTE* dest, const BYTE* src, int byteSize, int mipmapLevel ) const
 {
 	switch( compressionType ) {

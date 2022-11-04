@@ -82,6 +82,7 @@ namespace Gin {
 	class CFontSizeView;
 	class CFontSizeOwner;
 	class CGlyph;
+	class IGlyphProvider;
 
 	template <class Dispatcher>
 	class CWindowClass;

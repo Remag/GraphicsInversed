@@ -18,13 +18,13 @@ typedef struct vorbis_info vorbis_info;
 // Exception thrown by invalid OGG files.
 class GINAPI COggException : public CFileWrapperException {
 public:
-	COggException( CUnicodeView fileName, CUnicodeView additionalInfo ) : CFileWrapperException( fileName , additionalInfo ) {}
+	COggException( CStringPart fileName, CStringPart additionalInfo ) : CFileWrapperException( fileName , additionalInfo ) {}
 	
-	virtual CUnicodeString GetMessageTemplate() const override
-		{ return UnicodeStr( generalOggError ); }
+	virtual CString GetMessageTemplate() const override
+		{ return Str( generalOggError ); }
 	
 private:
-	static const CUnicodeView generalOggError;
+	static const CStringView generalOggError;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -33,14 +33,14 @@ private:
 class GINAPI COggFile {
 public:
 	COggFile();
-	explicit COggFile( CUnicodeView fileName );
+	explicit COggFile( CStringPart fileName );
 	~COggFile();
 
 	// Check if the image has been opened.
 	bool IsOpen() const
 	{ return oggFile.IsOpen(); }
 	// Open a given file. Same object cannot be opened twice.
-	void Open( CUnicodeView fileName );
+	void Open( CStringPart fileName );
 
 	// Read the audio from file. The sequence is separated into chunks of chunkSize.
 	CSoundOwner ReadAudioBuffer( int chunkSize );

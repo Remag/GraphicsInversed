@@ -12,6 +12,7 @@
 #include <BlendModeSwitcher.h>
 #include <BufferMapper.h>
 #include <DefaultSamplerContainer.h>
+#include <GlyphProvider.h>
 
 namespace Gin {
 
@@ -71,6 +72,8 @@ CFontRenderer::CFontRenderer( CPtrOwner<IGlyphProvider> provider ) :
 	assert( shaderData != nullptr );
 	fontTexture.SetSamplerObject( GetLinearSampler() );
 }
+
+CFontRenderer::~CFontRenderer() = default;
 
 void CFontRenderer::InitializeShaderData()
 {
@@ -223,7 +226,7 @@ void CFontRenderer::padGlyphAtlas( CVector2<int> oldSize, CVector2<int> newSize 
 	}
 }
 
-const CUnicodeView invalidStrError = L"Invalid string passed to renderer: %0.";
+const CStringView invalidStrError = "Invalid string passed to renderer: %0.";
 // Get the UTF16 character code from str at strPos. A parsed UTF32 character is returned.
 unsigned CFontRenderer::parseUtf16Character( CUnicodePart str, int& strPos ) const
 {
@@ -232,11 +235,13 @@ unsigned CFontRenderer::parseUtf16Character( CUnicodePart str, int& strPos ) con
 	if( !Unicode::TryConvertUtf16ToUtf32( str[strPos], result ) ) {
 		const auto nextPos = strPos + 1;
 		if( nextPos == str.Length() ) {
-			Log::Warning( invalidStrError.SubstParam( str ), this );
+			CMessageSourceSwitcher swt( GetMessageSource() );
+			Log::Warning( invalidStrError.SubstParam( str ) );
 			return str[strPos];
 		}
 		if( !Unicode::TryConvertUtf16ToUtf32( str[strPos], str[nextPos], result ) ) {
-			Log::Warning( invalidStrError.SubstParam( str ), this );
+			CMessageSourceSwitcher swt( GetMessageSource() );
+			Log::Warning( invalidStrError.SubstParam( str ) );
 			result = str[nextPos];
 			strPos++;
 		} else {
@@ -254,7 +259,8 @@ unsigned CFontRenderer::parseUtf8Character( CStringPart str, int& strPos ) const
 	unsigned result;
 	const auto parsedCount = Unicode::TryConvertUtf8ToUtf32( str.begin() + strPos, str.Length() - strPos, result );
 	if( parsedCount == 0 ) {
-		Log::Warning( invalidStrError.SubstParam( UnicodeStr( str ) ), this );
+		CMessageSourceSwitcher swt( GetMessageSource() );
+		Log::Warning( invalidStrError.SubstParam( str ) );
 		strPos++;
 		return 0;
 	}
@@ -266,6 +272,11 @@ unsigned CFontRenderer::parseUtf8Character( CStringPart str, int& strPos ) const
 CShaderProgram CFontRenderer::Shader()
 {
 	return shaderData->FontProgram;
+}
+
+CStringView CFontRenderer::GetMessageSource()
+{
+	return "Gin::CFontRenderer";
 }
 
 CGlyphSizeData CFontRenderer::GetGlyphData( unsigned symbolUTF ) const
@@ -776,7 +787,7 @@ void CFontRenderer::initAsciiCharString( CUnicodeString& str )
 
 //////////////////////////////////////////////////////////////////////////
 
-static const CUnicodeView defaultShaderName = L"Default text rendering shader";
+static const CStringView defaultShaderName = "Default text rendering shader";
 
 static const CStringView defaultVertexShaderText = "#version 110\n \
 attribute vec4 vertexData; \

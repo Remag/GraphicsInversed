@@ -46,12 +46,12 @@ struct CBitmapV4Header {
 
 //////////////////////////////////////////////////////////////////////////
 
-CBmpFile::CBmpFile( CUnicodeView fileName )
+CBmpFile::CBmpFile( CStringView fileName )
 {
 	Open( fileName );
 }
 
-void CBmpFile::Open( CUnicodeView fileName )
+void CBmpFile::Open( CStringView fileName )
 {
 	assert( !IsOpen() );
 	fileData.Open( fileName, FRWM_Write, FCM_CreateAlways, FSM_DenyNone );

@@ -12,9 +12,9 @@ public:
 	virtual ~IConsoleValue() {}
 
 	// Set a value given its string representation.
-	virtual void SetConsoleValue( CUnicodePart valueStr ) = 0;
+	virtual void SetConsoleValue( CStringPart valueStr ) = 0;
 	// Get the value as string.
-	virtual CUnicodeString GetConsoleValueString() const = 0;
+	virtual CString GetConsoleValueString() const = 0;
 
 private:
 	// Copying is prohibited.
@@ -22,7 +22,6 @@ private:
 	void operator=( IConsoleValue& ) = delete;
 };
 
-struct CConsoleSystemMessageTag{};
 //////////////////////////////////////////////////////////////////////////
 
 // System for storing and setting console commands.
@@ -35,15 +34,15 @@ public:
 	const auto& GetCommandDictionary() const
 		{ return nameToSetting; }
 
-	IConsoleValue* TryGetConsoleCommand( CUnicodePart name );
-	IConsoleValue& GetConsoleCommand( CUnicodePart name )
+	IConsoleValue* TryGetConsoleCommand( CStringPart name );
+	IConsoleValue& GetConsoleCommand( CStringPart name )
 		{ return *nameToSetting[name]; }
-	void AddConsoleCommand( CUnicodePart name, IConsoleValue& value )
+	void AddConsoleCommand( CStringPart name, IConsoleValue& value )
 		{ nameToSetting.Add( name, &value ); }
 
 private:
 	// Commands dictionary.
-	CMap<CUnicodeString, IConsoleValue*, CCaselessUnicodeHash> nameToSetting;
+	CMap<CString, IConsoleValue*, CCaselessStringHash> nameToSetting;
 
 	// Copying is prohibited.
 	CConsoleSystem( CConsoleSystem& ) = delete;
@@ -52,7 +51,7 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
-inline IConsoleValue* CConsoleSystem::TryGetConsoleCommand( CUnicodePart name )
+inline IConsoleValue* CConsoleSystem::TryGetConsoleCommand( CStringPart name )
 {
 	const auto resultPtr = nameToSetting.Get( name );
 	return resultPtr == nullptr ? nullptr : *resultPtr;
@@ -83,7 +82,7 @@ inline CConsoleSystem& GetGlobalConsoleSystem()
 template <class T, class ConsoleProvider = GinInternal::CGinConsoleProvider>
 class CConsoleValue : public IConsoleValue {
 public:
-	CConsoleValue( CUnicodeView name, T initialValue ) : consoleValue( move( initialValue ) )
+	CConsoleValue( CStringView name, T initialValue ) : consoleValue( move( initialValue ) )
 		{ ConsoleProvider::GetConsoleSystem().AddConsoleCommand( name, *this ); }
 
 	const T& GetValue() const
@@ -92,8 +91,8 @@ public:
 		{ consoleValue = move( newValue ); }
 
 	virtual void SetConsoleValue( CUnicodePart valueStr ) override final;
-	virtual CUnicodeString GetConsoleValueString() const override final
-		{ return UnicodeStr( consoleValue ); }
+	virtual CString GetConsoleValueString() const override final
+		{ return Str( consoleValue ); }
 
 private:
 	T consoleValue;
@@ -106,7 +105,7 @@ void CConsoleValue<T, ConsoleProvider>::SetConsoleValue( CUnicodePart valueStr )
 {
 	const auto value = Value<T>( valueStr );
 	if( !value.IsValid() ) {
-		Log::Warning( L"Invalid console value: " + valueStr, CConsoleSystemMessageTag() );
+		Log::Warning( L"Invalid console value: " + valueStr );
 		return;
 	}
 	consoleValue = *value;

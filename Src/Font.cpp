@@ -61,7 +61,7 @@ CFontSizeOwner CFontView::CreateSizeObject( CVector2<int> pxSize ) const
 
 //////////////////////////////////////////////////////////////////////////
 
-CFontOwner::CFontOwner( CUnicodeView name )
+CFontOwner::CFontOwner( CStringView name )
 {
 	Load( name );
 }
@@ -110,7 +110,7 @@ void CFontOwner::cleanup()
 	fontData.FreeBuffer();
 }
 
-void CFontOwner::Load( CUnicodeView name )
+void CFontOwner::Load( CStringView name )
 {
 	assert( !IsLoaded() );
 

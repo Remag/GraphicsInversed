@@ -12,13 +12,13 @@ class CModel;
 // Exception occurred while trying to extract data from an OBJ file.
 class GINAPI CObjFileException : public CFileWrapperException {
 public:
-	CObjFileException( CUnicodePart fileName, CUnicodePart additionalInfo ) : CFileWrapperException( fileName, additionalInfo ) {}
+	CObjFileException( CStringPart fileName, CStringPart additionalInfo ) : CFileWrapperException( fileName, additionalInfo ) {}
 
-	virtual CUnicodeString GetMessageTemplate() const override
-		{ return UnicodeStr( generalObjFileError ); }
+	virtual CString GetMessageTemplate() const override
+		{ return Str( generalObjFileError ); }
 	
 private:
-	static const CUnicodeView generalObjFileError;
+	static const CStringView generalObjFileError;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ public:
 	typedef CVector3<int> TIntVector3;
 	typedef CVector2<float> TVector2;
 
-	CObjFile( CUnicodeView fileName, CMaterialDatabase& materials );
+	CObjFile( CStringView fileName, CMaterialDatabase& materials );
 
 	// Create a model from a single named object in the file.
 	CModel CreateModel( CStringView name ) const;
@@ -38,7 +38,7 @@ public:
 	CModel CreateModel() const;
 	 
 private:
-	const CUnicodeString fileName;
+	const CString fileName;
 	// File is preloaded and separated into typified arrays.
 	CArray<TVector3> vertexArray;
 	CArray<TVector3> normalArray;
@@ -73,9 +73,9 @@ private:
 	void parseFace( const BYTE* fileData, int dataPos, int lineNumber, int lineEndPos );
 	CVector3<int> getFaceTriplet( const BYTE* fileData, int dataPos );
 	void parseUseMtl( const BYTE* fileData, int dataPos, int lineNumber, int lineEndPos, const CMaterialDatabase& materials );
-	void parseMtlLib( const BYTE* fileData, int dataPos, int lineNumber, int lineEndPos, CMaterialDatabase& materials, CUnicodeView objPath );
+	void parseMtlLib( const BYTE* fileData, int dataPos, int lineNumber, int lineEndPos, CMaterialDatabase& materials, CStringPart objPath );
 
-	void checkObjFileError( bool result, CUnicodeView err, int lineNumber );
+	void checkObjFileError( bool result, CStringView err, int lineNumber );
 	void checkUnknownCommand( bool result, int lineNumber );
 
 	CModel createModel( CInterval<int> nodeRange ) const;

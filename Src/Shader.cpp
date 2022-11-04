@@ -10,25 +10,24 @@ namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
 
-const CUnicodeView CShader::defaultShaderFolder = L"Shaders";
-CUnicodeView CShader::currentShaderFolder = defaultShaderFolder;
+const CStringView CShader::defaultShaderFolder = "Shaders";
+CString CShader::currentShaderFolder( defaultShaderFolder );
 //////////////////////////////////////////////////////////////////////////
 
-const CError CShader::shaderCompilationError{ L"Shader compilation failed.\nShader name: %0\nError: %1" };
-
+const CError CShader::shaderCompilationError{ "Shader compilation failed.\nShader name: %0\nError: %1" };
 CShader::~CShader()
 {
 	Release();
 }
 
-void CShader::compileShaderFromFile( unsigned shaderType, CUnicodeView filePath )
+void CShader::compileShaderFromFile( unsigned shaderType, CStringView filePath )
 {
-	const CUnicodeString fullPath = FileSystem::MergePath( currentShaderFolder, filePath );
-	const CString shaderText = File::ReadText( fullPath );
+	const auto fullPath = FileSystem::MergePath( currentShaderFolder, filePath );
+	const auto shaderText = File::ReadText( fullPath );
 	compileShaderFromString( shaderType, fullPath, shaderText );
 }
 
-void CShader::compileShaderFromString( unsigned shaderType, CUnicodeView shaderName, CStringView shaderText )
+void CShader::compileShaderFromString( unsigned shaderType, CStringView shaderName, CStringView shaderText )
 {
 	assert( !isCompiled() );
 	assert( GetGlContextManager().HasContext() );
@@ -42,9 +41,9 @@ void CShader::compileShaderFromString( unsigned shaderType, CUnicodeView shaderN
 
 #ifdef _DEBUG
 	// Report compilation result.
-	const CUnicodeString errorMsg = getCompileLogMessage();
+	const auto errorMsg = getCompileLogMessage();
 	if( !errorMsg.IsEmpty() ) {
-		Log::Warning( shaderName + L"\n" + errorMsg, CShaderMessageClass{} );
+		Log::Warning( shaderName + "\n" + errorMsg );
 	}
 #endif
 
@@ -53,13 +52,13 @@ void CShader::compileShaderFromString( unsigned shaderType, CUnicodeView shaderN
 	gl::GetShaderiv( shaderId, gl::COMPILE_STATUS, &status );
 	if( status == gl::FALSE_ ) {
 		// Cleanup and throw exception.
-		const CUnicodeString errorMsg = getCompileLogMessage();
+		const auto errorMsg = getCompileLogMessage();
 		Release();
-		GenerateCheck( shaderCompilationError, shaderName, errorMsg, CUnicodeString() );
+		GenerateCheck( shaderCompilationError, shaderName, errorMsg, CString() );
 	}
 }
 
-CUnicodeString CShader::getCompileLogMessage() const
+CString CShader::getCompileLogMessage() const
 {
 	assert( isCompiled() );
 	GLint logLength;
@@ -68,7 +67,7 @@ CUnicodeString CShader::getCompileLogMessage() const
 	auto logBuffer = logString.CreateRawBuffer( logLength );
 	gl::GetShaderInfoLog( shaderId, logLength, 0, logBuffer );
 	logBuffer.Release();
-	return UnicodeStr( logString );
+	return logString;
 }
 
 void CShader::Release()
@@ -79,27 +78,26 @@ void CShader::Release()
 	}
 }
 
-void CShader::SetShaderFolder( CUnicodeView newValue )
+void CShader::SetShaderFolder( CString newValue )
 {
 	currentShaderFolder = newValue;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-const CUnicodeView CVertexShader::vertexExt = L".vert";
-
-CVertexShader::CVertexShader( CUnicodeView filePath )
+const CStringView CVertexShader::vertexExt = ".vert";
+CVertexShader::CVertexShader( CStringView filePath )
 {
 	CreateFromFile( filePath );
 }
 
-void CVertexShader::CreateFromFile( CUnicodeView filePath )
+void CVertexShader::CreateFromFile( CStringView filePath )
 {
 	assert( FileSystem::GetExt( filePath ) == vertexExt );
 	compileShaderFromFile( gl::VERTEX_SHADER, filePath );
 }
 
-void CVertexShader::CreateFromString( CUnicodeView shaderName, CStringView shaderText )
+void CVertexShader::CreateFromString( CStringView shaderName, CStringView shaderText )
 {
 	assert( !shaderName.IsEmpty() );
 	compileShaderFromString( gl::VERTEX_SHADER, shaderName, shaderText );
@@ -107,20 +105,19 @@ void CVertexShader::CreateFromString( CUnicodeView shaderName, CStringView shade
 
 //////////////////////////////////////////////////////////////////////////
 
-const CUnicodeView CFragmentShader::fragmentExt = L".frag";
-
-CFragmentShader::CFragmentShader( CUnicodeView filePath )
+const CStringView CFragmentShader::fragmentExt = ".frag";
+CFragmentShader::CFragmentShader( CStringView filePath )
 {
 	CreateFromFile( filePath );
 }
 
-void CFragmentShader::CreateFromFile( CUnicodeView filePath )
+void CFragmentShader::CreateFromFile( CStringView filePath )
 {
 	assert( FileSystem::GetExt( filePath ) == fragmentExt );
 	compileShaderFromFile( gl::FRAGMENT_SHADER, filePath );
 }
 
-void CFragmentShader::CreateFromString( CUnicodeView shaderName, CStringView shaderText )
+void CFragmentShader::CreateFromString( CStringView shaderName, CStringView shaderText )
 {
 	assert( !shaderName.IsEmpty() );
 	compileShaderFromString( gl::FRAGMENT_SHADER, shaderName, shaderText );

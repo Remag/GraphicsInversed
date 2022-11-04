@@ -17,13 +17,13 @@ enum TAudioDataFormat;
 class GINAPI CWavFile {
 public:
 	CWavFile() = default;
-	explicit CWavFile( CUnicodeView fileName );
+	explicit CWavFile( CStringPart fileName );
 
 	// Check if the image has been opened.
 	bool IsOpen() const
 	{ return wavFile.IsOpen(); }
 	// Open a given file. Same object cannot be opened twice.
-	void Open( CUnicodeView fileName );
+	void Open( CStringPart fileName );
 
 	// Read the audio from file. The sequence is separated into chunks of maxBufferSize.
 	CSoundOwner ReadAudioBuffer( int chunkSize );
@@ -49,7 +49,7 @@ private:
 	TAudioDataFormat getMonoDataFormat( const WAV::CWavSubheader1& header ) const;
 	TAudioDataFormat getStereoDataFormat( const WAV::CWavSubheader1& header ) const;
 
-	void checkWavError( bool condition, CUnicodePart errorStr ) const;
+	void checkWavError( bool condition, CStringPart errorStr ) const;
 };
 
 //////////////////////////////////////////////////////////////////////////

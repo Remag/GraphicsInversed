@@ -10,7 +10,7 @@ namespace Gin {
 
 //////////////////////////////////////////////////////////////////////////
 
-CInputSettings::CInputSettings( CUnicodeView _fileName ) :
+CInputSettings::CInputSettings( CStringPart _fileName ) :
 	fileName( _fileName ),
 	fileData( parseCfgFile() )
 {
@@ -50,7 +50,7 @@ bool CInputSettings::isSectionName( CStringPart str ) const
 	return str[0] == '[';
 }
 
-const CUnicodeView unknownConfigStr = L"Invalid string in configuration file: %0.\r\nFile name: %1";
+const CStringView unknownConfigStr = "Invalid string in configuration file: %0.\r\nFile name: %1";
 CStringPart CInputSettings::parseSectionName( CStringPart str ) const
 {
 	const auto endCommentPos = findEndCommentPos( str );
@@ -65,7 +65,7 @@ CStringPart CInputSettings::parseSectionName( CStringPart str ) const
 
 void CInputSettings::unknownStrWarning( CStringPart str ) const
 {
-	Log::Warning( unknownConfigStr.SubstParam( str, fileName ), this );
+	Log::Warning( unknownConfigStr.SubstParam( str, fileName ) );
 }
 
 int CInputSettings::findEndCommentPos( CStringPart str )
@@ -493,7 +493,7 @@ CPtrOwner<TUserAction> CInputSettings::createInputAction( CUnicodePart actionNam
 	return CreateUniqueObject<TUserAction>( actionName );
 }
 
-const CUnicodeView unknownActionWarning = L"Unknown input action: %0";
+const CStringView unknownActionWarning = "Unknown input action: %0";
 void CInputSettings::createUserAction( CKeyCombination key, CStringPart actionName, CControlScheme& controlScheme ) const
 {
 	if( !tryCreateUserAction( key, actionName, controlScheme ) ) {

@@ -12,7 +12,7 @@ namespace GinInternal {
 }
 //////////////////////////////////////////////////////////////////////////
 
-CInputSettingsController::CInputSettingsController( CUnicodeView settingsFileName ) :
+CInputSettingsController::CInputSettingsController( CStringPart settingsFileName ) :
 	settingsFile( settingsFileName )
 {
 	for( auto binding : GinInternal::ActiveFileKeyBindings ) {

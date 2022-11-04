@@ -99,7 +99,7 @@ protected:
 	// Additional actions on application destruction.
 	virtual void onApplicationDestruction() {}
 	// Return the file path to an file with user input key binds.
-	virtual CUnicodeString getInputSettingsFileName( const IStartupInfo* startupInfo );
+	virtual CString getInputSettingsFileName( const IStartupInfo* startupInfo );
 
 	// Manipulation with the application engine.
 	void SetEngine( CPtrOwner<CEngine> newEngine );

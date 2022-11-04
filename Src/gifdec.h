@@ -8,13 +8,13 @@ namespace GinInternal {
 
 class CGifInternalException : public CException {
 public:
-	explicit CGifInternalException( CUnicodeView _errorStr ) : errorStr( _errorStr ) {}
+	explicit CGifInternalException( CStringPart _errorStr ) : errorStr( _errorStr ) {}
 
-	virtual CUnicodeString GetMessageText() const override final
+	virtual CString GetMessageText() const override final
 		{ return copy( errorStr ); }
 
 private:
-	CUnicodeString errorStr;
+	CString errorStr;
 };
 
 struct CGifPalette {

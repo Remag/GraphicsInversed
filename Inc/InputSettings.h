@@ -25,7 +25,7 @@ struct CInputTranslatorData {
 // All changes are automatically saved in destructor.
 class GINAPI CInputSettings {
 public:
-	explicit CInputSettings( CUnicodeView fileName );
+	explicit CInputSettings( CStringPart fileName );
 	~CInputSettings();
 
 	static CArray<CPair<CStringView, TGinVirtualKey>> CreateKeyNamePairs();
@@ -44,7 +44,7 @@ public:
 	{ return isModified; }
 
 	// Full path to the initialization file.
-	CUnicodeView GetName() const
+	CStringView GetName() const
 		{ return fileName; }
 
 	// Save changes to the input file.
@@ -62,7 +62,7 @@ public:
 	void AddBasicAction( CKeyCombination keyCombination, CPtrOwner<TUserAction> action, CStringPart segmentName );
 
 private:
-	CUnicodeString fileName;
+	CString fileName;
 
 	CArray<CInputTranslatorData> fileData;
 	// Section name to translator dictionary.

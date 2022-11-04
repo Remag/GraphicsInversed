@@ -45,7 +45,7 @@ void CGlWindow::doCreate( CUnicodeView className, CGlWindowSettings initialSetti
 
 	const auto creationStyle = initialSettings.IsFullscreen ? ( windowStyle & ~WS_OVERLAPPEDWINDOW ) : windowStyle;
 	const auto creationRect = initialSettings.IsFullscreen ? desktopRect : windowedModeRect;
-	const auto newHandle = ::CreateWindowEx( 0, windowClassName.Ptr(), Relib::GetAppTitle().Ptr(), creationStyle, 
+	const auto newHandle = ::CreateWindowEx( 0, windowClassName.Ptr(), UnicodeStr( Relib::GetAppTitle() ).Ptr(), creationStyle, 
 		creationRect.left, creationRect.top, creationRect.right - creationRect.left, creationRect.bottom - creationRect.top, 0, 0, ::GetModuleHandle( 0 ), 0 );
 	windowHandle = newHandle;
 	windowDC = ::GetDC( windowHandle );
@@ -70,12 +70,12 @@ CVector2<int> CGlWindow::findDefaultResolution() const
 	if( ::EnumDisplaySettings( nullptr, ENUM_REGISTRY_SETTINGS, &currentSettings ) == 0 ) {
 		// Apparently, the previous call can fail on some devices for an unknown reason.
 		// Use ENUM_CURRENT_SETTINGS as a fall back and revert to a hard coded resolution if that fails as well.
-		Log::Warning( L"Failed to fetch registry display settings", this );
+		Log::Warning( "Failed to fetch registry display settings" );
 		::ZeroMemory( &currentSettings, sizeof( currentSettings ) );
 		currentSettings.dmSize = sizeof( currentSettings );
 		currentSettings.dmDriverExtra = 0;
 		if( ::EnumDisplaySettings( nullptr, ENUM_CURRENT_SETTINGS, &currentSettings ) == 0 ) {
-			Log::Warning( L"Failed to fetch current display settings", this );
+			Log::Warning( "Failed to fetch current display settings" );
 			return CVector2<int>( 1920, 1080 );
 		}
 	}

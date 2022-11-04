@@ -12,7 +12,7 @@ public:
 	explicit COpenGLException( int errorCode );
 
 	// CException.
-	virtual CUnicodeString GetMessageText() const override final;
+	virtual CString GetMessageText() const override final;
 
 private:
 	int errorCode;

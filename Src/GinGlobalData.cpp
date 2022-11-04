@@ -6,6 +6,7 @@
 #include <BoundUserInputAction.h>
 #include <ConsoleSystem.h>
 #include <DdsImage.h>
+#include <Font.h>
 
 #include <FreeType\ft2build.h>
 #include FT_FREETYPE_H
@@ -20,9 +21,10 @@ CArray<CPair<CStringView, TGinVirtualKey>> CInputSettings::keyNameCodePairs = CI
 CArray<CStringView> CInputSettings::codeToKeyName = CInputSettings::CreateCodeToKeyNameArray();
 CMap<CStringView, TGinVirtualKey, CCaselessStringHash> CInputSettings::keyNameToCode = CInputSettings::CreateKeyNameToCodeMap();
 
-extern const CError Err_GeneralGlError{ L"General OpenGL error! Error code: %0." };
-const CUnicodeView CDdsException::generalDdsFileError = L"DDS parsing error: %1.\nFile name: %0";
-extern const CUnicodeView GeneralFreeTypeError = L"FreeType error. Error code: %0.\nFreeType module name: %1.";
+extern const CError Err_GeneralGlError{ "General OpenGL error! Error code: %0." };
+extern const CError Err_InvalidDxtImageHeight{ "Compressed DXT texture height must be a multiple of 4.\nFile name: %0" };
+const CStringView CDdsException::generalDdsFileError = "DDS parsing error: %1.\nFile name: %0";
+extern const CStringView GeneralFreeTypeError = "FreeType error. Error code: %0.\nFreeType module name: %1.";
 
 // FreeType library structure.
 FT_Library CFontOwner::freeTypeLib = 0;

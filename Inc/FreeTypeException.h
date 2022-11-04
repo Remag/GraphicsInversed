@@ -10,18 +10,18 @@ public:
 	// Create an exception from the given code.
 	explicit CFreeTypeException( int code );
 
-	virtual CUnicodeString GetMessageText() const override;
+	virtual CString GetMessageText() const override;
 	
 private:
 	// Basic error description.
-	CUnicodeString errorBase;
+	CString errorBase;
 	// Name of the FreeType module that threw an error.
-	CUnicodeString moduleName;
+	CString moduleName;
 	// Code of the error.
 	int errorCode;
 
 	void setInfoFromCode( int code );
-	static CUnicodeView getModuleName( int code );
+	static CStringView getModuleName( int code );
 };
 
 //////////////////////////////////////////////////////////////////////////

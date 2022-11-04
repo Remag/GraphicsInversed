@@ -10,7 +10,7 @@ namespace Gin {
 
 namespace Audio {
 
-const CUnicodeView COggException::generalOggError = L"OGG parsing error: %1.\nFile name: %0.";
+const CStringView COggException::generalOggError = "OGG parsing error: %1.\nFile name: %0.";
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -19,7 +19,7 @@ COggFile::COggFile()
 	vorbisHandle = CreateOwner<OggVorbis_File>();
 }
 
-COggFile::COggFile( CUnicodeView fileName ) :
+COggFile::COggFile( CStringPart fileName ) :
 	COggFile()
 {
 	Open( fileName );
@@ -32,7 +32,7 @@ COggFile::~COggFile()
 	}
 }
 
-void COggFile::Open( CUnicodeView fileName )
+void COggFile::Open( CStringPart fileName )
 {
 	assert( !IsOpen() );
 	oggFile.Open( fileName, FRWM_Read, FCM_OpenExisting, FSM_DenyNone );
@@ -109,7 +109,7 @@ TAudioDataFormat COggFile::getAudioFormat() const
 	return vorbisInfo->channels == 1 ? ADF_Mono16 : ADF_Stereo16;
 }
 
-static const CUnicodeView unsupportedFeatureError = L"OGG file uses unsupported features";
+static const CStringView unsupportedFeatureError = "OGG file uses unsupported features";
 void COggFile::fillAndVerifyVorbisInfo()
 {
 	vorbisInfo = ov_info( vorbisHandle.Ptr(), 0 ), sizeof( vorbisInfo );
@@ -175,17 +175,17 @@ long COggFile::relibTellFunction( void* datasource )
 	return numeric_cast<long>( filePtr->GetPosition() );
 }
 
-static const CUnicodeView notVorbisError = L"File doesn't contain valid Vorbis library data";
-static const CUnicodeView versionMismatchError = L"Vorbis library version mismatch";
-static const CUnicodeView badHeaderError = L"Invalid Vorbis library file header";
-static const CUnicodeView logicFaultError = L"Internal logic fault in Vorbis library";
-static const CUnicodeView unknownError = L"Unknown Vorbis library error";
+static const CStringView notVorbisError = "File doesn't contain valid Vorbis library data";
+static const CStringView versionMismatchError = "Vorbis library version mismatch";
+static const CStringView badHeaderError = "Invalid Vorbis library file header";
+static const CStringView logicFaultError = "Internal logic fault in Vorbis library";
+static const CStringView unknownError = "Unknown Vorbis library error";
 void COggFile::checkVorbisError( int errorCode ) const
 {
 	if( errorCode >= 0 ) {
 		return;
 	}
-	CUnicodeString errorStr;
+	CString errorStr;
 	switch( errorCode ) {
 	case OV_EREAD:
 		// Should not happen, CFile throws on itself.

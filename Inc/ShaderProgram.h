@@ -129,7 +129,7 @@ private:
 	void fillShaderIds( const ShaderClass& shader, const ShaderType&... rest )
 		{ shaderIds.Add( shader.GetId() ); fillShaderIds( rest... ); }
 	template <class... ShaderType>
-	void fillShaderIds( CUnicodeView shaderPath, const ShaderType&... rest )
+	void fillShaderIds( CStringView shaderPath, const ShaderType&... rest )
 		{ fillShaderIds( compiledShaders.Add( ShaderClass( shaderPath ) ), rest... ); }
 	void fillShaderIds() {}
 };
@@ -226,7 +226,7 @@ private:
 	static unsigned createProgramId();
 	void deleteProgram();
 
-	CUnicodeString getLinkingLogMessage() const;
+	CString getLinkingLogMessage() const;
 
 	void fillUniformInformation();
 

@@ -12,8 +12,7 @@ namespace Gin {
 
 namespace GinInternal {
 
-const CError CShaderProgramOperations::unsetUniformError{ L"Shader uniform %0 is not set before the draw call." };
-
+const CError CShaderProgramOperations::unsetUniformError{ "Shader uniform %0 is not set before the draw call." };
 //////////////////////////////////////////////////////////////////////////
 
 bool CShaderProgramOperations::IsLinked() const
@@ -41,8 +40,8 @@ CUniformLocation CShaderProgramOperations::getUniform( CStringView name, CArrayV
 #ifdef _DEBUG
 	if( dataPos == NotFound ) {
 		// Uniform with this name wasn't found, maybe it wasn't active. Report the error but continue working.
-		static const CUnicodeView inactiveUniformMsg = L"Inactive uniform found: %0.";
-		Log::Warning( inactiveUniformMsg.SubstParam( name ), CShaderMessageClass() );
+		static const CStringView inactiveUniformMsg = "Inactive uniform found: %0.";
+		Log::Warning( inactiveUniformMsg.SubstParam( name ) );
 	}
 #endif
 	return getUniform( dataPos );
@@ -86,8 +85,7 @@ CShaderLayoutInfo::CShaderLayoutInfo( std::initializer_list<CVertexAttributeLayo
 
 //////////////////////////////////////////////////////////////////////////
 
-const CError CShaderProgramOwner::shaderLinkingError{ L"Shader linking failed.\nError: %0" };
-
+const CError CShaderProgramOwner::shaderLinkingError{ "Shader linking failed.\nError: %0" };
 GLuint CShaderProgramOwner::createProgramId()
 {
 	const GLuint result = gl::CreateProgram();
@@ -163,9 +161,9 @@ void CShaderProgramOwner::linkProgram( CArrayView<unsigned> vertexIds, CArrayVie
 #ifdef _DEBUG
 
 	// Report linking result.
-	const CUnicodeString errorMsg = getLinkingLogMessage();
+	const auto errorMsg = getLinkingLogMessage();
 	if( !errorMsg.IsEmpty() ) {
-		Log::Warning( errorMsg, CShaderMessageClass() );
+		Log::Warning( errorMsg );
 	}
 #endif
 
@@ -173,7 +171,7 @@ void CShaderProgramOwner::linkProgram( CArrayView<unsigned> vertexIds, CArrayVie
 	GLint status;
 	gl::GetProgramiv( GetId(), gl::LINK_STATUS, &status );
 	if( !IsLinked() ) {
-		const CUnicodeString errorMsg = getLinkingLogMessage();
+		const auto errorMsg = getLinkingLogMessage();
 		deleteProgram();
 		GenerateCheck( shaderLinkingError, errorMsg );
 	} else {
@@ -197,7 +195,7 @@ void CShaderProgramOwner::deleteProgram()
 	}
 }
 
-CUnicodeString CShaderProgramOwner::getLinkingLogMessage() const
+CString CShaderProgramOwner::getLinkingLogMessage() const
 {
 	assert( GetId() != 0 );
 	GLint logLength;
@@ -206,7 +204,7 @@ CUnicodeString CShaderProgramOwner::getLinkingLogMessage() const
 	auto logBuffer = logString.CreateRawBuffer( logLength );
 	gl::GetProgramInfoLog( GetId(), logLength, 0, logBuffer );
 	logBuffer.Release();
-	return UnicodeStr( logString );
+	return logString;
 }
 
 static CStringView builtInUniformPrefix = "gl_";

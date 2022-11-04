@@ -12,9 +12,9 @@ COpenGLException::COpenGLException( int _errorCode ) :
 {
 }
 
-static const CUnicodeView openGlMessageTemplate = L"Open GL library error! Error code: %0.";
-CUnicodeString COpenGLException::GetMessageText() const
+CString COpenGLException::GetMessageText() const
 {
+	const CStringView openGlMessageTemplate = "Open GL library error! Error code: %0.";
 	return openGlMessageTemplate.SubstParam( errorCode );
 }
 

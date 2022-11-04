@@ -9,10 +9,10 @@
 
 namespace Gin {
 
-const CUnicodeView CObjFileException::generalObjFileError = L"OBJ parsing error: %1.\r\nFile name: %0.";
+const CStringView CObjFileException::generalObjFileError = "OBJ parsing error: %1.\r\nFile name: %0.";
 //////////////////////////////////////////////////////////////////////////
 
-CObjFile::CObjFile( CUnicodeView _fileName, CMaterialDatabase& _materials ) :
+CObjFile::CObjFile( CStringView _fileName, CMaterialDatabase& _materials ) :
 	fileName( _fileName )
 {
 	CArray<BYTE> fileData;
@@ -35,7 +35,7 @@ const char commentFirstLetter = '#';
 const char commandDelimiter = ' ';
 void CObjFile::parseFileData( const BYTE* fileData, int dataSize, CMaterialDatabase& materials )
 {
-	const CUnicodeString objPath = FileSystem::GetDrivePath( fileName );
+	const auto objPath = FileSystem::GetDrivePath( fileName );
 
 	// Initiate the first object with an empty name.
 	namedObjects.Add( 0, CString() );
@@ -163,8 +163,8 @@ CVector2<float> CObjFile::getVector2AttributeValue( const BYTE* fileData, int da
 	return result;
 }
 
-const CUnicodeView noMaterialFaceError = L"Face command with no set material. Line %0";
-const CUnicodeView unsupportedFaceCommand = L"Unsupported number of triplets. Line %0";
+const CStringView noMaterialFaceError = "Face command with no set material. Line %0";
+const CStringView unsupportedFaceCommand = "Unsupported number of triplets. Line %0";
 void CObjFile::parseFace( const BYTE* fileData, int dataPos, int lineNumber, int lineEndPos )
 {
 	checkUnknownCommand( fileData[dataPos + 1] == commandDelimiter, lineNumber );
@@ -215,7 +215,7 @@ CVector3<int> CObjFile::getFaceTriplet( const BYTE* fileData, int dataPos )
 }
 
 const CStringView useMtlCommand = "usemtl ";
-const CUnicodeView unknownMaterialError = L"Unknown material referenced at line %0";
+const CStringView unknownMaterialError = "Unknown material referenced at line %0";
 void CObjFile::parseUseMtl( const BYTE* fileData, int dataPos, int lineNumber, int lineEndPos, const CMaterialDatabase& materials )
 {
 	const char* fileStr = reinterpret_cast<const char*>( fileData + dataPos );
@@ -232,31 +232,31 @@ void CObjFile::parseUseMtl( const BYTE* fileData, int dataPos, int lineNumber, i
 }
 
 const CStringView mtlLibCommand = "mtllib ";
-void CObjFile::parseMtlLib( const BYTE* fileData, int dataPos, int lineNumber, int lineEndPos, CMaterialDatabase& materials, CUnicodeView objPath )
+void CObjFile::parseMtlLib( const BYTE* fileData, int dataPos, int lineNumber, int lineEndPos, CMaterialDatabase& materials, CStringPart objPath )
 {
 	const char* fileStr = reinterpret_cast<const char*>( fileData + dataPos );
 	const CStringPart mtlFilePrefix( fileStr, useMtlCommand.Length() );
 
 	checkUnknownCommand( mtlFilePrefix == mtlLibCommand, lineNumber );
-	const CUnicodeString libName = UnicodeStr( CStringPart( fileStr + mtlLibCommand.Length(), lineEndPos - mtlLibCommand.Length() - dataPos ) );
+	const CStringPart libName( fileStr + mtlLibCommand.Length(), lineEndPos - mtlLibCommand.Length() - dataPos );
 	checkUnknownCommand( !libName.IsEmpty(), lineNumber );
 	materials.LoadFile( FileSystem::MergeName( objPath, libName ) );
 }
 
-void CObjFile::checkObjFileError( bool result, CUnicodeView err, int lineNumber )
+void CObjFile::checkObjFileError( bool result, CStringView err, int lineNumber )
 {
 	if( !result ) {
 		throw CObjFileException( fileName, err.SubstParam( lineNumber ) );
 	}
 }
 
-const CUnicodeView unknownCommandError = L"Unknown command at line %0";
+const CStringView unknownCommandError = "Unknown command at line %0";
 void CObjFile::checkUnknownCommand( bool result, int lineNumber )
 {
 	checkObjFileError( result, unknownCommandError, lineNumber );
 }
 
-const CUnicodeView nameNotFoundError = L"Object with the name \"%0\" not found";
+const CStringView nameNotFoundError = "Object with the name \"%0\" not found";
 CModel CObjFile::CreateModel( CStringView name ) const
 {
 	// Skip strings until the named object is found.

@@ -1,5 +1,5 @@
 #pragma once
-#include <Redefs.h>
+#include <Gindefs.h>
 
 namespace Gin {
 

@@ -101,8 +101,7 @@ bool CMeshCommonData::checkShaderAndVaoTypes( GLenum shaderType, int vaoSize ) c
 {
 	const GinTypes::CGlTypeInfo& info = GinTypes::GetGlTypeInformation( TGlType( shaderType ) );
 
-	return info.ElemCount == vaoSize 
-		|| ( info.ElemCount == 4 && vaoSize == gl::BGRA );
+	return info.ElemCount == vaoSize;
 }
 
 bool CMeshCommonData::hasElementBinding() const

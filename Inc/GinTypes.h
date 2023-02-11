@@ -103,7 +103,7 @@ template<>
 struct GlType<CColor> {
 	static const TGlType Type = GLT_Vec4Float;
 	static const TGlType InnermostGlType = GLT_UnsignedByte;
-	static const int ElemCount = 0x80E1;	// gl::BGRA
+	static const int ElemCount = 4;
 	static const bool ShouldNormalize = true;
 };
 

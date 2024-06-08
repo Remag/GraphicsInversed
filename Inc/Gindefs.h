@@ -22,7 +22,6 @@
 
 #if defined( GINBUILD ) || defined( USE_STATIC_GIN )
 #pragma comment( lib, "OpenGL32.lib" )
-#pragma comment( lib, "glload.lib" )
 #pragma comment( lib, "FreeType.lib" )
 
 #ifndef GIN_NO_AUDIO

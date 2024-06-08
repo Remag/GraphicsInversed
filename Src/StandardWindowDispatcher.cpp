@@ -98,7 +98,7 @@ void CStandardWindowDispatcher::OnWindowMove( HWND ) const
 
 void CStandardWindowDispatcher::OnChar( HWND, WPARAM wParam ) const
 {
-	GinInternal::GetInputHandler().OnSymbolMessage( wParam );
+	GinInternal::GetInputHandler().OnSymbolMessage( static_cast<int>( wParam ) );
 }
 
 void CStandardWindowDispatcher::OnInput( HWND, LPARAM lParam ) const

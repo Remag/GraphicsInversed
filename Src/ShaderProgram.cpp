@@ -77,7 +77,7 @@ const CRawUniformData& CShaderProgramOperations::prepareUniformData( CUniformLoc
 
 CShaderLayoutInfo::CShaderLayoutInfo( std::initializer_list<CVertexAttributeLayoutInfo> info )
 {
-	attributeNames.ReserveBuffer( info.size() );
+	attributeNames.ReserveBuffer( static_cast<int>( info.size() ) );
 	for( const auto& attribInfo : info ) {
 		attributeNames.AddWithinCapacity( Str( attribInfo.Name ), attribInfo.Location );
 	}

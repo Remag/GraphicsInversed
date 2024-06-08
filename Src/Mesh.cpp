@@ -45,7 +45,12 @@ void CMeshCommonData::setVertexData( int dataElemCount, TGlType innermostType, i
 	assert( !isLocationEnabled( location ) );
 
 	gl::EnableVertexAttribArray( location );
+
+#pragma warning( push )
+#pragma warning( disable:4312 )	// conversion from 'int' to 'void *' of greater size [OpenGL API nonsense]
 	gl::VertexAttribPointer( location, dataElemCount, innermostType, normalizeValue, stride, reinterpret_cast<void*>( offset ) );
+#pragma warning( pop )
+
 	gl::BindVertexArray( 0 );
 	CheckGlError();
 }
@@ -107,7 +112,7 @@ bool CMeshCommonData::checkShaderAndVaoTypes( GLenum shaderType, int vaoSize ) c
 bool CMeshCommonData::hasElementBinding() const
 {
 	int elementObjectId;
-	gl::GetIntegerv( gl::ELEMENT_ARRAY_BUFFER_BINDING , &elementObjectId );
+	gl::GetIntegerv( gl::ELEMENT_ARRAY_BUFFER_BINDING, &elementObjectId );
 	CheckGlError();
 	return elementObjectId != 0;
 }

@@ -133,11 +133,11 @@ void CGlContextManager::updateToExtendedContext( HDC dc )
 void CGlContextManager::loadFunctions( HDC dc )
 {
 	if( !glFunctionsLoaded ) {
-		glload::LoadTest loadResult = glload::LoadFunctions();
+		const auto loadResult = glload::LoadFunctions();
 		assert( loadResult );
 		assert( glload::IsVersionGEQ( minVersion.Major, minVersion.Minor ) );
 	
-		glload::LoadTest wglLoadResult = glload::LoadFunctions( dc );
+		const auto wglLoadResult = glload::LoadFunctions( dc );
 		assert( wglLoadResult );
 		glFunctionsLoaded = true;
 	}

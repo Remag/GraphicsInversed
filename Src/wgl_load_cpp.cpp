@@ -1,3 +1,6 @@
+#include <common.h>
+#pragma hdrstop
+
 #include <algorithm>
 #include <vector>
 #include <string.h>
@@ -567,7 +570,7 @@ namespace wgl
 	}
 	
 }
-extern "C" void wgl_CopyFromC()
+void wgl_CopyFromC()
 {
   wgl::CopyExtensionVariables();
   wgl::CopyFunctionPointers();

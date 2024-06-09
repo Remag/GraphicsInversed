@@ -608,10 +608,10 @@
     <ClCompile Include="Src\gl_load_cpp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\gl_load.c">
+    <ClCompile Include="Src\gl_load.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\wgl_load.c">
+    <ClCompile Include="Src\wgl_load.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

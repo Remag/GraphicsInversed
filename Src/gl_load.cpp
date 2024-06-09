@@ -1,3 +1,6 @@
+#include <common.h>
+#pragma hdrstop
+
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
@@ -10942,7 +10945,7 @@ static int LoadVersion_4_4_Comp()
 typedef int (*PFN_LOADFUNCPOINTERS)();
 typedef struct ogl_StrToExtMap_s
 {
-	char *extensionName;
+	const char *extensionName;
 	int *extensionVariable;
 	PFN_LOADFUNCPOINTERS LoadExtension;
 } ogl_StrToExtMap;

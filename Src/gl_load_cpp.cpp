@@ -1,3 +1,6 @@
+#include <common.h>
+#pragma hdrstop
+
 #include <algorithm>
 #include <vector>
 #include <string.h>
@@ -10135,7 +10138,7 @@ namespace gl
 	}
 	
 }
-extern "C" void ogl_CopyFromC()
+void ogl_CopyFromC()
 {
   gl::CopyExtensionVariables();
   gl::CopyFunctionPointers();

@@ -1,3 +1,4 @@
+#include "Mesh.h"
 #include <common.h>
 #pragma hdrstop
 
@@ -181,29 +182,36 @@ void CSpecificMeshData<CQuadMeshTag>::invalidate()
 
 void CSpecificMeshData<CElementMeshTag>::Draw( CShaderProgram shader ) const
 {
-	const int elemCount = elementBuffer.ElemCount();
 	preMeshDraw( shader );
 	assert( hasElementBinding() );
-	gl::DrawElements( drawMode, elemCount, GLT_UnsignedInt, 0 );
+	gl::DrawElements( drawMode, elementCount, indexType, 0 );
 	postMeshDraw();
 }
 
-void CSpecificMeshData<CElementMeshTag>::Draw( CShaderProgram shader, int elementCount ) const
+void CSpecificMeshData<CElementMeshTag>::Draw( CShaderProgram shader, int extElementCount ) const
 {
-	assert( elementBuffer.ElemCount() >= elementCount );
+	assert( elementCount >= extElementCount );
 	preMeshDraw( shader );
 	assert( hasElementBinding() );
-	gl::DrawElements( drawMode, elementCount, GLT_UnsignedInt, 0 );
+	gl::DrawElements( drawMode, extElementCount, indexType, 0 );
 	postMeshDraw();
 }
 
 void CSpecificMeshData<CElementMeshTag>::invalidate()
 {
 	clearMeshId();
-	elementBuffer = CGlBuffer<BT_ElementArray, int>();
+	elementCount = 0;
+	indexType = GLT_Undefined;
 }
 
-void CSpecificMeshData<CElementMeshTag>::initIndexData()
+void CSpecificMeshData<CElementMeshTag>::doSetIndexBuffer( CRawGlBuffer<BT_ElementArray> elementBuffer, int elemCount, TGlType iType )
+{
+	elementCount = elemCount;
+	indexType = iType;
+	initIndexData( elementBuffer );
+}
+
+void CSpecificMeshData<CElementMeshTag>::initIndexData( CRawGlBuffer<BT_ElementArray> elementBuffer )
 {
 	gl::BindVertexArray( GetMeshId() );
 	CBufferObjectBinder binder( elementBuffer );

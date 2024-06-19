@@ -81,7 +81,7 @@ private:
 	CModel createModel( CInterval<int> nodeRange ) const;
 	void fillTriplets( CMap<TIntVector3, int>& uniqueTriplets, TVector3& resultSize, CArrayBuffer<CTuple<TVector3, TVector3, TVector2>> mappedBuffer ) const;
 	static void addMinMaxVertex( CInterval<float>& coordRange, float newCoordinate );
-	void fillIndices( CInterval<int> faceRange, const CMap<TIntVector3, int>& uniqueTriplets, CArrayBuffer<int> mappedBuffer ) const;
+	void fillIndices( CInterval<int> faceRange, const CMap<TIntVector3, int>& uniqueTriplets, CArrayBuffer<unsigned> mappedBuffer ) const;
 };
 
 //////////////////////////////////////////////////////////////////////////

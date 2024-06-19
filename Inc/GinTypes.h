@@ -27,6 +27,14 @@ struct GlType<BYTE> {
 	static const int ElemCount = 1;
 };
 
+template <>
+struct GlType<unsigned short> {
+	static const TGlType Type = GLT_UnsignedShort;
+	static const TGlType InnermostGlType = GLT_Int;
+	static const int ElemCount = 1;
+	static const bool ShouldNormalize = true;
+};
+
 template<>
 struct GlType<int> {
 	static const TGlType Type = GLT_Int;

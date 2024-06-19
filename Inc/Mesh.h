@@ -141,7 +141,10 @@ template <>
 class GINAPI CSpecificMeshData<CElementMeshTag> : public CMeshCommonData {
 public:
 	CSpecificMeshData( int id, TMeshDrawMode mode ) : CMeshCommonData( id ), drawMode( mode ) {}
-	CSpecificMeshData( int id, TMeshDrawMode mode, CGlBuffer<BT_ElementArray, int> buffer ) : CMeshCommonData( id ), drawMode( mode ), elementBuffer( buffer )  { initIndexData(); }
+	CSpecificMeshData( int id, TMeshDrawMode mode, CGlBuffer<BT_ElementArray, unsigned> buffer )
+		: CSpecificMeshData( id, mode, buffer, buffer.ElemCount(), GLT_UnsignedInt ) {}
+	CSpecificMeshData( int id, TMeshDrawMode mode, CGlBuffer<BT_ElementArray, unsigned short> buffer )
+		: CSpecificMeshData( id, mode, buffer, buffer.ElemCount(), GLT_UnsignedShort ) {}
 
 	typedef CElementMeshTag TMeshTag;
 	
@@ -150,8 +153,10 @@ public:
 	void SetDrawMode( TMeshDrawMode newValue )
 		{ drawMode = newValue; }
 
-	void SetIndexBuffer( CGlBuffer<BT_ElementArray, int> buffer )
-		{ elementBuffer = buffer; initIndexData(); }
+	void SetIndexBuffer( CGlBuffer<BT_ElementArray, unsigned short> buffer )
+		{ doSetIndexBuffer( buffer, buffer.ElemCount(), GLT_UnsignedShort ); }
+	void SetIndexBuffer( CGlBuffer<BT_ElementArray, unsigned> buffer )
+		{ doSetIndexBuffer( buffer, buffer.ElemCount(), GLT_UnsignedInt ); }
 
 	void Draw( CShaderProgram shader ) const;
 	void Draw( CShaderProgram shader, int elementCount ) const;
@@ -161,9 +166,13 @@ protected:
 
 private:
 	TMeshDrawMode drawMode = MDM_Points;
-	CGlBuffer<BT_ElementArray, int> elementBuffer;
+	int elementCount = 0;
+	TGlType indexType = GLT_Undefined;
 
-	void initIndexData();
+	CSpecificMeshData( int id, TMeshDrawMode mode, CRawGlBuffer<BT_ElementArray> buffer, int elemCount, TGlType iType )
+		: CMeshCommonData( id ), drawMode( mode ), elementCount( elemCount ), indexType( iType ) { initIndexData( buffer );	}
+	void doSetIndexBuffer( CRawGlBuffer<BT_ElementArray> elementBuffer, int elemCount, TGlType indexType );
+	void initIndexData( CRawGlBuffer<BT_ElementArray> elementBuffer );
 };
 
 //////////////////////////////////////////////////////////////////////////

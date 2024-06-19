@@ -69,6 +69,7 @@ enum TMeshDrawMode {
 enum TGlType {
 	GLT_Undefined = -1,
 	GLT_UnsignedByte = 0x1401,	// gl::UNSIGNED_BYTE
+	GLT_UnsignedShort = 0x1403,	// gl::UNSIGNED_SHORT
 	GLT_Int = 0x1404,	// gl::INT
 	GLT_UnsignedInt = 0x1405,	// gl::UNSIGNED_INT
 	GLT_Float = 0x1406,	// gl::FLOAT

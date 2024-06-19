@@ -293,7 +293,7 @@ CModel CObjFile::createModel( CInterval<int> nodeRange ) const
 
 	// Create nodes one by one.
 	for( int nodePos : nodeRange ) {
-		CGlBufferOwner<BT_ElementArray, int> indices;
+		CGlBufferOwner<BT_ElementArray, unsigned> indices;
 		const auto faceRange = nodesArray[nodePos].FaceRange;
 		indices.ReserveBuffer( faceRange.GetUpper() - faceRange.GetLower(), BUH_StaticDraw );
 		CBufferMapper( BWMM_Write, indices, &CObjFile::fillIndices, *this, faceRange, uniqueTriplets );
@@ -338,7 +338,7 @@ void CObjFile::addMinMaxVertex( CInterval<float>& coordRange, float newCoordinat
 	}
 }
 
-void CObjFile::fillIndices( CInterval<int> faceRange, const CMap<TIntVector3, int>& uniqueTriplets, CArrayBuffer<int> mappedBuffer ) const
+void CObjFile::fillIndices( CInterval<int> faceRange, const CMap<TIntVector3, int>& uniqueTriplets, CArrayBuffer<unsigned> mappedBuffer ) const
 {
 	int bufferPos = 0;
 	for( int facePos : faceRange ) {

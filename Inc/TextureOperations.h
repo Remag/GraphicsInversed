@@ -152,7 +152,7 @@ public:
 	// Reserve memory for the first level of the texture.
 	void SetBuffer( CVector2<int> pxSize )
 		{ CTypelessTextureOperations<TBT_Texture2>::SetBuffer( textureData, pxSize, 0, format ); }
-	// Increase buffer size without of the first level without destroying the texture contents.
+	// Increase buffer size of the first level without destroying the texture contents.
 	void GrowBuffer( CVector2<int> prevPxSize, CVector2<int> newPxSize, TTexelFormat cFormat, TTexelDataType type )
 		{ CTypelessTextureOperations<TBT_Texture2>::GrowBuffer( textureData, prevPxSize, newPxSize, 0, format, cFormat, type ); }
 	// Load the texture data directly.

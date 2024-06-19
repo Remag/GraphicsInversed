@@ -9,10 +9,10 @@ namespace Gin {
 // Data associated with a single node of a model.
 struct CModelNodeData {
 	CMeshOwner<CElementMesh> Mesh;
-	CGlBufferOwner<BT_ElementArray, int> Indices;
+	CGlBufferOwner<BT_ElementArray, unsigned> Indices;
 	TMaterialConstRef Material;
 
-	explicit CModelNodeData( CGlBufferOwner<BT_ElementArray, int>&& indices ) : Mesh( MDM_Triangles, indices ), Indices( move( indices ) ) {}
+	explicit CModelNodeData( CGlBufferOwner<BT_ElementArray, unsigned>&& indices ) : Mesh( MDM_Triangles, indices ), Indices( move( indices ) ) {}
 };
 
 //////////////////////////////////////////////////////////////////////////

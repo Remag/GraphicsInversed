@@ -308,6 +308,7 @@
     <ClInclude Include="Inc\DdsImage.h" />
     <ClInclude Include="Inc\DdsUtils.h" />
     <ClInclude Include="Inc\DefaultSamplerContainer.h" />
+    <ClInclude Include="Inc\DepthTestSwitcher.h" />
     <ClInclude Include="Inc\Font.h" />
     <ClInclude Include="Inc\FontListGlyphProvider.h" />
     <ClInclude Include="Inc\FontSize.h" />
@@ -421,6 +422,7 @@
     <ClCompile Include="Src\ControlScheme.cpp" />
     <ClCompile Include="Src\DdsImage.cpp" />
     <ClCompile Include="Src\DefaultSamplerContainer.cpp" />
+    <ClCompile Include="Src\DepthTestSwitcher.cpp" />
     <ClCompile Include="Src\DrawFunctions.cpp" />
     <ClCompile Include="Src\DrawMaskSwitchers.cpp" />
     <ClCompile Include="Src\Engine.cpp" />

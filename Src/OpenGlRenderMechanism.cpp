@@ -42,8 +42,9 @@ void COpenGlRenderMechanism::SetBackgroundColor( CColor newValue )
 	backgroundBrush = ::CreateSolidBrush( RGB( newValue.R, newValue.G, newValue.B ) );
 }
 
-void COpenGlRenderMechanism::OnWindowResize( CVector2<int> )
+void COpenGlRenderMechanism::OnWindowResize( CVector2<int> windowSize )
 {
+	CViewportSwitcher::SetBaseViewport( CVector2<int>{}, windowSize );
 }
 
 LRESULT COpenGlRenderMechanism::OnEraseBackground( HWND, WPARAM wParam, LPARAM )

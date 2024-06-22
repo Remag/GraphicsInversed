@@ -19,7 +19,7 @@ CStateManager::~CStateManager()
 
 int CStateManager::StateCount() const
 {
-	return stateStack.Size();
+	return stateStack.Size(); 
 }
 
 const IState& CStateManager::GetCurrentState() const

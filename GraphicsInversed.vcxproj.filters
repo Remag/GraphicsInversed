@@ -378,6 +378,9 @@
     <ClInclude Include="Inc\FreeTypeInitializer.h">
       <Filter>Header Files\Drawing\Font</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\DepthTestSwitcher.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlContextManager.cpp">
@@ -612,6 +615,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\wgl_load.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\DepthTestSwitcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

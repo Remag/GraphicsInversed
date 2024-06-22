@@ -19,6 +19,7 @@
 #include <DdsImage.h>
 #include <DefaultSamplerContainer.h>
 #include <StandardWindowDispatcher.h>
+#include <DepthTestSwitcher.h>
 #include <DrawFunctions.h>
 #include <DrawMaskSwitchers.h>
 #include <Engine.h>

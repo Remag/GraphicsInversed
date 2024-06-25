@@ -25,7 +25,7 @@ long long CEngine::getCurrentTime()
 
 //////////////////////////////////////////////////////////////////////////
 
-CFixedStepEngine::CFixedStepEngine( int maxFPS ) 
+CFixedStepEngine::CFixedStepEngine( int maxFPS )
 {
 	SetMaxFPS( maxFPS );
 }
@@ -57,4 +57,24 @@ CFrameInformation CFixedStepEngine::AdvanceFrame()
 
 //////////////////////////////////////////////////////////////////////////
 
-}	// namespace Gin.
+CRealTimeStepEngine::CRealTimeStepEngine()
+{
+	const long long currentTicks = getCurrentTime();
+	setLastUpdateTime( currentTicks );
+	setLastDrawTime( currentTicks );
+}
+
+CFrameInformation CRealTimeStepEngine::AdvanceFrame()
+{
+	const long long lastFrameTime = GetLastUpdateStartTime();
+	const long long currentTicks = getCurrentTime();
+	setLastUpdateTime( currentTicks );
+	setLastDrawTime( currentTicks );
+	const unsigned timeSinceUpdate = static_cast<unsigned>( currentTicks - lastFrameTime );
+	const auto step = timeSinceUpdate * 1.0f / GetCounterResolution();
+	return CFrameInformation( step, true, true );
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+}	 // namespace Gin.

@@ -74,4 +74,15 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
+// Unrestricted FPS engine implementation.
+class GINAPI CRealTimeStepEngine : public CEngine {
+public:
+	CRealTimeStepEngine();
+
+	// IEngine.
+	virtual CFrameInformation AdvanceFrame() override final;
+};
+
+//////////////////////////////////////////////////////////////////////////
+
 }	// namespace Gin.

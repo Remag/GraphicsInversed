@@ -259,7 +259,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>.\Ext\Lib\$(Platform)$(Configuration);..\ReversedLibrary\Ext\Lib\$(Platform)$(Configuration);$(SolutionDir)Lib\$(Platform)$(Configuration)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)Lib\$(Platform)$(Configuration)\$(TargetName)64.lib</ImportLibrary>
-      <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)Ext\Bin\$(Platform)$(Configuration)\*.dll" "$(TargetDir)" /D /K /Y</Command>

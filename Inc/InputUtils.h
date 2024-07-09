@@ -21,6 +21,8 @@ public:
 	// Get/Set the action corresponding to the given keystroke.
 	const TUserAction* GetAction( int keyCode, bool isDown ) const;
 	CPtrOwner<TUserAction> SetAction( int keyCode, bool isDown, CPtrOwner<TUserAction> action );
+	template <class CallableType>
+	CPtrOwner<TUserAction> CreateAction( int keyCode, bool isDown, CallableType&& action );
 	CPtrOwner<TUserAction> DetachAction( int keyCode, bool isDown );
 
 private:
@@ -47,6 +49,15 @@ inline const TUserAction* CInputTranslator::GetAction( int keyCode, bool isDown 
 {
 	const int pos = getActionIndex( keyCode, isDown );
 	return pos >= actions.Size() ? nullptr : actions[pos].Ptr();
+}
+
+template <class CallableType>
+inline CPtrOwner<TUserAction> CInputTranslator::CreateAction( int keyCode, bool isDown, CallableType&& action )
+{
+	auto userAction = Relib::CreateAction( forward<CallableType>( action ) );
+	auto actionPtr = CreateOwner<decltype( userAction )>( move( userAction ) );
+	auto convertedAction = ptr_static_cast<TUserAction>( move( actionPtr ) );
+	return SetAction( keyCode, isDown, move( convertedAction ) );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -295,4 +306,4 @@ struct CKeyCombination {
 
 //////////////////////////////////////////////////////////////////////////
 
-}	// namespace Gin.
+}	 // namespace Gin.

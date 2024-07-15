@@ -8,10 +8,15 @@ class CGlContextManager;
 
 class COpenGlRenderParameters : public IRenderParameters {
 public:
-	COpenGlRenderParameters( const CGlWindow& _targetWindow ) :  targetWindow( _targetWindow ) {}
+	COpenGlRenderParameters( const CGlWindow& _targetWindow )
+		: targetWindow( _targetWindow )
+	{
+	}
 
 	const CGlWindow& GetTargetWindow() const
-		{ return targetWindow; }
+	{
+		return targetWindow;
+	}
 
 private:
 	const CGlWindow& targetWindow;
@@ -38,11 +43,10 @@ public:
 private:
 	CGlContextManager& glContextManager;
 	const CGlWindow* targetWindow = nullptr;
-	CColor backgroundColor;
+	CColor backgroundColor = CColor( 0, 0, 0, 0 );
 	HBRUSH backgroundBrush;
 };
 
 //////////////////////////////////////////////////////////////////////////
 
-}	// namespace Gin.
-
+}	 // namespace Gin.

@@ -9,6 +9,7 @@ class GINAPI CFreeTypeException : public CException {
 public:
 	// Create an exception from the given code.
 	explicit CFreeTypeException( int code );
+	CFreeTypeException( const CFreeTypeException& other );
 
 	virtual CString GetMessageText() const override;
 	

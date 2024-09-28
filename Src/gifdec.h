@@ -9,6 +9,7 @@ namespace GinInternal {
 class CGifInternalException : public CException {
 public:
 	explicit CGifInternalException( CStringPart _errorStr ) : errorStr( _errorStr ) {}
+	CGifInternalException( const CGifInternalException& other ) : errorStr( copy( other.errorStr ) ) {}
 
 	virtual CString GetMessageText() const override final
 		{ return copy( errorStr ); }

@@ -80,7 +80,7 @@ CUnicodeString Clipboard::PasteText()
 	}
 
 	CUnicodeString result;
-	const auto blockSize = ::GlobalSize( globalMemHandle );
+	const auto blockSize = numeric_cast<int>(::GlobalSize(globalMemHandle) );
 	const auto str = static_cast<const wchar_t*>( strPtr );
 	const auto blockLength = blockSize / 2;
 	for( auto i = 0; i < blockLength; i++ ) {
